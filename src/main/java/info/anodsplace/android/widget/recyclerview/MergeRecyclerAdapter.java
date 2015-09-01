@@ -6,30 +6,38 @@ import android.view.ViewGroup;
 
 import java.util.ArrayList;
 
-public class MergeRecyclerAdapter<T extends RecyclerView.Adapter> extends RecyclerView.Adapter {
+public class MergeRecyclerAdapter extends RecyclerView.Adapter {
 
-	private ArrayList<T> mAdapters = new ArrayList<>();
+	private ArrayList<RecyclerView.Adapter> mAdapters = new ArrayList<>();
 	private int mAdapterOffset;
-	private ArrayMap<Integer, T> mViewTypesMap = new ArrayMap<>();
+	private ArrayMap<Integer, RecyclerView.Adapter> mViewTypesMap = new ArrayMap<>();
 
 	public MergeRecyclerAdapter() {
 	}
 
 	/** Append the given adapter to the list of merged adapters. */
-	public void addAdapter(T adapter) {
-		mAdapters.add(adapter);
+	public void addAdapter(RecyclerView.Adapter adapter) {
+		addAdapter(mAdapters.size(), adapter);
+	}
+
+	/** Append the given adapter to the list of merged adapters. */
+	public void addAdapter(int index, RecyclerView.Adapter adapter) {
+		mAdapters.add(index, adapter);
 		adapter.registerAdapterDataObserver(new ForwardingDataSetObserver(mAdapters.size()-1));
+	}
+
+	public RecyclerView.Adapter getAdapter(int index) {
+		return mAdapters.get(index);
 	}
 
 	@Override
 	public int getItemCount() {
 		int count = 0;
-		for (T adapter : mAdapters) {
+		for (RecyclerView.Adapter adapter : mAdapters) {
 			count += adapter.getItemCount();
 		}
 		return count;
 	}
-
 
 
 	@Override
@@ -40,7 +48,7 @@ public class MergeRecyclerAdapter<T extends RecyclerView.Adapter> extends Recycl
 
 	@Override
 	public int getItemViewType(int position) {
-		T adapter = getAdapterOffsetForItem(position);
+		RecyclerView.Adapter adapter = getAdapterOffsetForItem(position);
 		int viewType = adapter.getItemViewType(mAdapterOffset + position);
 		mViewTypesMap.put(viewType, adapter);
 		return viewType;
@@ -49,13 +57,13 @@ public class MergeRecyclerAdapter<T extends RecyclerView.Adapter> extends Recycl
 
 	@Override
 	public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-		T adapter  = mViewTypesMap.get(viewType);
+		RecyclerView.Adapter adapter  = mViewTypesMap.get(viewType);
 		return adapter.onCreateViewHolder(viewGroup,viewType);
 	}
 
 	@Override
 	public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
-		T adapter = getAdapterOffsetForItem(position);
+		RecyclerView.Adapter adapter = getAdapterOffsetForItem(position);
 		adapter.onBindViewHolder(viewHolder, mAdapterOffset+position);
 	}
 
@@ -102,7 +110,7 @@ public class MergeRecyclerAdapter<T extends RecyclerView.Adapter> extends Recycl
 		int offset = 0;
 
 		while (i < adapterIndex) {
-			T adapter = mAdapters.get(i);
+			RecyclerView.Adapter adapter = mAdapters.get(i);
 			offset += adapter.getItemCount();
 			i++;
 		}
@@ -117,13 +125,13 @@ public class MergeRecyclerAdapter<T extends RecyclerView.Adapter> extends Recycl
 	 * @param position a merged (global) position
 	 * @return the matching Adapter and local position, or null if not found
 	 */
-	protected T getAdapterOffsetForItem(final int position) {
+	protected RecyclerView.Adapter getAdapterOffsetForItem(final int position) {
 		final int adapterCount = mAdapters.size();
 		int i = 0;
 		int count = 0;
 
 		while (i < adapterCount) {
-			T adapter = mAdapters.get(i);
+			RecyclerView.Adapter adapter = mAdapters.get(i);
 			int newCount = count + adapter.getItemCount();
 			if (position < newCount) {
 				return adapter;
