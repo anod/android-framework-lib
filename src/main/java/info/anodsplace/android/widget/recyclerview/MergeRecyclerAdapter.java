@@ -49,7 +49,7 @@ public class MergeRecyclerAdapter extends RecyclerView.Adapter {
 	@Override
 	public int getItemViewType(int position) {
 		RecyclerView.Adapter adapter = getAdapterOffsetForItem(position);
-		int viewType = adapter.getItemViewType(mAdapterOffset + position);
+		int viewType = adapter.getItemViewType(position - mAdapterOffset);
 		mViewTypesMap.put(viewType, adapter);
 		return viewType;
 	}
@@ -64,7 +64,7 @@ public class MergeRecyclerAdapter extends RecyclerView.Adapter {
 	@Override
 	public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
 		RecyclerView.Adapter adapter = getAdapterOffsetForItem(position);
-		adapter.onBindViewHolder(viewHolder, mAdapterOffset+position);
+		adapter.onBindViewHolder(viewHolder, position - mAdapterOffset);
 	}
 
 	private class ForwardingDataSetObserver extends RecyclerView.AdapterDataObserver {
