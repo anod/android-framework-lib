@@ -130,6 +130,7 @@ public class MergeRecyclerAdapter extends RecyclerView.Adapter {
 		int i = 0;
 		int count = 0;
 
+		mAdapterOffset = 0;
 		while (i < adapterCount) {
 			RecyclerView.Adapter adapter = mAdapters.get(i);
 			int newCount = count + adapter.getItemCount();
