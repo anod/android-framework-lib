@@ -22,11 +22,13 @@
 
 ## How to install
 
+[![](https://jitpack.io/v/anod/android-utils-lib.svg)](https://jitpack.io/#anod/android-utils-lib)
+
     repositories { 
           jcenter()
           maven { url "https://jitpack.io" }
     }
    
     dependencies {
-          compile 'com.github.anod:android-utils-lib:1.0.1'
+            compile 'com.github.anod:android-utils-lib:v1.0.2'
     }

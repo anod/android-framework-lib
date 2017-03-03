@@ -1,5 +1,6 @@
 package info.anodsplace.android.log;
 
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 
@@ -14,8 +15,34 @@ import java.util.Locale;
 public class AppLog {
 
     private static final String TAG = "AppLog";
-    public static boolean DEBUG;
-    static volatile AppLog singleton = null;
+    private static int LOG_LEVEL = Log.INFO;
+    private static volatile AppLog singleton = null;
+
+    public static final boolean LOG_VERBOSE = LOG_LEVEL <= Log.VERBOSE;
+    public static final boolean LOG_DEBUG = LOG_LEVEL <= Log.DEBUG;
+
+    public static Logger LOGGER = new Logger.Android();
+
+    public interface Logger
+    {
+        void println(int priority, String tag, String msg);
+
+        class Android implements Logger
+        {
+            @Override
+            public void println(int priority, String tag, String msg) {
+                Log.println(priority, TAG, msg);
+            }
+        }
+
+        class StdOut implements Logger
+        {
+            @Override
+            public void println(int priority, String tag, String msg) {
+                System.out.println("["+tag+":"+priority+"] " + msg);
+            }
+        }
+    }
 
     private Listener mListener;
 
@@ -31,52 +58,67 @@ public class AppLog {
     }
 
     public static void setDebug(boolean buildConfigDebug, String loggableTag) {
-        DEBUG = buildConfigDebug ? buildConfigDebug : Log.isLoggable(loggableTag, Log.DEBUG);
+        boolean isDebug = buildConfigDebug || Log.isLoggable(loggableTag, Log.DEBUG);
+        if (isDebug) {
+            setLogLevel(Log.DEBUG);
+        } else {
+            setLogLevel(Log.INFO);
+        }
+    }
+
+    public static void setLogLevel(int level) {
+        LOG_LEVEL = level;
     }
 
     public static void d(String msg) {
-        if (DEBUG) Log.d(TAG, format(msg));
+        log(Log.DEBUG, format(msg));
     }
 
     public static void d(final String msg, final Object... params) {
-        if (DEBUG) Log.d(TAG, format(msg, params));
+        log(Log.DEBUG, format(msg, params));
     }
 
     public static void v(String msg) {
-        Log.v(TAG, format(msg));
+        log(Log.VERBOSE, format(msg));
     }
 
     public static void e(String msg) {
-        Log.e(TAG, format(msg));
+        loge(format(msg), null);
     }
 
     public static void e(String msg, Throwable tr) {
-        Log.e(TAG, format(msg), tr);
+        loge(format(msg), tr);
         instance().notifyExcpetion(tr);
     }
 
     public static void e(Throwable tr) {
-        Log.e(TAG, tr.getMessage(), tr);
+        loge(tr.getMessage(), tr);
         instance().notifyExcpetion(tr);
     }
 
-    /*
-    public static void e(RetrofitError error) {
-        e("RetrofitError: " + error.getClass().getSimpleName() + ": " + error.getMessage(), error.getCause());
-        instance().notifyExcpetion(error.getCause());
-    }
-    */
-
     public static void e(String msg, final Object... params) {
-        Log.e(TAG, format(msg, params));
+        loge(format(msg, params), null);
     }
 
     public static void w(String msg) {
-        Log.v(TAG, format(msg));
+        log(Log.VERBOSE, format(msg));
     }
 
     public static void v(String msg, final Object... params) {
-        Log.v(TAG, format(msg, params));
+        log(Log.VERBOSE, format(msg, params));
+    }
+
+    private static void log(int priority, String msg)
+    {
+        if (priority >= LOG_LEVEL)
+        {
+            LOGGER.println(priority, TAG, msg);
+        }
+    }
+
+    private static void loge(String message,@Nullable Throwable tr) {
+        String trace = LOGGER instanceof Logger.Android ? Log.getStackTraceString(tr) : "";
+        LOGGER.println(Log.ERROR, TAG, message + '\n' + trace);
     }
 
     private static String format(final String msg, final Object... array) {
@@ -117,5 +159,4 @@ public class AppLog {
     public interface Listener {
         void onLogException(Throwable tr);
     }
-
 }
