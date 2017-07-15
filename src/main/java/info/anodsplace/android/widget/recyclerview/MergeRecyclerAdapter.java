@@ -8,32 +8,38 @@ import java.util.ArrayList;
 
 public class MergeRecyclerAdapter extends RecyclerView.Adapter {
 
-	private ArrayList<RecyclerView.Adapter> mAdapters = new ArrayList<>();
-	private int mAdapterOffset;
-	private ArrayMap<Integer, RecyclerView.Adapter> mViewTypesMap = new ArrayMap<>();
+	private ArrayList<RecyclerView.Adapter> adapters = new ArrayList<>();
+	private int adapterOffset;
+	private ArrayMap<Integer, RecyclerView.Adapter> viewTypesMap = new ArrayMap<>();
 
 	public MergeRecyclerAdapter() {
 	}
 
 	/** Append the given adapter to the list of merged adapters. */
-	public void addAdapter(RecyclerView.Adapter adapter) {
-		addAdapter(mAdapters.size(), adapter);
+	public int addAdapter(RecyclerView.Adapter adapter) {
+		int index = adapters.size();
+		addAdapter(index, adapter);
+		return index;
 	}
 
 	/** Append the given adapter to the list of merged adapters. */
 	public void addAdapter(int index, RecyclerView.Adapter adapter) {
-		mAdapters.add(index, adapter);
-		adapter.registerAdapterDataObserver(new ForwardingDataSetObserver(mAdapters.size()-1));
+		adapters.add(index, adapter);
+		adapter.registerAdapterDataObserver(new ForwardingDataSetObserver(adapters.size()-1));
+	}
+
+	public int size() {
+		return adapters.size();
 	}
 
 	public RecyclerView.Adapter getAdapter(int index) {
-		return mAdapters.get(index);
+		return adapters.get(index);
 	}
 
 	@Override
 	public int getItemCount() {
 		int count = 0;
-		for (RecyclerView.Adapter adapter : mAdapters) {
+		for (RecyclerView.Adapter adapter : adapters) {
 			count += adapter.getItemCount();
 		}
 		return count;
@@ -45,26 +51,24 @@ public class MergeRecyclerAdapter extends RecyclerView.Adapter {
 		return position;
 	}
 
-
 	@Override
 	public int getItemViewType(int position) {
 		RecyclerView.Adapter adapter = getAdapterOffsetForItem(position);
-		int viewType = adapter.getItemViewType(position - mAdapterOffset);
-		mViewTypesMap.put(viewType, adapter);
+		int viewType = adapter.getItemViewType(position - adapterOffset);
+		viewTypesMap.put(viewType, adapter);
 		return viewType;
 	}
 
-
 	@Override
 	public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup viewGroup, int viewType) {
-		RecyclerView.Adapter adapter  = mViewTypesMap.get(viewType);
+		RecyclerView.Adapter adapter  = viewTypesMap.get(viewType);
 		return adapter.onCreateViewHolder(viewGroup,viewType);
 	}
 
 	@Override
 	public void onBindViewHolder(RecyclerView.ViewHolder viewHolder, int position) {
 		RecyclerView.Adapter adapter = getAdapterOffsetForItem(position);
-		adapter.onBindViewHolder(viewHolder, position - mAdapterOffset);
+		adapter.onBindViewHolder(viewHolder, position - adapterOffset);
 	}
 
 	private class ForwardingDataSetObserver extends RecyclerView.AdapterDataObserver {
@@ -110,7 +114,7 @@ public class MergeRecyclerAdapter extends RecyclerView.Adapter {
 		int offset = 0;
 
 		while (i < adapterIndex) {
-			RecyclerView.Adapter adapter = mAdapters.get(i);
+			RecyclerView.Adapter adapter = adapters.get(i);
 			offset += adapter.getItemCount();
 			i++;
 		}
@@ -126,19 +130,19 @@ public class MergeRecyclerAdapter extends RecyclerView.Adapter {
 	 * @return the matching Adapter and local position, or null if not found
 	 */
 	protected RecyclerView.Adapter getAdapterOffsetForItem(final int position) {
-		final int adapterCount = mAdapters.size();
+		final int adapterCount = adapters.size();
 		int i = 0;
 		int count = 0;
 
-		mAdapterOffset = 0;
+		adapterOffset = 0;
 		while (i < adapterCount) {
-			RecyclerView.Adapter adapter = mAdapters.get(i);
+			RecyclerView.Adapter adapter = adapters.get(i);
 			int newCount = count + adapter.getItemCount();
 			if (position < newCount) {
 				return adapter;
 			}
 			count = newCount;
-			mAdapterOffset = count;
+			adapterOffset = count;
 			i++;
 		}
 		return null;
