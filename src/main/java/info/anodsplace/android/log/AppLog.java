@@ -1,5 +1,6 @@
 package info.anodsplace.android.log;
 
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
@@ -14,7 +15,7 @@ import java.util.Locale;
  */
 public class AppLog {
 
-    private static final String TAG = "AppLog";
+    private static String LOG_TAG = "AppLog";
     private static int LOG_LEVEL = Log.INFO;
     private static volatile AppLog singleton = null;
 
@@ -25,26 +26,26 @@ public class AppLog {
 
     public interface Logger
     {
-        void println(int priority, String tag, String msg);
+        void println(int priority,@NonNull String tag,@NonNull String msg);
 
         class Android implements Logger
         {
             @Override
-            public void println(int priority, String tag, String msg) {
-                Log.println(priority, TAG, msg);
+            public void println(int priority, @NonNull String tag, @NonNull String msg) {
+                Log.println(priority, tag, msg);
             }
         }
 
         class StdOut implements Logger
         {
             @Override
-            public void println(int priority, String tag, String msg) {
+            public void println(int priority, @NonNull String tag, @NonNull String msg) {
                 System.out.println("["+tag+":"+priority+"] " + msg);
             }
         }
     }
 
-    private Listener mListener;
+    private Listener listener;
 
     public static AppLog instance() {
         if (singleton == null) {
@@ -66,41 +67,47 @@ public class AppLog {
         }
     }
 
+    public static void setLogTag(@NonNull String tag) {
+        LOG_TAG = tag;
+    }
+
     public static void setLogLevel(int level) {
         LOG_LEVEL = level;
     }
 
-    public static void d(String msg) {
+    public static void d(@NonNull String msg) {
         log(Log.DEBUG, format(msg));
     }
 
-    public static void d(final String msg, final Object... params) {
+    public static void d(@NonNull String msg, final Object... params) {
         log(Log.DEBUG, format(msg, params));
     }
 
-    public static void v(String msg) {
+    public static void v(@NonNull String msg) {
         log(Log.VERBOSE, format(msg));
     }
 
-    public static void e(String msg) {
+    public static void e(@NonNull String msg) {
         loge(format(msg), null);
     }
 
-    public static void e(String msg, Throwable tr) {
+    public static void e(@NonNull String msg,@Nullable Throwable tr) {
         loge(format(msg), tr);
-        instance().notifyExcpetion(tr);
+        if (tr != null) {
+            instance().notifyException(tr);
+        }
     }
 
-    public static void e(Throwable tr) {
-        loge(tr.getMessage(), tr);
-        instance().notifyExcpetion(tr);
+    public static void e(@Nullable Throwable tr) {
+        String message = tr == null ? "Throwable is null" : tr.getMessage();
+        e(message, tr);
     }
 
-    public static void e(String msg, final Object... params) {
+    public static void e(@NonNull String msg, final Object... params) {
         loge(format(msg, params), null);
     }
 
-    public static void w(String msg) {
+    public static void w(@NonNull String msg) {
         log(Log.VERBOSE, format(msg));
     }
 
@@ -108,17 +115,17 @@ public class AppLog {
         log(Log.VERBOSE, format(msg, params));
     }
 
-    private static void log(int priority, String msg)
+    private static void log(int priority,@NonNull String msg)
     {
         if (priority >= LOG_LEVEL)
         {
-            LOGGER.println(priority, TAG, msg);
+            LOGGER.println(priority, LOG_TAG, msg);
         }
     }
 
-    private static void loge(String message,@Nullable Throwable tr) {
+    private static void loge(@NonNull String message,@Nullable Throwable tr) {
         String trace = LOGGER instanceof Logger.Android ? Log.getStackTraceString(tr) : "";
-        LOGGER.println(Log.ERROR, TAG, message + '\n' + trace);
+        LOGGER.println(Log.ERROR, LOG_TAG, message + '\n' + trace);
     }
 
     private static String format(final String msg, final Object... array) {
@@ -146,17 +153,17 @@ public class AppLog {
         return String.format(Locale.US, "[%d] %s: %s", Thread.currentThread().getId(), string, formatted);
     }
 
-    public void setListener(Listener listener) {
-        this.mListener = listener;
+    public void setListener(@Nullable  Listener listener) {
+        this.listener = listener;
     }
 
-    private void notifyExcpetion(Throwable tr) {
-        if (mListener != null) {
-            mListener.onLogException(tr);
+    private void notifyException(@NonNull Throwable tr) {
+        if (listener != null) {
+            listener.onLogException(tr);
         }
     }
 
     public interface Listener {
-        void onLogException(Throwable tr);
+        void onLogException(@NonNull Throwable tr);
     }
 }

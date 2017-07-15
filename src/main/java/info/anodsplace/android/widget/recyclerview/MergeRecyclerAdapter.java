@@ -1,5 +1,6 @@
 package info.anodsplace.android.widget.recyclerview;
 
+import android.support.annotation.NonNull;
 import android.support.v4.util.ArrayMap;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
@@ -16,14 +17,14 @@ public class MergeRecyclerAdapter extends RecyclerView.Adapter {
 	}
 
 	/** Append the given adapter to the list of merged adapters. */
-	public int addAdapter(RecyclerView.Adapter adapter) {
+	public int addAdapter(@NonNull RecyclerView.Adapter adapter) {
 		int index = adapters.size();
 		addAdapter(index, adapter);
 		return index;
 	}
 
 	/** Append the given adapter to the list of merged adapters. */
-	public void addAdapter(int index, RecyclerView.Adapter adapter) {
+	public void addAdapter(int index,@NonNull RecyclerView.Adapter adapter) {
 		adapters.add(index, adapter);
 		adapter.registerAdapterDataObserver(new ForwardingDataSetObserver(adapters.size()-1));
 	}
@@ -32,7 +33,7 @@ public class MergeRecyclerAdapter extends RecyclerView.Adapter {
 		return adapters.size();
 	}
 
-	public RecyclerView.Adapter getAdapter(int index) {
+	public @NonNull RecyclerView.Adapter getAdapter(int index) {
 		return adapters.get(index);
 	}
 

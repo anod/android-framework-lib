@@ -1,17 +1,18 @@
 package info.anodsplace.android.widget.recyclerview;
 
+import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 public abstract class EndlessOnScrollListener extends RecyclerView.OnScrollListener {
-    private final int mVisibleThreshold;
+    private final int visibleThreshold;
 
     private LinearLayoutManager mLinearLayoutManager;
     private int lastCall;
 
-    public EndlessOnScrollListener(RecyclerView.LayoutManager linearLayoutManager, int threshold) {
+    public EndlessOnScrollListener(@NonNull RecyclerView.LayoutManager linearLayoutManager, int threshold) {
         mLinearLayoutManager = (LinearLayoutManager) linearLayoutManager;
-        mVisibleThreshold = threshold;
+        visibleThreshold = threshold;
     }
  
     @Override
@@ -21,7 +22,7 @@ public abstract class EndlessOnScrollListener extends RecyclerView.OnScrollListe
         int totalItemCount = recyclerView.getAdapter().getItemCount();
         int firstVisibleItem = mLinearLayoutManager.findFirstVisibleItemPosition();
 
-        if (lastCall != totalItemCount && firstVisibleItem + mVisibleThreshold > lastCall) {
+        if (lastCall != totalItemCount && firstVisibleItem + visibleThreshold > lastCall) {
             lastCall = totalItemCount;
             onLoadMore();
         }
@@ -31,7 +32,6 @@ public abstract class EndlessOnScrollListener extends RecyclerView.OnScrollListe
         lastCall = 0;
     }
     /**
-     *
      * @return true if there is more data
      */
     public abstract void onLoadMore();

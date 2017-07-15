@@ -2,6 +2,7 @@ package info.anodsplace.android.widget.recyclerview;
 
 import android.content.Context;
 import android.support.annotation.LayoutRes;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,18 +13,18 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class EndlessAdapter extends AdapterWrapper {
     public static final int VIEW_TYPE_LOAD_MORE = -1;
     private AtomicBoolean keepOnAppending=new AtomicBoolean(false);
-    private int mLoadMoreViewId;
-    private Context mContext;
+    private int loadMoreViewId;
+    private final Context context;
 
-    public EndlessAdapter(RecyclerView.Adapter adapter, Context context, @LayoutRes int loadMoreViewId) {
+    public EndlessAdapter(@NonNull RecyclerView.Adapter adapter, @NonNull Context context, @LayoutRes int loadMoreViewId) {
         super(adapter);
-        mLoadMoreViewId = loadMoreViewId;
-        mContext = context;
+        this.loadMoreViewId = loadMoreViewId;
+        this.context = context;
     }
 
     @Override
     public int getItemCount() {
-        int count = mAdapter.getItemCount();
+        int count = adapter.getItemCount();
         if (keepOnAppending.get()) {
             if(count > getMinItemCount()) {
                 return count + 1; // one more for loading view
@@ -34,7 +35,7 @@ public class EndlessAdapter extends AdapterWrapper {
     }
 
     public int getItemViewType(int position) {
-        if (position == mAdapter.getItemCount()) {
+        if (position == adapter.getItemCount()) {
             return VIEW_TYPE_LOAD_MORE;
         }
 
@@ -43,7 +44,7 @@ public class EndlessAdapter extends AdapterWrapper {
 
     @Override
     public long getItemId(int position) {
-        if (position == mAdapter.getItemCount()) {
+        if (position == adapter.getItemCount()) {
             return position;
         }
         return super.getItemId(position);
@@ -53,7 +54,7 @@ public class EndlessAdapter extends AdapterWrapper {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == VIEW_TYPE_LOAD_MORE) {
-            View view = LayoutInflater.from(mContext).inflate(mLoadMoreViewId, parent, false);
+            View view = LayoutInflater.from(context).inflate(loadMoreViewId, parent, false);
             return new FooterViewHolder(view);
         }
 
@@ -75,7 +76,7 @@ public class EndlessAdapter extends AdapterWrapper {
         keepOnAppending.set(newValue);
 
         if (!same) {
-            int count = mAdapter.getItemCount();
+            int count = adapter.getItemCount();
             if (newValue) {
                 if (count > getMinItemCount()) {
                     notifyItemInserted(count);
@@ -87,8 +88,8 @@ public class EndlessAdapter extends AdapterWrapper {
     }
 
     private int getMinItemCount() {
-        if (mAdapter instanceof HeaderAdapter) {
-            return ((HeaderAdapter) mAdapter).getHeaderCount();
+        if (adapter instanceof HeaderAdapter) {
+            return ((HeaderAdapter) adapter).getHeaderCount();
         }
         return 0;
     }

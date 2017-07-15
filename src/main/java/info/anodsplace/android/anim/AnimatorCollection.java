@@ -3,6 +3,7 @@ package info.anodsplace.android.anim;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
+import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -12,38 +13,34 @@ import java.util.List;
  * @date 2015-05-25
  */
 public class AnimatorCollection {
-    private List<Animator> mAnimators;
-    private AnimatorSet mSet;
+    private List<Animator> animators = new ArrayList<>();
+    private AnimatorSet set;
 
-    public AnimatorCollection() {
-        mAnimators = new ArrayList<>();
-    }
-
-    public void add(Animator anim) {
+    public void add(@Nullable Animator anim) {
         if (anim != null) {
-            mAnimators.add(anim);
+            animators.add(anim);
         }
     }
 
     public void clear() {
-        mSet = null;
-        mAnimators.clear();
+        set = null;
+        animators.clear();
     }
 
     public AnimatorSet sequential() {
         AnimatorSet set = set();
-        set.playSequentially(mAnimators);
+        set.playSequentially(animators);
         return set;
     }
 
     public AnimatorSet together() {
         AnimatorSet set = set();
-        set.playTogether(mAnimators);
+        set.playTogether(animators);
         return set;
     }
 
     public boolean isEmpty() {
-        return mAnimators.isEmpty();
+        return animators.isEmpty();
     }
 
     public void addListener(AnimatorListenerAdapter listener) {
@@ -52,9 +49,9 @@ public class AnimatorCollection {
     }
 
     private AnimatorSet set() {
-        if (mSet == null) {
-            mSet = new AnimatorSet();
+        if (set == null) {
+            set = new AnimatorSet();
         }
-        return mSet;
+        return set;
     }
 }

@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.ValueAnimator;
 import android.os.Build;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewAnimationUtils;
 
@@ -14,7 +15,7 @@ import android.view.ViewAnimationUtils;
 public class RevealAnimatorCompat {
     private static final int ANIM_DURATION = 300;
 
-    public static Animator show(final View viewRoot, int x, int y, int delay) {
+    public static Animator show(@NonNull final View viewRoot, int x, int y, int delay) {
         Animator anim;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             int finalRadius = Math.max(viewRoot.getWidth(), viewRoot.getHeight());
@@ -35,7 +36,7 @@ public class RevealAnimatorCompat {
         return anim;
     }
 
-    public static Animator hide(final View viewRoot, int x, int y, int delay) {
+    public static Animator hide(@NonNull final View viewRoot, int x, int y, int delay) {
         Animator anim;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             int initialRadius = viewRoot.getWidth();

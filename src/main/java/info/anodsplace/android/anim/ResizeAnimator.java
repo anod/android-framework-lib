@@ -1,6 +1,7 @@
 package info.anodsplace.android.anim;
 
 import android.animation.ValueAnimator;
+import android.support.annotation.NonNull;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -11,7 +12,7 @@ import android.widget.LinearLayout;
  */
 public class ResizeAnimator {
 
-    public static ValueAnimator height(int from, int to, final View view,int duration) {
+    public static ValueAnimator height(int from, int to, @NonNull final View view, int duration) {
         ValueAnimator anim = ValueAnimator.ofInt(from, to);
         anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
@@ -25,7 +26,7 @@ public class ResizeAnimator {
         anim.setDuration(duration);
         return anim;
     }
-    public static ValueAnimator margin(int from, int to, final View view,int duration) {
+    public static ValueAnimator margin(int from, int to, @NonNull final View view, int duration) {
         ValueAnimator anim = ValueAnimator.ofInt(from, to);
         anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override

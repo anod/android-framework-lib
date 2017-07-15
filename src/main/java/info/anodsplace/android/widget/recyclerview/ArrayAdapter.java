@@ -1,5 +1,6 @@
 package info.anodsplace.android.widget.recyclerview;
 
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 
 
@@ -10,10 +11,10 @@ import java.util.List;
 public abstract class ArrayAdapter<T extends Object, VH extends RecyclerView.ViewHolder>
         extends RecyclerView.Adapter<VH> {
  
-    private List<T> mObjects;
+    private List<T> objects;
  
-    public ArrayAdapter(final List<T> objects) {
-        mObjects = objects;
+    public ArrayAdapter(@NonNull final List<T> objects) {
+        this.objects = objects;
     }
  
     /**
@@ -21,18 +22,18 @@ public abstract class ArrayAdapter<T extends Object, VH extends RecyclerView.Vie
      *
      * @param object The object to add at the end of the array.
      */
-    public void add(final T object) {
-        mObjects.add(object);
-        notifyItemInserted(mObjects.size() - 1);
+    public void add(@NonNull final T object) {
+        objects.add(object);
+        notifyItemInserted(objects.size() - 1);
     }
 
     /**
      *
      * @param objects List of objects to be added
      */
-    public void addAll(List<T> objects) {
-        int count = mObjects.size();
-        mObjects.addAll(objects);
+    public void addAll(@NonNull List<T> objects) {
+        int count = this.objects.size();
+        this.objects.addAll(objects);
         notifyItemRangeInserted(count, objects.size());
     }
 
@@ -40,17 +41,17 @@ public abstract class ArrayAdapter<T extends Object, VH extends RecyclerView.Vie
      * Remove all elements from the list.
      */
     public void clear() {
-        mObjects.clear();
+        objects.clear();
         notifyDataSetChanged();
     }
  
     @Override
     public int getItemCount() {
-        return mObjects.size();
+        return objects.size();
     }
  
     public T getItem(final int position) {
-        return mObjects.get(position);
+        return objects.get(position);
     }
 
     @Override
@@ -65,7 +66,7 @@ public abstract class ArrayAdapter<T extends Object, VH extends RecyclerView.Vie
      * @return The position of the specified item.
      */
     public int getPosition(final T item) {
-        return mObjects.indexOf(item);
+        return objects.indexOf(item);
     }
  
     /**
@@ -74,8 +75,8 @@ public abstract class ArrayAdapter<T extends Object, VH extends RecyclerView.Vie
      * @param object The object to insert into the array.
      * @param index  The index at which the object must be inserted.
      */
-    public void insert(final T object, int index) {
-        mObjects.add(index, object);
+    public void insert(@NonNull final T object, int index) {
+        objects.add(index, object);
         notifyItemInserted(index);
  
     }
@@ -85,9 +86,9 @@ public abstract class ArrayAdapter<T extends Object, VH extends RecyclerView.Vie
      *
      * @param object The object to remove.
      */
-    public void remove(T object) {
+    public void remove(@NonNull T object) {
         final int position = getPosition(object);
-        mObjects.remove(object);
+        objects.remove(object);
         notifyItemRemoved(position);
     }
  
@@ -96,9 +97,9 @@ public abstract class ArrayAdapter<T extends Object, VH extends RecyclerView.Vie
      *
      * @param comparator The comparator used to sort the objects contained in this adapter.
      */
-    public void sort(Comparator<? super T> comparator) {
-        Collections.sort(mObjects, comparator);
-        notifyItemRangeChanged(0, mObjects.size());
+    public void sort(@NonNull Comparator<? super T> comparator) {
+        Collections.sort(objects, comparator);
+        notifyItemRangeChanged(0, objects.size());
     }
 
 

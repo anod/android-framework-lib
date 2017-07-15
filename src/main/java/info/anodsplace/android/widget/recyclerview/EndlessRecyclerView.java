@@ -1,6 +1,8 @@
 package info.anodsplace.android.widget.recyclerview;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 
@@ -12,55 +14,53 @@ import info.anodsplace.android.R;
  */
 public class EndlessRecyclerView extends RecyclerView {
 
-    private EndlessOnScrollListener mScrollListener;
-    private boolean mHasMoreData;
-    private OnLoadMoreListener mListener;
+    private EndlessOnScrollListener scrollListener;
+    private boolean hasMoreData;
+    private OnLoadMoreListener listener;
 
-    public EndlessRecyclerView(Context context) {
+    public EndlessRecyclerView(@NonNull Context context) {
         this(context, null);
     }
 
-    public EndlessRecyclerView(Context context, AttributeSet attrs) {
+    public EndlessRecyclerView(@NonNull Context context, @Nullable AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public EndlessRecyclerView(Context context, AttributeSet attrs, int defStyle) {
+    public EndlessRecyclerView(@NonNull Context context, @Nullable AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
 
-
-    public void init(LayoutManager layout, Adapter adapter, int scrollLimit) {
+    public void init(@NonNull LayoutManager layout,@NonNull Adapter adapter, int scrollLimit) {
         super.setLayoutManager(layout);
 
         EndlessAdapter endlessAdapter = new EndlessAdapter(adapter, getContext(), R.layout.list_item_loadmore);
         super.setAdapter(endlessAdapter);
 
-        mScrollListener = new EndlessOnScrollListener(layout, scrollLimit) {
-
+        scrollListener = new EndlessOnScrollListener(layout, scrollLimit) {
             @Override
             public void onLoadMore() {
-                if (mListener != null) {
-                    mListener.onLoadMore();
+                if (listener != null) {
+                    listener.onLoadMore();
                 }
             }
         };
     }
 
-    public void setOnLoadMoreListener(OnLoadMoreListener listener) {
-        mListener = listener;
+    public void setOnLoadMoreListener(@Nullable OnLoadMoreListener listener) {
+        this.listener = listener;
     }
 
     public void setHasMoreData(boolean hasMoreData) {
-        mScrollListener.reset();
-        if (mHasMoreData == hasMoreData) {
+        scrollListener.reset();
+        if (this.hasMoreData == hasMoreData) {
             return;
         }
-        mHasMoreData = hasMoreData;
+        this.hasMoreData = hasMoreData;
         if (hasMoreData) {
-            addOnScrollListener(mScrollListener);
+            addOnScrollListener(scrollListener);
             ((EndlessAdapter) getAdapter()).setKeepOnAppending(true);
         } else {
-            removeOnScrollListener(mScrollListener);
+            removeOnScrollListener(scrollListener);
             ((EndlessAdapter) getAdapter()).setKeepOnAppending(false);
         }
     }
@@ -68,5 +68,4 @@ public class EndlessRecyclerView extends RecyclerView {
     public interface OnLoadMoreListener {
         void onLoadMore();
     }
-
 }
