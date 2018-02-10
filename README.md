@@ -22,7 +22,7 @@
 
 ## How to install
 
-[![](https://jitpack.io/v/anod/android-utils-lib.svg)](https://jitpack.io/#anod/android-utils-lib)
+[![](https://jitpack.io/v/anod/android-framework-lib.svg)](https://jitpack.io/#anod/android-framework-lib)
 
     repositories { 
           jcenter()
@@ -30,5 +30,5 @@
     }
    
     dependencies {
-            compile 'com.github.anod:android-utils-lib:v1.0.2'
+            compile 'com.github.anod:android-framework-lib:v1.0.3'
     }
