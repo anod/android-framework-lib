@@ -2,10 +2,12 @@ buildscript {
     ext.kotlin_version = '1.2.21'
     repositories {
         mavenCentral()
+        maven { url "https://jitpack.io" }
         maven { url 'https://maven.google.com' }
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:3.0.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.0'
     }
 }
