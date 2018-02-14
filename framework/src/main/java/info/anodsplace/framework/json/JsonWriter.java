@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.util;
+package info.anodsplace.framework.json;
 
 import java.io.Closeable;
 import java.io.IOException;

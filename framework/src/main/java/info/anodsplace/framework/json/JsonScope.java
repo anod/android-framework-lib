@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.util;
+package info.anodsplace.framework.json;
 
 /**
  * Lexical scoping elements within a JSON reader or writer.

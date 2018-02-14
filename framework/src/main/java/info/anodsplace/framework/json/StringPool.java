@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.util;
+package info.anodsplace.framework.json;
 
 /**
  * A pool of string instances. Unlike the {@link String#intern() VM's

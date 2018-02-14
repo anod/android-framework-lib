@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.util;
+package info.anodsplace.framework.json;
 
 /**
  * A structure, name or actual type in a JSON-encoded string.
