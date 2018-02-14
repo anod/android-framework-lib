@@ -2,7 +2,7 @@ package info.anodsplace.framework.widget.recyclerview
 
 import android.support.v7.widget.RecyclerView
 
-open class RecyclerViewStateAdapter<VH : RecyclerView.ViewHolder>(adapters: Array<RecyclerView.Adapter<VH>>): MergeRecyclerAdapter() {
+open class RecyclerViewStateAdapter<VH : RecyclerView.ViewHolder>(adapters: Array<RecyclerView.Adapter<VH>>): MergeRecyclerAdapter<VH>() {
 
     constructor() : this(emptyArray())
 
@@ -20,7 +20,7 @@ open class RecyclerViewStateAdapter<VH : RecyclerView.ViewHolder>(adapters: Arra
         return 0
     }
 
-    override fun getAdapterOffsetForItem(position: Int): RecyclerView.Adapter<*> {
+    override fun getAdapterOffsetForItem(position: Int): RecyclerView.Adapter<VH> {
         return getAdapter(selectedId)
     }
 
