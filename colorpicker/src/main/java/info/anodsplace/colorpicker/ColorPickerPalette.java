@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.colorpicker;
+package info.anodsplace.colorpicker;
 
 import android.content.Context;
 import android.content.res.Resources;
@@ -25,9 +25,7 @@ import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 
-import com.android.colorpicker.ColorPickerSwatch.OnColorSelectedListener;
-
-import info.anodsplace.colorpicker.R;
+import info.anodsplace.colorpicker.ColorPickerSwatch.OnColorSelectedListener;
 
 /**
  * A color picker custom view which creates an grid of color squares.  The number of squares per
@@ -62,7 +60,7 @@ public class ColorPickerPalette extends TableLayout {
     public void init(int size, int columns, OnColorSelectedListener listener) {
         mNumColumns = columns;
         Resources res = getResources();
-        if (size == ColorPickerDialog.SIZE_LARGE) {
+        if (size == ColorPickerDialogSystem.SIZE_LARGE) {
             mSwatchLength = res.getDimensionPixelSize(R.dimen.color_swatch_large);
             mMarginSize = res.getDimensionPixelSize(R.dimen.color_swatch_margins_large);
         } else {

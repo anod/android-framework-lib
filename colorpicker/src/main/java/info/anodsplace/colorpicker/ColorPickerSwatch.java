@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.colorpicker;
+package info.anodsplace.colorpicker;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
@@ -23,8 +23,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-
-import info.anodsplace.colorpicker.R;
 
 /**
  * Creates a circular swatch of a specified color.  Adds a checkmark if marked as checked.

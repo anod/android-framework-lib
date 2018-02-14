@@ -16,8 +16,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
-import com.android.colorpicker.ColorStateDrawable;
-
 /**
  * @author alex
  * @date 2014-12-17

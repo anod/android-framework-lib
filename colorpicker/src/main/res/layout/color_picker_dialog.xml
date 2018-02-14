@@ -50,7 +50,7 @@
                 android:padding="8dp">
 
 
-                <com.android.colorpicker.ColorPickerPalette
+                <info.anodsplace.colorpicker.ColorPickerPalette
                     android:id="@+id/color_picker"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -58,7 +58,7 @@
                     android:gravity="center"
                     android:visibility="gone" />
 
-                <com.android.colorpicker.ColorPickerPalette
+                <info.anodsplace.colorpicker.ColorPickerPalette
                     android:id="@+id/alpha_picker"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

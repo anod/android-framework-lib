@@ -13,10 +13,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ProgressBar;
 
-import com.android.colorpicker.ColorPickerPalette;
-import com.android.colorpicker.ColorPickerSwatch;
-
-public class ColorPickerDialog extends com.android.colorpicker.ColorPickerDialog {
+public class ColorPickerDialog extends ColorPickerDialogSystem {
 
     protected static final String KEY_ALPHA = "alpha";
 
@@ -80,10 +77,10 @@ public class ColorPickerDialog extends com.android.colorpicker.ColorPickerDialog
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.color_picker_dialog, container, false);
 
-        Toolbar toolbar = (Toolbar) view.findViewById(R.id.color_dialog_toolbar);
+        Toolbar toolbar = view.findViewById(R.id.color_dialog_toolbar);
         toolbar.setTitle(R.string.color_picker_default_title);
 
-        mHexButton = (Button) toolbar.findViewById(R.id.hex_switch);
+        mHexButton = toolbar.findViewById(R.id.hex_switch);
         updateHexButton();
         mHexButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,18 +89,18 @@ public class ColorPickerDialog extends com.android.colorpicker.ColorPickerDialog
             }
         });
 
-        mProgress = (ProgressBar) view.findViewById(android.R.id.progress);
-        mPalette = (ColorPickerPalette) view.findViewById(R.id.color_picker);
+        mProgress = view.findViewById(android.R.id.progress);
+        mPalette = view.findViewById(R.id.color_picker);
         mPalette.init(mSize, mColumns, mColorSelectListener);
         mColorsPanel = view.findViewById(R.id.colors_panel);
 
-        mHexPanel = (HexPanel) view.findViewById(R.id.hex_panel);
+        mHexPanel = view.findViewById(R.id.hex_panel);
         mHexPanel.init(getSelectedColor(), mAlphaSliderVisible);
         mHexPanel.hide();
 
         if (mAlphaSliderVisible) {
             float density = getResources().getDisplayMetrics().density;
-            mAlpha = (ColorPickerPalette) view.findViewById(R.id.alpha_picker);
+            mAlpha = view.findViewById(R.id.alpha_picker);
 
                 mAlpha.setBackground(new AlphaPatternDrawable((int) (5 * density)));
                 mAlpha.setBackgroundDrawable(new AlphaPatternDrawable((int) (5 * density)));
@@ -112,11 +109,11 @@ public class ColorPickerDialog extends com.android.colorpicker.ColorPickerDialog
             mAlpha.init(mSize, ALPHA_LEVELS, mAlphaSelectListener);
         }
 
-        Button positiveButton = (Button) view.findViewById(android.R.id.button1);
+        Button positiveButton = view.findViewById(android.R.id.button1);
         positiveButton.setText(android.R.string.ok);
         positiveButton.setOnClickListener(mPositiveListener);
 
-        Button negativeButton = (Button) view.findViewById(android.R.id.button2);
+        Button negativeButton = view.findViewById(android.R.id.button2);
         negativeButton.setText(android.R.string.cancel);
         negativeButton.setOnClickListener(mNegativeListener);
 

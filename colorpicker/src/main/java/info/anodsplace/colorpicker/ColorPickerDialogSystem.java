@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.colorpicker;
+package info.anodsplace.colorpicker;
 
 import android.app.Activity;
 import android.app.Dialog;
@@ -25,15 +25,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ProgressBar;
 
-import com.android.colorpicker.ColorPickerSwatch.OnColorSelectedListener;
-
-import info.anodsplace.colorpicker.R;
+import info.anodsplace.colorpicker.ColorPickerSwatch.OnColorSelectedListener;
 
 /**
  * A dialog which takes in as input an array of colors and creates a palette allowing the user to
  * select a specific color swatch, which invokes a listener.
  */
-public class ColorPickerDialog extends DialogFragment implements OnColorSelectedListener {
+public class ColorPickerDialogSystem extends DialogFragment implements OnColorSelectedListener {
 
     public static final int SIZE_LARGE = 1;
 
@@ -67,13 +65,13 @@ public class ColorPickerDialog extends DialogFragment implements OnColorSelected
 
     protected OnColorSelectedListener mListener;
 
-    public ColorPickerDialog() {
+    public ColorPickerDialogSystem() {
         // Empty constructor required for dialog fragments.
     }
 
-    public static ColorPickerDialog newInstance(int titleResId, int[] colors, int selectedColor,
-            int columns, int size) {
-        ColorPickerDialog ret = new ColorPickerDialog();
+    public static ColorPickerDialogSystem newInstance(int titleResId, int[] colors, int selectedColor,
+                                                      int columns, int size) {
+        ColorPickerDialogSystem ret = new ColorPickerDialogSystem();
         ret.initialize(titleResId, colors, selectedColor, columns, size);
         return ret;
     }
@@ -116,8 +114,8 @@ public class ColorPickerDialog extends DialogFragment implements OnColorSelected
         final Activity activity = getActivity();
 
         View view = LayoutInflater.from(getActivity()).inflate(R.layout.color_picker_dialog, null);
-        mProgress = (ProgressBar) view.findViewById(android.R.id.progress);
-        mPalette = (ColorPickerPalette) view.findViewById(R.id.color_picker);
+        mProgress = view.findViewById(android.R.id.progress);
+        mPalette = view.findViewById(R.id.color_picker);
         mPalette.init(mSize, mColumns, this);
 
         if (mColors != null) {

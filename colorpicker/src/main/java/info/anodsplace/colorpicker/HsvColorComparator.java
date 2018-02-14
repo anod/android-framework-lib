@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.android.colorpicker;
+package info.anodsplace.colorpicker;
 
 import android.graphics.Color;
 
