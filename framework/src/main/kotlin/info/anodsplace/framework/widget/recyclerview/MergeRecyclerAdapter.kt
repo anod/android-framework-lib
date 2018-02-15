@@ -12,7 +12,7 @@ open class MergeRecyclerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>(
     private val viewTypesMap = ArrayMap<Int, RecyclerView.Adapter<RecyclerView.ViewHolder>>()
 
     /** Append the given adapter to the list of merged adapters.  */
-    fun add(adapter: RecyclerView.Adapter<*>): Int {
+    fun add(adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>): Int {
         val index = adapters.size
         add(index, adapter)
         return index
@@ -27,7 +27,7 @@ open class MergeRecyclerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>(
     val size: Int
         get() = adapters.size
 
-    operator fun get(index: Int): RecyclerView.Adapter<*> {
+    operator fun get(index: Int): RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return adapters[index]
     }
 
