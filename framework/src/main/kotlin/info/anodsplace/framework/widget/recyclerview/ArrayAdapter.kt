@@ -13,7 +13,7 @@ abstract class ArrayAdapter<T : Any, VH : RecyclerView.ViewHolder>(private val o
      *
      * @param object The object to add at the end of the array.
      */
-    fun add(`object`: T) {
+    open fun add(`object`: T) {
         objects.add(`object`)
         notifyItemInserted(objects.size - 1)
     }
@@ -22,7 +22,7 @@ abstract class ArrayAdapter<T : Any, VH : RecyclerView.ViewHolder>(private val o
      *
      * @param objects List of objects to be added
      */
-    fun addAll(objects: List<T>) {
+    open fun addAll(objects: List<T>) {
         val count = this.objects.size
         this.objects.addAll(objects)
         notifyItemRangeInserted(count, objects.size)
@@ -31,7 +31,7 @@ abstract class ArrayAdapter<T : Any, VH : RecyclerView.ViewHolder>(private val o
     /**
      * Remove all elements from the list.
      */
-    fun clear() {
+    open fun clear() {
         objects.clear()
         notifyDataSetChanged()
     }
@@ -40,7 +40,7 @@ abstract class ArrayAdapter<T : Any, VH : RecyclerView.ViewHolder>(private val o
         return objects.size
     }
 
-    fun getItem(position: Int): T {
+    open fun getItem(position: Int): T {
         return objects[position]
     }
 
@@ -54,7 +54,7 @@ abstract class ArrayAdapter<T : Any, VH : RecyclerView.ViewHolder>(private val o
      * @param item The item to retrieve the position of.
      * @return The position of the specified item.
      */
-    fun getPosition(item: T): Int {
+    open fun getPosition(item: T): Int {
         return objects.indexOf(item)
     }
 
@@ -64,7 +64,7 @@ abstract class ArrayAdapter<T : Any, VH : RecyclerView.ViewHolder>(private val o
      * @param object The object to insert into the array.
      * @param index  The index at which the object must be inserted.
      */
-    fun insert(`object`: T, index: Int) {
+    open fun insert(`object`: T, index: Int) {
         objects.add(index, `object`)
         notifyItemInserted(index)
     }
@@ -74,7 +74,7 @@ abstract class ArrayAdapter<T : Any, VH : RecyclerView.ViewHolder>(private val o
      *
      * @param object The object to remove.
      */
-    fun remove(`object`: T) {
+    open fun remove(`object`: T) {
         val position = getPosition(`object`)
         objects.remove(`object`)
         notifyItemRemoved(position)
@@ -85,7 +85,7 @@ abstract class ArrayAdapter<T : Any, VH : RecyclerView.ViewHolder>(private val o
      *
      * @param comparator The comparator used to sort the objects contained in this adapter.
      */
-    fun sort(comparator: Comparator<in T>) {
+    open fun sort(comparator: Comparator<in T>) {
         Collections.sort(objects, comparator)
         notifyItemRangeChanged(0, objects.size)
     }

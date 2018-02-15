@@ -35,7 +35,7 @@ class AppLog {
 
         var tag = "AppLog"
         var level = Log.INFO
-        private val instance: AppLog by lazy { AppLog() }
+        val instance: AppLog by lazy { AppLog() }
 
         val isVerbose = level <= Log.VERBOSE
         val isDebug = level <= Log.DEBUG

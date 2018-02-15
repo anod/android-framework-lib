@@ -5,35 +5,34 @@ import android.support.v7.widget.RecyclerView
 import android.view.ViewGroup
 
 import java.util.ArrayList
+open class MergeRecyclerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-open class MergeRecyclerAdapter<VH : RecyclerView.ViewHolder> : RecyclerView.Adapter<VH>() {
-
-    private val adapters = ArrayList<RecyclerView.Adapter<VH>>()
+    private val adapters = ArrayList<RecyclerView.Adapter<RecyclerView.ViewHolder>>()
     private var adapterOffset: Int = 0
-    private val viewTypesMap = ArrayMap<Int, RecyclerView.Adapter<VH>>()
+    private val viewTypesMap = ArrayMap<Int, RecyclerView.Adapter<RecyclerView.ViewHolder>>()
 
     /** Append the given adapter to the list of merged adapters.  */
-    fun addAdapter(adapter: RecyclerView.Adapter<VH>): Int {
+    fun add(adapter: RecyclerView.Adapter<*>): Int {
         val index = adapters.size
-        addAdapter(index, adapter)
+        add(index, adapter)
         return index
     }
 
     /** Append the given adapter to the list of merged adapters.  */
-    fun addAdapter(index: Int, adapter: RecyclerView.Adapter<VH>) {
-        adapters.add(index, adapter)
+    fun add(index: Int, adapter: RecyclerView.Adapter<*>) {
+        adapters.add(index, adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>)
         adapter.registerAdapterDataObserver(ForwardingDataSetObserver(adapters.size - 1))
     }
 
     val size: Int
         get() = adapters.size
 
-    fun getAdapter(index: Int): RecyclerView.Adapter<VH> {
+    operator fun get(index: Int): RecyclerView.Adapter<*> {
         return adapters[index]
     }
 
     override fun getItemCount(): Int {
-       return adapters.sumBy { it.itemCount }
+        return adapters.sumBy { it.itemCount }
     }
 
     override fun getItemId(position: Int): Long {
@@ -47,12 +46,12 @@ open class MergeRecyclerAdapter<VH : RecyclerView.ViewHolder> : RecyclerView.Ada
         return viewType
     }
 
-    override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): VH {
+    override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val adapter = viewTypesMap[viewType]!!
         return adapter.onCreateViewHolder(viewGroup, viewType)
     }
 
-    override fun onBindViewHolder(viewHolder: VH, position: Int) {
+    override fun onBindViewHolder(viewHolder: RecyclerView.ViewHolder, position: Int) {
         val adapter = getAdapterOffsetForItem(position)
         adapter!!.onBindViewHolder(viewHolder, position - adapterOffset)
     }
@@ -106,7 +105,7 @@ open class MergeRecyclerAdapter<VH : RecyclerView.ViewHolder> : RecyclerView.Ada
      * @param position a merged (global) position
      * @return the matching Adapter and local position, or null if not found
      */
-    protected open fun getAdapterOffsetForItem(position: Int): RecyclerView.Adapter<VH>? {
+    protected open fun getAdapterOffsetForItem(position: Int): RecyclerView.Adapter<RecyclerView.ViewHolder>? {
         val adapterCount = adapters.size
         var i = 0
         var count = 0
