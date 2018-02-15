@@ -14,13 +14,13 @@ class AppLog {
     interface Logger {
         fun println(priority: Int, tag: String, msg: String)
 
-        class Android : Logger {
+        open class Android : Logger {
             override fun println(priority: Int, tag: String, msg: String) {
                 Log.println(priority, tag, msg)
             }
         }
 
-        class StdOut : Logger {
+        open class StdOut : Logger {
             override fun println(priority: Int, tag: String, msg: String) {
                 println("[$tag:$priority] $msg")
             }
