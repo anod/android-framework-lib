@@ -13,92 +13,82 @@ import info.anodsplace.framework.view.MenuItemAnimation
 import info.anodsplace.framework.R
 
 abstract class SettingsActionBarActivity : ToolbarActivity(), AdapterView.OnItemClickListener {
-    lateinit private var listView: ListView
-    lateinit private var refreshAnim: MenuItemAnimation
-    lateinit private var preferenceAdapter: PreferenceAdapter
+    private val listView: ListView by lazy { findViewById<View>(android.R.id.list) as ListView }
+    private val refreshAnim: MenuItemAnimation by lazy { MenuItemAnimation(this, R.anim.rotate) }
+    private val preferenceAdapter: PreferenceAdapter by lazy { PreferenceAdapter(this, createPreferenceItems()) }
 
-    open class Preference(@StringRes val title: Int, @LayoutRes val layout: Int)
-    class Category(@StringRes title: Int) : Preference(title, R.layout.preference_category)
+    var viewTypeCount = 3
 
-    open class Item(@StringRes title: Int, @StringRes var summaryRes: Int, internal val action: Int)
-        : Preference(title, R.layout.preference_holo) {
+    open class Preference(@StringRes val title: Int, @LayoutRes val layout: Int, val viewType: Int)
+    class Category(@StringRes title: Int) : Preference(title, R.layout.preference_category, 0)
+
+    open class Item(@StringRes title: Int, @StringRes var summaryRes: Int, internal val action: Int, val widget: Int, viewType: Int)
+        : Preference(title, R.layout.preference_holo, viewType) {
+
+        constructor(@StringRes title: Int, @StringRes summaryRes: Int, action: Int, viewType: Int)
+                : this(title, summaryRes, action, 0, viewType)
+
         var summary = ""
-        var widget: Int = 0
         var enabled = true
     }
 
-    class CheckboxItem(@StringRes title: Int, @StringRes summaryRes: Int, action: Int)
-        : Item(title, summaryRes, action) {
-        var checked = false
+    open class ToggleItem(@StringRes title: Int, @StringRes summaryRes: Int, action: Int, widget: Int, var checked: Boolean, viewType: Int)
+        : Item(title, summaryRes, action, widget, viewType) {
 
-        init {
-            this.widget = R.layout.preference_widget_checkbox
-        }
-
-        constructor(title: Int, summaryRes: Int, action: Int, checked: Boolean) : this(title, summaryRes, action) {
-            this.checked = checked
-        }
-
-        fun switchState() {
+        fun toggle() {
             this.checked = !this.checked
         }
     }
 
+    class CheckboxItem(@StringRes title: Int, @StringRes summaryRes: Int, action: Int, checked: Boolean = false)
+        : ToggleItem(title, summaryRes, action, R.layout.preference_widget_checkbox, checked, 1)
+
+    class SwitchItem(@StringRes title: Int, @StringRes summaryRes: Int, action: Int, checked: Boolean = false)
+        : ToggleItem(title, summaryRes, action, R.layout.preference_widget_switch, checked, 2)
+
     internal class PreferenceAdapter(activity: SettingsActionBarActivity, objects: List<Preference>) : ArrayAdapter<Preference>(activity, 0, objects) {
         private val inflater: LayoutInflater = activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
+        private val viewTypeCount = activity.viewTypeCount
 
         override fun getItemViewType(position: Int): Int {
-            val pref = getItem(position)
-            if (pref is CheckboxItem) {
-                return 0
-            }
-            if (pref is Category) {
-                return 1
-            }
-            return 2
+            return getItem(position).viewType
         }
 
         override fun getViewTypeCount(): Int {
-            return 3
+            return viewTypeCount
         }
 
         override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
             val pref = getItem(position)
 
-            val view: View
-            if (convertView == null) {
-                view = inflater.inflate(pref!!.layout, parent, false)
-            } else {
-                view = convertView
-            }
+            val view: View = convertView ?: inflater.inflate(pref!!.layout, parent, false)
 
             val title = view.findViewById<View>(android.R.id.title) as TextView
             title.setText(pref!!.title)
 
             if (pref is Item) {
-                val item = pref
                 val icon = view.findViewById<View>(android.R.id.icon)
                 if (icon != null) {
                     icon.visibility = View.GONE
                 }
 
                 val summary = view.findViewById<View>(android.R.id.summary) as TextView
-                if (item.summaryRes > 0) {
-                    summary.setText(item.summaryRes)
+                if (pref.summaryRes > 0) {
+                    summary.setText(pref.summaryRes)
                 } else {
-                    summary.text = item.summary
+                    summary.text = pref.summary
                 }
 
                 val widgetFrame = view.findViewById<View>(android.R.id.widget_frame) as ViewGroup
-                if (item.widget > 0) {
-
-                    if (item is CheckboxItem) {
-                        var checkBox: CheckBox? = widgetFrame.findViewById<View>(android.R.id.checkbox) as? CheckBox
-                        if (checkBox == null) {
-                            inflater.inflate(item.widget, widgetFrame)
-                            checkBox = widgetFrame.findViewById<View>(android.R.id.checkbox) as CheckBox
-                        }
-                        checkBox.isChecked = item.checked
+                if (pref.widget > 0) {
+                    var widgetView: View? = widgetFrame.findViewById(android.R.id.checkbox)
+                    if (widgetView == null) {
+                        inflater.inflate(pref.widget, widgetFrame)
+                        widgetView = widgetFrame.findViewById(android.R.id.checkbox)
+                    }
+                    if (pref is ToggleItem) {
+                        val checkBox: CompoundButton = widgetView as CompoundButton
+                        checkBox.isChecked = pref.checked
                     }
                 } else {
                     widgetFrame.visibility = View.GONE
@@ -125,30 +115,24 @@ abstract class SettingsActionBarActivity : ToolbarActivity(), AdapterView.OnItem
         setContentView(R.layout.activity_settings)
         setupToolbar()
 
-        refreshAnim = MenuItemAnimation(this, R.anim.rotate)
         refreshAnim.isInvisibleMode = true
-        init()
 
-        val preferences = initPreferenceItems()
-
-        preferenceAdapter = PreferenceAdapter(this, preferences)
-        listView = findViewById<View>(android.R.id.list) as ListView
         listView.emptyView = findViewById(android.R.id.empty)
         listView.adapter = preferenceAdapter
         listView.onItemClickListener = this
     }
 
-    protected abstract fun init()
-    protected abstract fun initPreferenceItems(): List<Preference>
+    protected abstract fun createPreferenceItems(): List<Preference>
     protected abstract fun onPreferenceItemClick(action: Int, pref: Item)
 
-    protected fun setProgressVisibility(visible: Boolean) {
-        if (visible) {
-            refreshAnim.start()
-        } else {
-            refreshAnim.stop()
+    var isProgressVisible: Boolean = false
+        set(value) {
+            if (value) {
+                refreshAnim.start()
+            } else {
+                refreshAnim.stop()
+            }
         }
-    }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu
@@ -162,15 +146,14 @@ abstract class SettingsActionBarActivity : ToolbarActivity(), AdapterView.OnItem
         val pref = listView.getItemAtPosition(position) as Preference
         if (pref is Item) {
             val action = pref.action
-            if (pref is CheckboxItem) {
-                pref.switchState()
+            if (pref is ToggleItem) {
+                pref.toggle()
             }
             onPreferenceItemClick(action, pref)
         }
     }
 
-    protected fun notifyDataSetChanged() {
+    fun notifyDataSetChanged() {
         preferenceAdapter.notifyDataSetChanged()
     }
-
 }
