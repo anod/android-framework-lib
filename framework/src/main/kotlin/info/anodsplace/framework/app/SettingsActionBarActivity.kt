@@ -17,7 +17,7 @@ abstract class SettingsActionBarActivity : ToolbarActivity(), AdapterView.OnItem
     private val refreshAnim: MenuItemAnimation by lazy { MenuItemAnimation(this, R.anim.rotate) }
     private val preferenceAdapter: PreferenceAdapter by lazy { PreferenceAdapter(this, createPreferenceItems()) }
 
-    var viewTypeCount = 3
+    var viewTypeCount = 4
 
     open class Preference(@StringRes val title: Int, @LayoutRes val layout: Int, val viewType: Int)
     class Category(@StringRes title: Int) : Preference(title, R.layout.preference_category, 0)
@@ -32,6 +32,9 @@ abstract class SettingsActionBarActivity : ToolbarActivity(), AdapterView.OnItem
         var enabled = true
     }
 
+    class TextItem(@StringRes title: Int, @StringRes summaryRes: Int, action: Int)
+        : Item(title, summaryRes, action, 0, 1)
+
     open class ToggleItem(@StringRes title: Int, @StringRes summaryRes: Int, action: Int, widget: Int, var checked: Boolean, viewType: Int)
         : Item(title, summaryRes, action, widget, viewType) {
 
@@ -41,10 +44,10 @@ abstract class SettingsActionBarActivity : ToolbarActivity(), AdapterView.OnItem
     }
 
     class CheckboxItem(@StringRes title: Int, @StringRes summaryRes: Int, action: Int, checked: Boolean = false)
-        : ToggleItem(title, summaryRes, action, R.layout.preference_widget_checkbox, checked, 1)
+        : ToggleItem(title, summaryRes, action, R.layout.preference_widget_checkbox, checked, 2)
 
     class SwitchItem(@StringRes title: Int, @StringRes summaryRes: Int, action: Int, checked: Boolean = false)
-        : ToggleItem(title, summaryRes, action, R.layout.preference_widget_switch, checked, 2)
+        : ToggleItem(title, summaryRes, action, R.layout.preference_widget_switch, checked, 3)
 
     internal class PreferenceAdapter(activity: SettingsActionBarActivity, objects: List<Preference>) : ArrayAdapter<Preference>(activity, 0, objects) {
         private val inflater: LayoutInflater = activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
