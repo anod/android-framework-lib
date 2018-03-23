@@ -22,23 +22,23 @@ open class AdapterWrapper<VH : RecyclerView.ViewHolder>(protected val adapter: R
         return adapter.getItemViewType(position)
     }
 
-    override fun onViewRecycled(holder: VH?) {
+    override fun onViewRecycled(holder: VH) {
         adapter.onViewRecycled(holder)
     }
 
-    override fun onViewAttachedToWindow(holder: VH?) {
+    override fun onViewAttachedToWindow(holder: VH) {
         adapter.onViewAttachedToWindow(holder)
     }
 
-    override fun onViewDetachedFromWindow(holder: VH?) {
+    override fun onViewDetachedFromWindow(holder: VH) {
         adapter.onViewDetachedFromWindow(holder)
     }
 
-    override fun onAttachedToRecyclerView(recyclerView: RecyclerView?) {
+    override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
         adapter.onAttachedToRecyclerView(recyclerView)
     }
 
-    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView?) {
+    override fun onDetachedFromRecyclerView(recyclerView: RecyclerView) {
         adapter.onDetachedFromRecyclerView(recyclerView)
     }
 
