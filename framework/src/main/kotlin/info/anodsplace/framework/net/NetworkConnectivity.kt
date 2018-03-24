@@ -5,6 +5,12 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.net.ConnectivityManager
+import java.net.ConnectException
+import java.net.SocketException
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
+import javax.net.ssl.SSLHandshakeException
+import javax.net.ssl.SSLPeerUnverifiedException
 
 class NetworkConnectivity(private val context: Context) {
     private val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -33,5 +39,14 @@ class NetworkConnectivity(private val context: Context) {
             val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
             listener.onNetworkConnectivity(connectivityManager.activeNetworkInfo?.isConnected == true)
         }
+    }
+
+    fun isNetworkException(tr: Throwable): Boolean {
+        return tr is SocketException
+                || tr is UnknownHostException
+                || tr is SSLHandshakeException
+                || tr is SSLPeerUnverifiedException
+                || tr is ConnectException
+                || tr is SocketTimeoutException
     }
 }
