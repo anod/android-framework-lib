@@ -32,6 +32,7 @@ abstract class CursorIterator<O>(cursor: Cursor?)
     }
 
     override fun iterator(): Iterator<O> {
+        this.moveToPosition(-1)
         return this
     }
 
@@ -46,6 +47,14 @@ abstract class CursorIterator<O>(cursor: Cursor?)
             return ""
         }
         return value
+    }
+
+    override fun close() {
+        if (isClosed) {
+            AppLog.e("Cursor already closed")
+        } else {
+            super.close()
+        }
     }
 
     /**

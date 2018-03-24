@@ -1,5 +1,6 @@
 package info.anodsplace.framework
 
+import android.os.Looper
 import android.util.Log
 import java.util.IllegalFormatException
 import java.util.Locale
@@ -122,7 +123,8 @@ class AppLog {
                     break
                 }
             }
-            return String.format(Locale.US, "[%d] %s: %s", Thread.currentThread().id, string, formatted)
+            val isMain = Looper.myLooper() == Looper.getMainLooper()
+            return String.format(Locale.US, "[%s%d] %s: %s", if (isMain) "MAIN:" else "", Thread.currentThread().id, string, formatted)
         }
     }
 }
