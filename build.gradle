@@ -8,11 +8,7 @@ buildscript {
         google()
     }
     dependencies {
-<<<<<<< Updated upstream
-        classpath 'com.android.tools.build:gradle:3.1.0'
-=======
         classpath 'com.android.tools.build:gradle:3.1.1'
->>>>>>> Stashed changes
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
         classpath 'com.github.dcendents:android-maven-gradle-plugin:2.0'
     }
