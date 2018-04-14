@@ -12,14 +12,15 @@ open class MergeRecyclerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>(
     private val viewTypesMap = ArrayMap<Int, RecyclerView.Adapter<RecyclerView.ViewHolder>>()
 
     /** Append the given adapter to the list of merged adapters.  */
-    fun add(adapter: RecyclerView.Adapter<RecyclerView.ViewHolder>): Int {
+
+    fun add(adapter: Any): Int {
         val index = adapters.size
         add(index, adapter)
         return index
     }
 
     /** Append the given adapter to the list of merged adapters.  */
-    fun add(index: Int, adapter: RecyclerView.Adapter<*>) {
+    fun add(index: Int, adapter: Any) {
         adapters.add(index, adapter as RecyclerView.Adapter<RecyclerView.ViewHolder>)
         adapter.registerAdapterDataObserver(ForwardingDataSetObserver(adapters.size - 1))
     }
@@ -105,7 +106,7 @@ open class MergeRecyclerAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>(
      * @param position a merged (global) position
      * @return the matching Adapter and local position, or null if not found
      */
-    protected open fun getAdapterOffsetForItem(position: Int): RecyclerView.Adapter<RecyclerView.ViewHolder>? {
+    open fun getAdapterOffsetForItem(position: Int): RecyclerView.Adapter<RecyclerView.ViewHolder>? {
         val adapterCount = adapters.size
         var i = 0
         var count = 0
