@@ -16,10 +16,9 @@ import java.util.concurrent.ExecutionException
  */
 class GoogleSignInConnect(private val context: ApplicationContext, private val signInOptions: GoogleSignInOptions) {
 
-    constructor(context: Context, signInOptions: GoogleSignInOptions): this(ApplicationContext(context), signInOptions)
+    constructor(context: Context, signInOptions: GoogleSignInOptions) : this(ApplicationContext(context), signInOptions)
 
     private fun createGoogleApiSignInClient(): GoogleSignInClient {
-
         return GoogleSignIn.getClient(context.actual, signInOptions)
     }
 
@@ -39,12 +38,12 @@ class GoogleSignInConnect(private val context: ApplicationContext, private val s
 
         val task = client.silentSignIn()
         if (task.isSuccessful) {
-            completion.onSuccess(task.result, client)
+            completion.onSuccess(task.result!!, client)
         } else {
             task.addOnCompleteListener {
                 try {
                     val signInAccount = task.getResult(ApiException::class.java)
-                    completion.onSuccess(signInAccount, client)
+                    completion.onSuccess(signInAccount!!, client)
                 } catch (apiException: ApiException) {
                     // You can get from apiException.getStatusCode() the detailed error code
                     // e.g. GoogleSignInStatusCodes.SIGN_IN_REQUIRED means user needs to take

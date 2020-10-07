@@ -3,68 +3,72 @@ package info.anodsplace.framework.app
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.support.v4.app.Fragment
-import info.anodsplace.framework.R
-
+import androidx.fragment.app.Fragment
 import info.anodsplace.framework.AppLog
+import info.anodsplace.framework.R
+import java.io.Serializable
 
 /**
  * @author Alex Gavrishev
  * @date 16/12/2016.
  */
-typealias FragmentCreator = () -> Fragment
+open class FragmentFactory(val fragmentTag: String) : Serializable {
 
-class FragmentToolbarActivity : ToolbarActivity() {
+    open fun create(): Fragment? {
+        return null
+    }
+}
+
+open class FragmentToolbarActivity : ToolbarActivity() {
+
+    override val themeRes: Int
+        get() = intentExtras.getInt("themeRes", 0)
+    override val themeColors: CustomThemeColors
+        get() = intentExtras.getParcelable<CustomThemeColors?>("themeColors")
+                ?: CustomThemeColors.none
+
+    override val layoutResource: Int
+        get() = R.layout.activity_fragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val themeRes = intentExtras.getInt("themeRes", 0)
-        if (themeRes > 0) {
-            setTheme(themeRes)
-        }
-        setContentView(R.layout.activity_fragment)
-        setupToolbar()
 
         if (savedInstanceState == null) {
-            val fragmentTag = intent.getStringExtra(EXTRA_FRAGMENT)
-            val f = createFragment(fragmentTag)
+            val factory: FragmentFactory = intent.getSerializableExtra(EXTRA_FACTORY) as FragmentFactory
+            val f = factory.create()
             if (f == null) {
-                AppLog.e("Missing fragment for tag: " + fragmentTag)
+                AppLog.e("Missing fragment for tag: ${factory.fragmentTag}")
                 finish()
                 return
             }
-            f.arguments = intent.getBundleExtra(EXTRA_ARGUMENTS)
+            if (intent.hasExtra(EXTRA_ARGUMENTS)) {
+                val extra = intent.getBundleExtra(EXTRA_ARGUMENTS)!!
+                if (f.arguments == null) {
+                    f.arguments = extra
+                } else {
+                    if (!extra.isEmpty) {
+                        f.arguments!!.putAll(extra)
+                    }
+                }
+            }
 
             supportFragmentManager.beginTransaction()
-                    .add(R.id.activity_content, f, fragmentTag)
+                    .replace(R.id.activity_content, f, factory.fragmentTag)
                     .commit()
         }
     }
 
-    private fun createFragment(fragmentTag: String): Fragment? {
-        val creator = fragments[fragmentTag]
-        if (creator != null) {
-            return creator()
-        }
-        return null
-    }
-
     companion object {
-        private const val EXTRA_FRAGMENT = "extra_fragment"
+        private const val EXTRA_FACTORY = "extra_factory"
         private const val EXTRA_ARGUMENTS = "extra_arguments"
-        private var fragments: MutableMap<String, FragmentCreator> = mutableMapOf()
 
-        fun register(tag: String, creator: FragmentCreator) {
-            fragments[tag] = creator
-        }
-
-        fun intent(tag: String, creator: FragmentCreator, themeRes: Int, args: Bundle, context: Context): Intent {
-            register(tag, creator)
-            val intent = Intent(context, FragmentToolbarActivity::class.java)
-            intent.putExtra(EXTRA_FRAGMENT, tag)
-            intent.putExtra(EXTRA_ARGUMENTS, args)
-            intent.putExtra("themeRes", themeRes)
-            return intent
+        fun intent(factory: FragmentFactory, arguments: Bundle, themeRes: Int, themeColors: CustomThemeColors, context: Context, clazz: Class<*> = FragmentToolbarActivity::class.java): Intent {
+            return Intent(context, clazz).apply {
+                putExtra(EXTRA_FACTORY, factory)
+                putExtra(EXTRA_ARGUMENTS, arguments)
+                putExtra("themeRes", themeRes)
+                putExtra("themeColors", themeColors)
+            }
         }
     }
 }

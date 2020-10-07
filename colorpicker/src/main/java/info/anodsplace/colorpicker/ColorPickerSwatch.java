@@ -18,7 +18,7 @@ package info.anodsplace.colorpicker;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.support.v4.content.res.ResourcesCompat;
+import androidx.core.content.res.ResourcesCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -45,7 +45,7 @@ public class ColorPickerSwatch extends FrameLayout implements View.OnClickListen
         /**
          * Called when a specific color square has been selected.
          */
-        public void onColorSelected(int color);
+        void onColorSelected(int color);
     }
 
     public ColorPickerSwatch(Context context, int color, boolean checked,

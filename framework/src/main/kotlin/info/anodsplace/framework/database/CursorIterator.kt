@@ -14,19 +14,20 @@ import info.anodsplace.framework.AppLog
 abstract class CursorIterator<O>(cursor: Cursor?)
     : CursorWrapper(cursor ?: NullCursor()), CrossProcessCursor, Iterable<O>, Iterator<O> {
 
-    class Default(cursor: Cursor?): CursorIterator<Cursor>(cursor) {
-        override fun next(): Cursor {
-            return this
-        }
+    class Default(cursor: Cursor?) : CursorIterator<Cursor>(cursor) {
+        override val current = cursor ?: NullCursor()
     }
 
     init {
         this.moveToPosition(-1)
     }
 
+    val isEmpty: Boolean
+        get() = count == 0
+
     fun moveToNextObject(): O? {
         if (this.moveToNext()) {
-            return this.next()
+            return current
         }
         return null
     }
@@ -37,7 +38,29 @@ abstract class CursorIterator<O>(cursor: Cursor?)
     }
 
     override fun hasNext(): Boolean {
-        return moveToNext()
+        val count = count
+        val next = position + 1
+        if (next >= count) {
+            return false
+        }
+
+        // Make sure position isn't before the beginning of the cursor
+        if (next < 0) {
+            return false
+        }
+
+        // Check for no-op moves, and skip the rest of the work for them
+        if (next == position) {
+            return true
+        }
+        return position < count
+    }
+
+    abstract val current: O
+
+    override fun next(): O {
+        moveToNext()
+        return current
     }
 
     override fun getString(columnIndex: Int): String {
@@ -49,9 +72,13 @@ abstract class CursorIterator<O>(cursor: Cursor?)
         return value
     }
 
+    fun getString(columnIndex: Int, defaultValue: String): String {
+        return super.getString(columnIndex) ?: return defaultValue
+    }
+
     override fun close() {
         if (isClosed) {
-            AppLog.e("Cursor already closed")
+            AppLog.d("Cursor already closed")
         } else {
             super.close()
         }

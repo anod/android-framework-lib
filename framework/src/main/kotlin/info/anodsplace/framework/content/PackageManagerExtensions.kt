@@ -21,6 +21,22 @@ import java.util.*
  * @date 9/18/13
  */
 
+typealias PackageWithCode = Pair<String, Int>
+
+class InstalledPackage(val packageName: String, val versionCode: Int, val title: String, val updateTime: Long)
+
+class AppTitleComparator(private val order: Int) : Comparator<InstalledPackage> {
+    override fun compare(lPackage: InstalledPackage, rPackage: InstalledPackage): Int {
+        return order * lPackage.title.compareTo(rPackage.title)
+    }
+}
+
+class AppUpdateTimeComparator(private val order: Int) : Comparator<InstalledPackage> {
+    override fun compare(lPackage: InstalledPackage, rPackage: InstalledPackage): Int {
+        return order * lPackage.updateTime.compareTo(rPackage.updateTime)
+    }
+}
+
 fun PackageManager.loadIcon(componentName: ComponentName, displayMetrics: DisplayMetrics): Bitmap? {
     var d: Drawable? = null
     try {
@@ -69,7 +85,7 @@ fun PackageManager.getAppUpdateTime(packageName: String): Long {
     return info.lastUpdateTime
 }
 
-fun PackageManager.getInstalledPackagesCompat(): List<String> {
+fun PackageManager.getInstalledPackagesCompat(): List<PackageWithCode> {
     val packs: List<PackageInfo>
     try {
         packs = this.getInstalledPackages(0)
@@ -78,7 +94,7 @@ fun PackageManager.getInstalledPackagesCompat(): List<String> {
         return getInstalledPackagesFallback()
     }
 
-    val downloaded = ArrayList<String>(packs.size)
+    val downloaded = ArrayList<PackageWithCode>(packs.size)
     for (i in packs.indices) {
         val packageInfo = packs[i]
         val applicationInfo = packageInfo.applicationInfo
@@ -86,13 +102,25 @@ fun PackageManager.getInstalledPackagesCompat(): List<String> {
         if (applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM == 1 && applicationInfo.flags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP == 0) {
             continue
         }
-        downloaded.add(packageInfo.packageName)
+        downloaded.add(Pair(packageInfo.packageName, packageInfo.versionCode))
     }
     return downloaded
 }
 
-private fun getInstalledPackagesFallback(): List<String> {
-    val downloaded = ArrayList<String>()
+fun PackageManager.getInstalledPackages(): List<InstalledPackage> {
+    return getInstalledPackagesCompat().map {
+        InstalledPackage(it.first, it.second, getAppTitle(it.first), getAppUpdateTime(it.first))
+    }
+}
+
+fun PackageManager.getRecentlyInstalled(): List<String> {
+    return getInstalledPackages()
+            .sortedWith(AppUpdateTimeComparator(-1))
+            .map { it.packageName }
+}
+
+private fun getInstalledPackagesFallback(): List<PackageWithCode> {
+    val downloaded = ArrayList<PackageWithCode>()
     var bufferedReader: BufferedReader? = null
     try {
         val process = Runtime.getRuntime().exec("pm list packages")
@@ -101,7 +129,7 @@ private fun getInstalledPackagesFallback(): List<String> {
         while (line != null) {
             val packageName = line.substring(line.indexOf(':') + 1)
             line = bufferedReader.readLine()
-            downloaded.add(packageName)
+            downloaded.add(Pair(packageName, 0))
         }
         process.waitFor()
     } catch (e: Exception) {

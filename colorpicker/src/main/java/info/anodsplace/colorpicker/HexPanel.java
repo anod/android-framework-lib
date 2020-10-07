@@ -3,7 +3,7 @@ package info.anodsplace.colorpicker;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.support.v4.content.res.ResourcesCompat;
+import androidx.core.content.res.ResourcesCompat;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.Spanned;
@@ -46,8 +46,8 @@ public class HexPanel extends LinearLayout {
 
         LayoutInflater.from(context).inflate(R.layout.color_picker_hex_panel, this);
 
-        mHexEdit = (EditText) findViewById(R.id.hex_edit);
-        mPreview = (ImageView) findViewById(R.id.hex_preview);
+        mHexEdit = findViewById(R.id.hex_edit);
+        mPreview = findViewById(R.id.hex_preview);
         if (isInEditMode()) {
             setPreviewColor(Color.RED);
         }

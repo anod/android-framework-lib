@@ -4,9 +4,11 @@ import android.app.Dialog;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.DialogFragment;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.StyleRes;
+import androidx.fragment.app.DialogFragment;
+import androidx.appcompat.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,17 +39,26 @@ public class ColorPickerDialog extends ColorPickerDialogSystem {
 
     private Button mHexButton;
 
+    private final int mTheme;
 
-    public static ColorPickerDialog newInstance(int selectedColor, boolean alphaSliderVisible, Context context) {
-        ColorPickerDialog ret = new ColorPickerDialog();
+    public static ColorPickerDialog newInstance(int selectedColor, boolean alphaSliderVisible, Context context, @StyleRes int theme) {
+        ColorPickerDialog ret = new ColorPickerDialog(theme);
         ret.initialize(ColorChoice.create(context, R.array.color_picker_values), selectedColor,
                 alphaSliderVisible);
         return ret;
     }
 
-    public void initialize(int[] colors, int selectedColor, boolean alphaSliderVisible) {
+    private void initialize(int[] colors, int selectedColor, boolean alphaSliderVisible) {
         super.initialize(R.string.color_picker_default_title, colors, selectedColor, 5, ColorPickerDialog.SIZE_SMALL);
         getArguments().putBoolean(KEY_ALPHA, alphaSliderVisible);
+    }
+
+    ColorPickerDialog(@StyleRes int theme) {
+        mTheme = theme;
+    }
+
+    ColorPickerDialog() {
+        this(R.style.Theme_AppCompat_Dialog);
     }
 
     @Override
@@ -68,13 +79,13 @@ public class ColorPickerDialog extends ColorPickerDialogSystem {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        // Do not use AlertBuilder, itcause requestFeature exception
-        return new Dialog(getActivity(), R.style.Theme_AppCompat_Dialog);
+        // Do not use AlertBuilder, it cause requestFeature exception
+        return new Dialog(requireActivity(), mTheme);
     }
 
     @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.color_picker_dialog, container, false);
 
         Toolbar toolbar = view.findViewById(R.id.color_dialog_toolbar);
@@ -102,8 +113,7 @@ public class ColorPickerDialog extends ColorPickerDialogSystem {
             float density = getResources().getDisplayMetrics().density;
             mAlpha = view.findViewById(R.id.alpha_picker);
 
-                mAlpha.setBackground(new AlphaPatternDrawable((int) (5 * density)));
-                mAlpha.setBackgroundDrawable(new AlphaPatternDrawable((int) (5 * density)));
+            mAlpha.setBackground(new AlphaPatternDrawable((int) (5 * density)));
 
             mAlpha.setVisibility(View.VISIBLE);
             mAlpha.init(mSize, ALPHA_LEVELS, mAlphaSelectListener);

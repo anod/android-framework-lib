@@ -1,7 +1,7 @@
 package info.anodsplace.framework.content
 
 import android.content.pm.PackageInfo
-import android.support.v4.util.ArrayMap
+import androidx.collection.ArrayMap
 
 /**
  * @author Alex Gavrishev
@@ -14,7 +14,7 @@ interface InstalledApps {
     class Info(val versionCode: Int, val versionName: String) {
 
         fun isUpdatable(versionNumber: Int): Boolean {
-            return this.versionCode > 0 && this.versionCode < versionNumber
+            return this.versionCode in 1 until versionNumber
         }
 
         val isInstalled: Boolean
@@ -49,7 +49,7 @@ interface InstalledApps {
             }
 
             val info = installedApps.packageInfo(packageName)
-            cache.put(packageName, info)
+            cache[packageName] = info
             return info
         }
 

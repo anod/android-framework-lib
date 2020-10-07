@@ -1,16 +1,15 @@
 package info.anodsplace.framework.app
 
-import android.content.Context
 import android.os.Bundle
-import android.support.annotation.LayoutRes
-import android.support.annotation.StringRes
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import info.anodsplace.framework.view.MenuItemAnimation
+import androidx.annotation.LayoutRes
+import androidx.annotation.StringRes
 import info.anodsplace.framework.R
+import info.anodsplace.framework.view.MenuItemAnimation
 
 abstract class SettingsActionBarActivity : ToolbarActivity(), AdapterView.OnItemClickListener {
     private val listView: ListView by lazy { findViewById<View>(android.R.id.list) as ListView }
@@ -50,11 +49,10 @@ abstract class SettingsActionBarActivity : ToolbarActivity(), AdapterView.OnItem
         : ToggleItem(title, summaryRes, action, R.layout.preference_widget_switch, checked, 3)
 
     internal class PreferenceAdapter(activity: SettingsActionBarActivity, objects: List<Preference>) : ArrayAdapter<Preference>(activity, 0, objects) {
-        private val inflater: LayoutInflater = activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         private val viewTypeCount = activity.viewTypeCount
 
         override fun getItemViewType(position: Int): Int {
-            return getItem(position).viewType
+            return getItem(position)?.viewType ?: 0
         }
 
         override fun getViewTypeCount(): Int {
@@ -64,12 +62,14 @@ abstract class SettingsActionBarActivity : ToolbarActivity(), AdapterView.OnItem
         override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
             val pref = getItem(position)
 
-            val view: View = convertView ?: inflater.inflate(pref!!.layout, parent, false)
+            val view: View = convertView ?: LayoutInflater.from(parent.context).inflate(pref!!.layout, parent, false)
 
             val title = view.findViewById<View>(android.R.id.title) as TextView
-            title.setText(pref!!.title)
-
-            if (pref is Item) {
+            val titleText = parent.context.getString(pref!!.title)
+            title.setText(titleText)
+            if (pref is Category) {
+                title.contentDescription = "$titleText section"
+            } else if (pref is Item) {
                 val icon = view.findViewById<View>(android.R.id.icon)
                 if (icon != null) {
                     icon.visibility = View.GONE
@@ -86,7 +86,7 @@ abstract class SettingsActionBarActivity : ToolbarActivity(), AdapterView.OnItem
                 if (pref.widget > 0) {
                     var widgetView: View? = widgetFrame.findViewById(android.R.id.checkbox)
                     if (widgetView == null) {
-                        inflater.inflate(pref.widget, widgetFrame)
+                        LayoutInflater.from(parent.context).inflate(pref.widget, widgetFrame)
                         widgetView = widgetFrame.findViewById(android.R.id.checkbox)
                     }
                     if (pref is ToggleItem) {
@@ -103,9 +103,6 @@ abstract class SettingsActionBarActivity : ToolbarActivity(), AdapterView.OnItem
 
         override fun isEnabled(position: Int): Boolean {
             val pref = getItem(position)
-            if (pref is Category) {
-                return false
-            }
             if (pref is Item) {
                 return pref.enabled
             }
@@ -113,10 +110,11 @@ abstract class SettingsActionBarActivity : ToolbarActivity(), AdapterView.OnItem
         }
     }
 
+    override val layoutResource: Int
+        get() = R.layout.activity_settings
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_settings)
-        setupToolbar()
 
         refreshAnim.isInvisibleMode = true
 
@@ -130,6 +128,7 @@ abstract class SettingsActionBarActivity : ToolbarActivity(), AdapterView.OnItem
 
     var isProgressVisible: Boolean = false
         set(value) {
+            field = value
             if (value) {
                 refreshAnim.start()
             } else {
