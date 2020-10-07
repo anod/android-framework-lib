@@ -34,15 +34,15 @@ class DialogMessage(context: Context,
                     @StyleRes themeResId: Int,
                     @StringRes titleRes: Int,
                     @StringRes private val messageRes: Int,
-                    private val message: String,
+                    private val message: CharSequence,
                     private val config: (builder: AlertDialog.Builder) -> Unit)
     : BaseDialog(context, themeResId, titleRes) {
 
     constructor(context: Context, themeResId: Int, titleRes: Int, messageRes: Int, config: (builder: AlertDialog.Builder) -> Unit)
             :this(context, themeResId, titleRes, messageRes, "", config)
 
-    constructor(context: Context, themeResId: Int, titleRes: Int, message: String, config: (builder: AlertDialog.Builder) -> Unit)
-            :this(context, themeResId, titleRes, 0, message, config)
+    constructor(context: Context, themeResId: Int, titleRes: Int, message: CharSequence, config: (builder: AlertDialog.Builder) -> Unit)
+            : this(context, themeResId, titleRes, 0, message, config)
 
     override fun apply(builder: AlertDialog.Builder) {
         if (this.messageRes > 0) {

@@ -42,6 +42,15 @@ fun Fragment.startActivitySafely(intent: Intent) {
     }
 }
 
+fun Fragment.startActivityForResultSafely(intent: Intent, requestCode: Int) {
+    try {
+        this.startActivityForResult(intent, requestCode)
+    } catch (e: Exception) {
+        AppLog.e(e)
+        Toast.makeText(requireContext(), "Cannot start activity: $intent", Toast.LENGTH_SHORT).show()
+    }
+}
+
 fun Activity.startActivityForResultSafely(intent: Intent, requestCode: Int) {
     try {
         this.startActivityForResult(intent, requestCode)

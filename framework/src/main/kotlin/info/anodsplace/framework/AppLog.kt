@@ -55,7 +55,7 @@ class AppLog {
             log(Log.DEBUG, format(msg, null))
         }
 
-        fun i(msg: String, tag: String?) {
+        fun i(msg: String, tag: String? = null) {
             log(Log.INFO, format(msg, tag))
         }
 
@@ -90,7 +90,7 @@ class AppLog {
             loge(format(msg, null, *params), null)
         }
 
-        fun w(msg: String, tag: String?) {
+        fun w(msg: String, tag: String? = null) {
             log(Log.VERBOSE, format(msg, tag))
         }
 
