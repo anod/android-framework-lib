@@ -36,6 +36,7 @@ dependencies {
     implementation("androidx.palette:palette-ktx:1.0.0")
     implementation("androidx.appcompat:appcompat:1.3.0-alpha02")
     implementation("androidx.activity:activity-ktx:1.1.0")
+    implementation("androidx.fragment:fragment-ktx:1.2.5")
     implementation("com.google.android.material:material:1.3.0-alpha03")
     implementation("androidx.cardview:cardview:1.0.0")
     implementation("androidx.window:window:1.0.0-alpha01")
