@@ -27,8 +27,7 @@ abstract class ToolbarActivity : AppCompatActivity(), CustomThemeActivity {
     override val themeRes = 0
     override val themeColors = CustomThemeColors.none
 
-    @get:LayoutRes
-    abstract val layoutResource: Int
+    abstract val layoutView: View
 
     @get:IdRes
     open val detailsLayoutId = 0
@@ -52,7 +51,7 @@ abstract class ToolbarActivity : AppCompatActivity(), CustomThemeActivity {
         }
         duoDevice = HingeDevice.create(this)
         super.onCreate(savedInstanceState)
-        setContentView(layoutResource)
+        setContentView(layoutView)
         setupToolbar()
         updateWideLayout(resources.getBoolean(R.bool.wide_layout), duoDevice)
     }

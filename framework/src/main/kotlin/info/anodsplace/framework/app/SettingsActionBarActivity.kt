@@ -110,8 +110,8 @@ abstract class SettingsActionBarActivity : ToolbarActivity(), AdapterView.OnItem
         }
     }
 
-    override val layoutResource: Int
-        get() = R.layout.activity_settings
+    override val layoutView: View
+        get() = layoutInflater.inflate(R.layout.activity_settings, null, false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
