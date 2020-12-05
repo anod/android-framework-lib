@@ -21,19 +21,25 @@ import java.util.*
  * @date 9/18/13
  */
 
-typealias PackageWithCode = Pair<String, Int>
+class InstalledPackage(val name: String, val versionCode: Int, val versionName: String, val updateTime: Long)
 
-class InstalledPackage(val packageName: String, val versionCode: Int, val title: String, val updateTime: Long)
+class InstalledPackageApp(val pkg: InstalledPackage, val title: String, val launchComponent: ComponentName?)
 
-class AppTitleComparator(private val order: Int) : Comparator<InstalledPackage> {
-    override fun compare(lPackage: InstalledPackage, rPackage: InstalledPackage): Int {
+class AppTitleComparator(private val order: Int) : Comparator<InstalledPackageApp> {
+    override fun compare(lPackage: InstalledPackageApp, rPackage: InstalledPackageApp): Int {
         return order * lPackage.title.compareTo(rPackage.title)
     }
 }
 
-class AppUpdateTimeComparator(private val order: Int) : Comparator<InstalledPackage> {
+private class AppUpdateTimePackageComparator(private val order: Int) : Comparator<InstalledPackage> {
     override fun compare(lPackage: InstalledPackage, rPackage: InstalledPackage): Int {
         return order * lPackage.updateTime.compareTo(rPackage.updateTime)
+    }
+}
+
+class AppUpdateTimeComparator(private val order: Int) : Comparator<InstalledPackageApp> {
+    override fun compare(lPackage: InstalledPackageApp, rPackage: InstalledPackageApp): Int {
+        return order * lPackage.pkg.updateTime.compareTo(rPackage.pkg.updateTime)
     }
 }
 
@@ -65,27 +71,26 @@ fun PackageManager.loadIcon(componentName: ComponentName, displayMetrics: Displa
         }
         // copy to avoid recycling problems
         return bitmapDrawable.bitmap.copy(bitmapDrawable.bitmap.config, true)
-    } else if (d != null) {
-        val bitmap = Bitmap.createBitmap(d.intrinsicWidth, d.intrinsicHeight, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(bitmap)
-        d.setBounds(0, 0, canvas.width, canvas.height)
-        d.draw(canvas)
-        return bitmap
     }
-    return null
+
+    val bitmap = Bitmap.createBitmap(d.intrinsicWidth, d.intrinsicHeight, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(bitmap)
+    d.setBounds(0, 0, canvas.width, canvas.height)
+    d.draw(canvas)
+    return bitmap
 }
 
 fun PackageManager.getAppTitle(packageName: String): String {
-    val info = getPackageInfo(packageName, this) ?: return packageName
-    return getAppTitle(info, this)
+    val info = this.getPackageInfoOrNull(packageName) ?: return packageName
+    return this.getAppTitle(info)
 }
 
 fun PackageManager.getAppUpdateTime(packageName: String): Long {
-    val info = getPackageInfo(packageName, this) ?: return 0
+    val info = this.getPackageInfoOrNull(packageName) ?: return 0
     return info.lastUpdateTime
 }
 
-fun PackageManager.getInstalledPackagesCompat(): List<PackageWithCode> {
+fun PackageManager.getInstalledPackagesCodes(): List<InstalledPackage> {
     val packs: List<PackageInfo>
     try {
         packs = this.getInstalledPackages(0)
@@ -94,33 +99,33 @@ fun PackageManager.getInstalledPackagesCompat(): List<PackageWithCode> {
         return getInstalledPackagesFallback()
     }
 
-    val downloaded = ArrayList<PackageWithCode>(packs.size)
-    for (i in packs.indices) {
-        val packageInfo = packs[i]
+    val downloaded = ArrayList<InstalledPackage>(packs.size)
+    for (packageInfo in packs) {
         val applicationInfo = packageInfo.applicationInfo
         // Skips the system application (packages)
-        if (applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM == 1 && applicationInfo.flags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP == 0) {
+        if (applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM == 1
+                && applicationInfo.flags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP == 0) {
             continue
         }
-        downloaded.add(Pair(packageInfo.packageName, packageInfo.versionCode))
+        downloaded.add(InstalledPackage(packageInfo.packageName, packageInfo.versionCode, packageInfo.versionName
+                ?: "", packageInfo.lastUpdateTime))
     }
     return downloaded
 }
 
-fun PackageManager.getInstalledPackages(): List<InstalledPackage> {
-    return getInstalledPackagesCompat().map {
-        InstalledPackage(it.first, it.second, getAppTitle(it.first), getAppUpdateTime(it.first))
+fun PackageManager.getInstalledApps(): List<InstalledPackageApp> {
+    return getInstalledPackagesCodes().map {
+        InstalledPackageApp(it, getAppTitle(it.name), getLaunchComponent(it.name))
     }
 }
 
-fun PackageManager.getRecentlyInstalled(): List<String> {
-    return getInstalledPackages()
-            .sortedWith(AppUpdateTimeComparator(-1))
-            .map { it.packageName }
+fun PackageManager.getRecentlyInstalled(): List<InstalledPackage> {
+    return getInstalledPackagesCodes()
+            .sortedWith(AppUpdateTimePackageComparator(-1))
 }
 
-private fun getInstalledPackagesFallback(): List<PackageWithCode> {
-    val downloaded = ArrayList<PackageWithCode>()
+private fun getInstalledPackagesFallback(): List<InstalledPackage> {
+    val downloaded = ArrayList<InstalledPackage>()
     var bufferedReader: BufferedReader? = null
     try {
         val process = Runtime.getRuntime().exec("pm list packages")
@@ -129,7 +134,7 @@ private fun getInstalledPackagesFallback(): List<PackageWithCode> {
         while (line != null) {
             val packageName = line.substring(line.indexOf(':') + 1)
             line = bufferedReader.readLine()
-            downloaded.add(Pair(packageName, 0))
+            downloaded.add(InstalledPackage(packageName, 0, "", -1))
         }
         process.waitFor()
     } catch (e: Exception) {
@@ -147,14 +152,14 @@ private fun getInstalledPackagesFallback(): List<PackageWithCode> {
     return downloaded
 }
 
-fun PackageManager.getAppTitle(info: PackageInfo, pm: PackageManager): String {
-    return info.applicationInfo.loadLabel(pm).toString()
+fun PackageManager.getAppTitle(info: PackageInfo): String {
+    return info.applicationInfo.loadLabel(this).toString()
 }
 
-fun PackageManager.getPackageInfo(packageName: String, pm: PackageManager): PackageInfo? {
+fun PackageManager.getPackageInfoOrNull(packageName: String): PackageInfo? {
     var pkgInfo: PackageInfo? = null
     try {
-        pkgInfo = pm.getPackageInfo(packageName, 0)
+        pkgInfo = this.getPackageInfo(packageName, 0)
     } catch (e: PackageManager.NameNotFoundException) {
         AppLog.e(e)
     }
@@ -162,8 +167,8 @@ fun PackageManager.getPackageInfo(packageName: String, pm: PackageManager): Pack
     return pkgInfo
 }
 
-fun PackageManager.getLaunchComponent(info: PackageInfo, pm: PackageManager): ComponentName? {
-    val launchIntent = pm.getLaunchIntentForPackage(info.packageName)
+fun PackageManager.getLaunchComponent(packageName: String): ComponentName? {
+    val launchIntent = this.getLaunchIntentForPackage(packageName)
     return launchIntent?.component
 }
 
