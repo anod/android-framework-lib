@@ -1,16 +1,15 @@
 package info.anodsplace.framework.app
 
 import android.content.res.ColorStateList
-import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.PorterDuff
+import android.graphics.Rect
 import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.annotation.IdRes
-import androidx.annotation.LayoutRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
@@ -53,7 +52,9 @@ abstract class ToolbarActivity : AppCompatActivity(), CustomThemeActivity {
         super.onCreate(savedInstanceState)
         setContentView(layoutView)
         setupToolbar()
-        updateWideLayout(resources.getBoolean(R.bool.wide_layout), duoDevice)
+        duoDevice.hinge.observe(this, {
+            updateWideLayout(resources.getBoolean(R.bool.wide_layout), it)
+        })
     }
 
     override fun onAttachedToWindow() {
@@ -66,18 +67,13 @@ abstract class ToolbarActivity : AppCompatActivity(), CustomThemeActivity {
         duoDevice.attachedToWindow = false
     }
 
-    override fun onConfigurationChanged(newConfig: Configuration) {
-        super.onConfigurationChanged(newConfig)
-        updateWideLayout(resources.getBoolean(R.bool.wide_layout), duoDevice)
-    }
-
-    protected open fun updateWideLayout(isWideLayout: Boolean, duoDevice: HingeDevice) {
+    protected open fun updateWideLayout(isWideLayout: Boolean, hinge: Rect) {
         if (hingeLayoutId != 0) {
-            if (hinge == null) {
-                hinge = findViewById(hingeLayoutId)
+            if (this.hinge == null) {
+                this.hinge = findViewById(hingeLayoutId)
             }
-            hinge!!.isVisible = isWideLayout && duoDevice.hinge.width() > 0
-            hinge!!.layoutParams.width = duoDevice.hinge.width()
+            this.hinge!!.isVisible = isWideLayout && hinge.width() > 0
+            this.hinge!!.layoutParams.width = hinge.width()
         }
         if (detailsLayoutId != 0) {
             if (details == null) {
