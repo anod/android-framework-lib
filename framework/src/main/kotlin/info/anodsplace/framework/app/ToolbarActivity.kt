@@ -1,6 +1,7 @@
 package info.anodsplace.framework.app
 
 import android.content.res.ColorStateList
+import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.Rect
@@ -65,6 +66,12 @@ abstract class ToolbarActivity : AppCompatActivity(), CustomThemeActivity {
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
         duoDevice.attachedToWindow = false
+    }
+
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        val hinge = duoDevice.hinge.value ?: Rect()
+        updateWideLayout(resources.getBoolean(R.bool.wide_layout), hinge)
     }
 
     protected open fun updateWideLayout(isWideLayout: Boolean, hinge: Rect) {
