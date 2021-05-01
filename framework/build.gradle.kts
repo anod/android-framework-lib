@@ -9,11 +9,11 @@ repositories {
 }
 
 android {
-    compileSdkVersion(30)
+    compileSdk = 30
 
     defaultConfig {
-        minSdkVersion(21)
-        targetSdkVersion(30)
+        minSdk = 21
+        targetSdk = 30
     }
 
     sourceSets {
@@ -21,7 +21,7 @@ android {
     }
 
     kotlinOptions {
-        // jvmTarget = "1.8"
+        jvmTarget = "11"
     }
 
     compileOptions {
