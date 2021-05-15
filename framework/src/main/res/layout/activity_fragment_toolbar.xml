@@ -19,7 +19,7 @@
 
             <include layout="@layout/toolbar" />
 
-            <FrameLayout
+            <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/activity_content"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
@@ -33,7 +33,7 @@
             android:layout_width="1dp"
             android:layout_height="match_parent" />
 
-        <FrameLayout
+        <androidx.fragment.app.FragmentContainerView
             android:visibility="gone"
             tools:visibility="visible"
             android:id="@+id/details"
