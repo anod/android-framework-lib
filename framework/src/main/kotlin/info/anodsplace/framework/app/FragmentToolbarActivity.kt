@@ -10,8 +10,6 @@ import info.anodsplace.framework.R
  * @author Alex Gavrishev
  * @date 16/12/2016.
  */
-
-
 open class FragmentToolbarActivity : ToolbarActivity() {
 
     override val themeRes: Int
@@ -34,7 +32,7 @@ open class FragmentToolbarActivity : ToolbarActivity() {
 
     companion object {
         fun intent(context: Context, factory: FragmentFactory, arguments: Bundle = Bundle.EMPTY, themeRes: Int = 0, themeColors: CustomThemeColors = CustomThemeColors.none, clazz: Class<*> = FragmentToolbarActivity::class.java): Intent {
-            return FragmentContainerActivity.intent(context, factory, arguments).apply {
+            return FragmentContainerActivity.intent(context, factory, arguments, clazz).apply {
                 putExtra("themeRes", themeRes)
                 putExtra("themeColors", themeColors)
             }
