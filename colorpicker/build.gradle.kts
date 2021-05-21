@@ -24,5 +24,5 @@ android {
 
 dependencies {
     implementation("com.google.android.material:material:1.3.0")
-    implementation("androidx.fragment:fragment:1.3.3")
+    implementation("androidx.fragment:fragment:1.3.4")
 }
