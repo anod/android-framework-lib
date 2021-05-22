@@ -8,7 +8,7 @@ import android.os.Build
 import android.provider.DocumentsContract
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
-import info.anodsplace.framework.AppLog
+import info.anodsplace.applog.AppLog
 
 class CreateDocument : ActivityResultContract<CreateDocument.Args, Uri>() {
     private val inner = ActivityResultContracts.CreateDocument()

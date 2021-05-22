@@ -1,4 +1,4 @@
-package info.anodsplace.framework.graphics
+package info.anodsplace.graphics
 
 import androidx.annotation.ColorInt
 import androidx.palette.graphics.Palette

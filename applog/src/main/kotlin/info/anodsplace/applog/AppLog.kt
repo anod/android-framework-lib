@@ -1,4 +1,4 @@
-package info.anodsplace.framework
+package info.anodsplace.applog
 
 import android.os.Looper
 import android.util.Log

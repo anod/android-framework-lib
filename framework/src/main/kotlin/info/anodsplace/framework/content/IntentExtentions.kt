@@ -7,8 +7,8 @@ import android.net.Uri
 import android.provider.Settings
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import info.anodsplace.applog.AppLog
 
-import info.anodsplace.framework.AppLog
 import info.anodsplace.framework.app.addMultiWindowFlags
 
 fun Intent.forUninstall(packageName: String): Intent {

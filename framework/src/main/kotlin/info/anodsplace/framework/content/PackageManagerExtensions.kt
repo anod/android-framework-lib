@@ -9,7 +9,7 @@ import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.DisplayMetrics
-import info.anodsplace.framework.AppLog
+import info.anodsplace.applog.AppLog
 import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader

@@ -7,7 +7,7 @@ import android.provider.Settings
 import android.view.View
 import android.view.WindowManager
 import androidx.core.content.getSystemService
-import info.anodsplace.framework.AppLog
+import info.anodsplace.applog.AppLog
 
 class AlertWindow(private val context: Context) {
     private val wm: WindowManager = context.getSystemService()!!

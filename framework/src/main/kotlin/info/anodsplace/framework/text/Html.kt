@@ -2,7 +2,7 @@ package info.anodsplace.framework.text
 
 import android.text.SpannableString
 import android.text.Spanned
-import info.anodsplace.framework.AppLog
+import info.anodsplace.applog.AppLog
 
 /**
  * @author Alex Gavrishev

@@ -4,7 +4,7 @@ import android.database.CrossProcessCursor
 import android.database.Cursor
 import android.database.CursorWindow
 import android.database.CursorWrapper
-import info.anodsplace.framework.AppLog
+import info.anodsplace.applog.AppLog
 
 /**
  * @author Alex Gavrishev

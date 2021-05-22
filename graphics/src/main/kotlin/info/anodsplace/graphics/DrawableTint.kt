@@ -1,4 +1,4 @@
-package info.anodsplace.framework.graphics
+package info.anodsplace.graphics
 
 import android.content.res.Resources
 import android.graphics.drawable.Drawable

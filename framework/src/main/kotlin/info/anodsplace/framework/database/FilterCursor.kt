@@ -4,7 +4,7 @@ import android.database.AbstractCursor
 import android.database.Cursor
 import android.os.Bundle
 
-import info.anodsplace.framework.AppLog
+import info.anodsplace.applog.AppLog
 
 /**
  * Cursor wrapper that filters MIME types not matching given list.
