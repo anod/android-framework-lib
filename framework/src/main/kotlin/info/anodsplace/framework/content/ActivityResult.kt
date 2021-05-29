@@ -19,8 +19,8 @@ class CreateDocument : ActivityResultContract<CreateDocument.Args, Uri?>() {
         return Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
             putExtra(Intent.EXTRA_TITLE, input.title)
             try {
+                setDataAndType(input.initialUri, input.dataType)
                 if (input.initialUri != null) {
-                    setDataAndType(input.initialUri, input.dataType)
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                         putExtra(DocumentsContract.EXTRA_INITIAL_URI, input.initialUri)
                     }
