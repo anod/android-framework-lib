@@ -4,8 +4,10 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.provider.Settings
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import info.anodsplace.applog.AppLog
 
@@ -21,6 +23,13 @@ fun Intent.forAppInfo(packageName: String, context: Context): Intent {
     this.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
     this.data = Uri.fromParts("package", packageName, null)
     addMultiWindowFlags(context)
+    return this
+}
+
+@RequiresApi(Build.VERSION_CODES.M)
+fun Intent.forOverlayPermission(packageName: String): Intent {
+    action = Settings.ACTION_MANAGE_OVERLAY_PERMISSION
+    data = Uri.parse("package:$packageName")
     return this
 }
 
