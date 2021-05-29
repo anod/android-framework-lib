@@ -26,6 +26,28 @@ fun Intent.forAppInfo(packageName: String, context: Context): Intent {
     return this
 }
 
+fun Intent.forLauncher(): Intent {
+    action = Intent.ACTION_MAIN
+    addCategory(Intent.CATEGORY_LAUNCHER)
+    return this
+}
+
+object IconPack {
+    internal const val ACTION_ADW_PICK_ICON = "org.adw.launcher.icons.ACTION_PICK_ICON"
+    internal const val THEME_CATEGORY = "com.anddoes.launcher.THEME"
+}
+
+fun Intent.forIconPack(): Intent {
+    action = IconPack.ACTION_ADW_PICK_ICON
+    return this
+}
+
+fun Intent.forIconTheme(): Intent {
+    addCategory(IconPack.THEME_CATEGORY)
+    action = Intent.ACTION_MAIN
+    return this
+}
+
 @RequiresApi(Build.VERSION_CODES.M)
 fun Intent.forOverlayPermission(packageName: String): Intent {
     action = Settings.ACTION_MANAGE_OVERLAY_PERMISSION
