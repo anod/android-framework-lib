@@ -9,27 +9,33 @@ sealed class PreferenceItem{
     abstract val summaryRes: Int
     abstract val summary: String
     abstract val key: String
+    abstract val enabled: Boolean
 
     data class Category(
         @StringRes override val titleRes: Int = 0,
         override val title: String = "",
         @StringRes override val summaryRes: Int = 0,
         override val summary: String = "",
-        override val key: String = ""): PreferenceItem()
+        override val key: String = "",
+        override val enabled: Boolean = true
+    ) : PreferenceItem()
+
     data class Text(
         @StringRes override val titleRes: Int = 0,
         override val title: String = "",
         @StringRes override val summaryRes: Int = 0,
         override val summary: String = "",
-        override val key: String = ""
-    ): PreferenceItem()
+        override val key: String = "",
+        override val enabled: Boolean = true
+    ) : PreferenceItem()
     data class Switch(
         var checked: Boolean,
         @StringRes override val titleRes: Int = 0,
         override val title: String = "",
         @StringRes override val summaryRes: Int = 0,
         override val summary: String = "",
-        override val key: String = ""
+        override val key: String = "",
+        override val enabled: Boolean = true
     ): PreferenceItem()
     data class CheckBox(
         var checked: Boolean,
@@ -37,7 +43,8 @@ sealed class PreferenceItem{
         override val title: String = "",
         @StringRes override val summaryRes: Int = 0,
         override val summary: String = "",
-        override val key: String = ""
+        override val key: String = "",
+        override val enabled: Boolean = true
     ): PreferenceItem()
     data class List(
         @ArrayRes val entries: Int,
@@ -47,14 +54,16 @@ sealed class PreferenceItem{
         override val title: String = "",
         @StringRes override val summaryRes: Int = 0,
         override val summary: String = "",
-        override val key: String = ""
+        override val key: String = "",
+        override val enabled: Boolean = true
     ): PreferenceItem()
     data class Placeholder(
         @StringRes override val titleRes: Int = 0,
         override val title: String = "",
         @StringRes override val summaryRes: Int = 0,
         override val summary: String = "",
-        override val key: String = ""
+        override val key: String = "",
+        override val enabled: Boolean = true
     ): PreferenceItem()
 }
 

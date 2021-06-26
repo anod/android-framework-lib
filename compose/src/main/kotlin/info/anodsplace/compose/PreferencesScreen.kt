@@ -4,11 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringArrayResource
@@ -74,7 +70,7 @@ fun PreferenceCategory(item: PreferenceItem.Category, modifier: Modifier = Modif
             .fillMaxWidth()
             .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp),
         style = MaterialTheme.typography.overline.copy(
-            color = MaterialTheme.colors.primary,
+            // TODO: color = MaterialTheme.colors.primary,
             fontSize = 14.sp,
             fontWeight = FontWeight.Bold
         )
@@ -104,7 +100,7 @@ fun Preference(item: PreferenceItem, paddingValues: PaddingValues = PaddingValue
                     modifier = Modifier.padding(top = 8.dp),
                     text = if (item.summaryRes != 0) stringResource(id = item.summaryRes) else item.summary,
                     style = MaterialTheme.typography.body2.copy(
-                        color = MaterialTheme.colors.secondary
+                        color = MaterialTheme.colors.onSurface
                     )
                 )
             }
@@ -208,7 +204,9 @@ fun PreferencesScreen(
 @Composable
 fun PreferenceListDialog(item: PreferenceItem.List, onValueChange: (value: String) -> Unit) {
     val entries = stringArrayResource(id = item.entries)
-    val entryValues = stringArrayResource(id = item.entryValues)
+    val entryValues = if (item.entryValues == 0)
+        entries.mapIndexed { index, _ -> index.toString() }.toTypedArray()
+    else stringArrayResource(id = item.entryValues)
     var value by remember { mutableStateOf(item.value) }
     AlertDialog(
         title = { Text(text = if (item.titleRes != 0) stringResource(id = item.titleRes) else item.title) },
