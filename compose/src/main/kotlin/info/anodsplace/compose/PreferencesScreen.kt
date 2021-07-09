@@ -7,9 +7,9 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -63,16 +63,19 @@ fun PreferenceSlider(
 }
 
 @Composable
-fun PreferenceCategory(item: PreferenceItem.Category, modifier: Modifier = Modifier) {
+fun PreferenceCategory(
+    item: PreferenceItem.Category,
+    color: Color = MaterialTheme.colors.secondary,
+    modifier: Modifier = Modifier
+) {
     Text(
         text = if (item.titleRes != 0) stringResource(id = item.titleRes) else item.title,
         modifier = modifier
             .fillMaxWidth()
             .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp),
         style = MaterialTheme.typography.overline.copy(
-            // TODO: color = MaterialTheme.colors.primary,
+            color,
             fontSize = 14.sp,
-            fontWeight = FontWeight.Bold
         )
     )
 }
@@ -82,7 +85,7 @@ fun PreferenceCategory(item: PreferenceItem.Category, modifier: Modifier = Modif
 fun Preference(item: PreferenceItem, paddingValues: PaddingValues = PaddingValues(4.dp), onClick: () -> Unit, content: @Composable (() -> Unit)? = null) {
     ListItem(
         modifier = Modifier
-            .defaultMinSize(minHeight = 56.dp)
+            .defaultMinSize(minHeight = 48.dp)
             .fillMaxWidth()
             .clickable(onClick = onClick)
             .padding(paddingValues)
@@ -91,13 +94,15 @@ fun Preference(item: PreferenceItem, paddingValues: PaddingValues = PaddingValue
         text = {
             Text(
                 text = if (item.titleRes != 0) stringResource(id = item.titleRes) else item.title,
-                style = MaterialTheme.typography.h6
+                style = MaterialTheme.typography.h5.copy(
+                    fontSize = 20.sp,
+                )
             )
         },
         secondaryText = if (item.summaryRes != 0 || item.summary.isNotEmpty()) {
             {
                 Text(
-                    modifier = Modifier.padding(top = 8.dp),
+                    modifier = Modifier.padding(top = 4.dp),
                     text = if (item.summaryRes != 0) stringResource(id = item.summaryRes) else item.summary,
                     style = MaterialTheme.typography.body2.copy(
                         color = MaterialTheme.colors.onSurface
@@ -143,6 +148,7 @@ fun PreferencesScreen(
     preferences: List<PreferenceItem>,
     modifier: Modifier = Modifier,
     onClick: (item: PreferenceItem) -> Unit = { },
+    categoryColor: Color = MaterialTheme.colors.secondary,
     placeholder: @Composable (PreferenceItem.Placeholder) -> Unit = { },
 ) {
     var listItem by remember { mutableStateOf<PreferenceItem.List?>(null) }
@@ -152,7 +158,7 @@ fun PreferencesScreen(
         items(preferences.size) { index ->
             val paddingValues = PaddingValues(16.dp)
             when (val item = preferences[index]) {
-                is PreferenceItem.Category -> PreferenceCategory(item = item)
+                is PreferenceItem.Category -> PreferenceCategory(item = item, color = categoryColor)
                 is PreferenceItem.CheckBox -> {
                     var checked by remember { mutableStateOf(item.checked) }
                     PreferenceCheckbox(
@@ -160,10 +166,10 @@ fun PreferencesScreen(
                         checked = checked,
                         item = item,
                         onCheckedChange = { newChecked ->
-                        checked = newChecked
-                        item.checked = newChecked
-                        onClick(item)
-                    })
+                            checked = newChecked
+                            item.checked = newChecked
+                            onClick(item)
+                        })
                 }
                 is PreferenceItem.List -> Preference(
                     paddingValues = paddingValues,
@@ -209,6 +215,7 @@ fun PreferenceListDialog(item: PreferenceItem.List, onValueChange: (value: Strin
     else stringArrayResource(id = item.entryValues)
     var value by remember { mutableStateOf(item.value) }
     AlertDialog(
+        modifier = Modifier.padding(16.dp),
         title = { Text(text = if (item.titleRes != 0) stringResource(id = item.titleRes) else item.title) },
         text = {
             val selected = entryValues.indexOf(value)
