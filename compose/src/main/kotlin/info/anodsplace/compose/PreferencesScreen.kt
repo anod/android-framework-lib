@@ -7,6 +7,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
@@ -45,6 +46,7 @@ fun PreferenceSlider(
                     .weight(1f)
             )
             Slider(
+                enabled = item.enabled,
                 modifier = Modifier.weight(6f),
                 value = value,
                 valueRange = 0f..100f,
@@ -65,8 +67,8 @@ fun PreferenceSlider(
 @Composable
 fun PreferenceCategory(
     item: PreferenceItem.Category,
+    modifier: Modifier = Modifier,
     color: Color = MaterialTheme.colors.secondary,
-    modifier: Modifier = Modifier
 ) {
     Text(
         text = if (item.titleRes != 0) stringResource(id = item.titleRes) else item.title,
@@ -87,9 +89,9 @@ fun Preference(item: PreferenceItem, paddingValues: PaddingValues = PaddingValue
         modifier = Modifier
             .defaultMinSize(minHeight = 48.dp)
             .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(paddingValues)
-        ,
+            .alpha(if (item.enabled) 1.0f else 0.6f)
+            .clickable(onClick = onClick, enabled = item.enabled)
+            .padding(paddingValues),
         icon = null,
         text = {
             Text(
@@ -120,6 +122,7 @@ fun PreferenceSwitch(checked: Boolean, item: PreferenceItem, paddingValues: Padd
         onCheckedChange(!checked)
     }) {
         Switch(
+            enabled = item.enabled,
             checked = checked,
             onCheckedChange = onCheckedChange,
             colors = SwitchDefaults.colors()
@@ -133,6 +136,7 @@ fun PreferenceCheckbox(checked: Boolean, item: PreferenceItem, paddingValues: Pa
         onCheckedChange(!checked)
     }) {
         Checkbox(
+            enabled = item.enabled,
             checked = checked,
             onCheckedChange = onCheckedChange,
             colors = CheckboxDefaults.colors(

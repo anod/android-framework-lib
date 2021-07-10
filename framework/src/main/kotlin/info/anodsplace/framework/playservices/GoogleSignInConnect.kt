@@ -27,6 +27,10 @@ class GoogleSignInConnect(private val context: ApplicationContext, private val s
         fun onError(errorCode: Int, client: GoogleSignInClient)
     }
 
+    interface SignOutResult {
+        fun onResult()
+    }
+
     @Throws(ApiException::class, ExecutionException::class, InterruptedException::class)
     fun connectLocked(): GoogleSignInAccount {
         val client = createGoogleApiSignInClient()
@@ -51,6 +55,18 @@ class GoogleSignInConnect(private val context: ApplicationContext, private val s
                     // Please refer to GoogleSignInStatusCodes Javadoc for details
                     completion.onError(apiException.statusCode, client)
                 }
+            }
+        }
+    }
+
+    fun disconnect(completion: SignOutResult) {
+        val client = createGoogleApiSignInClient()
+        val task = client.signOut()
+        if (task.isSuccessful) {
+            completion.onResult()
+        } else {
+            task.addOnCompleteListener {
+                completion.onResult()
             }
         }
     }
