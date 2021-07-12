@@ -27,19 +27,20 @@ fun PreferenceSlider(
     var value: Float by remember { mutableStateOf(initialValue.toFloat()) }
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Preference(item = item, onClick = { }) { }
-            OutlinedTextField(
-                value = value.toInt().toString(),
-                onValueChange = { value ->
-                    if (value.isEmpty()) {
-                        onValueChanged(value.trim().toInt())
-                    }
-                },
-                trailingIcon = suffixText
-            )
+        OutlinedTextField(
+            value = value.toInt().toString(),
+            onValueChange = { value ->
+                if (value.isEmpty()) {
+                    onValueChanged(value.trim().toInt())
+                }
+            },
+            trailingIcon = suffixText
+        )
         Row(
             modifier = Modifier
                 .padding(horizontal = 8.dp),
-            verticalAlignment = Alignment.CenterVertically) {
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             startIcon(
                 Modifier
                     .size(24.dp)
@@ -187,10 +188,10 @@ fun PreferencesScreen(
                         checked = checked,
                         item = item,
                         onCheckedChange = { newChecked ->
-                        item.checked = newChecked
-                        checked = newChecked
-                        onClick(item)
-                    })
+                            item.checked = newChecked
+                            checked = newChecked
+                            onClick(item)
+                        })
                 }
                 is PreferenceItem.Text -> Preference(
                     paddingValues = paddingValues,
@@ -243,10 +244,10 @@ fun InCarScreenLight() {
     MaterialTheme {
         BackgroundSurface {
             PreferencesScreen(listOf(
-                PreferenceItem.Category(title ="Category"),
-                PreferenceItem.Text(title ="Bluetooth device", summary = "Choose bluetooth device which enable InCar mode"),
-                PreferenceItem.CheckBox(checked = true, title ="Keep screen On", summary = "When checked, prevents screen from automatically turning off"),
-                PreferenceItem.Switch(checked = true, title ="Route to speaker", summary = "Route all incoming calls to phones speaker"),
+                PreferenceItem.Category(title = "Category"),
+                PreferenceItem.Text(title = "Bluetooth device", summary = "Choose bluetooth device which enable InCar mode"),
+                PreferenceItem.CheckBox(checked = true, title = "Keep screen On", summary = "When checked, prevents screen from automatically turning off"),
+                PreferenceItem.Switch(checked = true, title = "Route to speaker", summary = "Route all incoming calls to phones speaker"),
             ), onClick = {})
         }
     }
@@ -258,10 +259,10 @@ fun InCarScreenDark() {
     MaterialTheme {
         BackgroundSurface {
             PreferencesScreen(listOf(
-                PreferenceItem.Category(title ="Category"),
-                PreferenceItem.Text(title ="Bluetooth device", summary = "Choose bluetooth device which enable InCar mode"),
-                PreferenceItem.CheckBox(checked = true, title ="Keep screen On", summary = "When checked, prevents screen from automatically turning off"),
-                PreferenceItem.Switch(checked = true, title ="Route to speaker", summary = "Route all incoming calls to phones speaker"),
+                PreferenceItem.Category(title = "Category"),
+                PreferenceItem.Text(title = "Bluetooth device", summary = "Choose bluetooth device which enable InCar mode"),
+                PreferenceItem.CheckBox(checked = true, title = "Keep screen On", summary = "When checked, prevents screen from automatically turning off"),
+                PreferenceItem.Switch(checked = true, title = "Route to speaker", summary = "Route all incoming calls to phones speaker"),
             ), onClick = {})
         }
     }
