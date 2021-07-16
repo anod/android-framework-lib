@@ -85,7 +85,11 @@ fun PreferenceCategory(
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun Preference(item: PreferenceItem, paddingValues: PaddingValues = PaddingValues(4.dp), onClick: () -> Unit, content: @Composable (() -> Unit)? = null) {
+fun Preference(
+        item: PreferenceItem,
+        paddingValues: PaddingValues = PaddingValues(4.dp),
+        descriptionColor: Color = MaterialTheme.colors.onSurface,
+        onClick: () -> Unit, content: @Composable (() -> Unit)? = null) {
     ListItem(
         modifier = Modifier
             .defaultMinSize(minHeight = 48.dp)
@@ -108,7 +112,7 @@ fun Preference(item: PreferenceItem, paddingValues: PaddingValues = PaddingValue
                     modifier = Modifier.padding(top = 4.dp),
                     text = if (item.summaryRes != 0) stringResource(id = item.summaryRes) else item.summary,
                     style = MaterialTheme.typography.body2.copy(
-                        color = MaterialTheme.colors.onSurface
+                        color = descriptionColor
                     )
                 )
             }
@@ -118,22 +122,36 @@ fun Preference(item: PreferenceItem, paddingValues: PaddingValues = PaddingValue
 }
 
 @Composable
-fun PreferenceSwitch(checked: Boolean, item: PreferenceItem, paddingValues: PaddingValues = PaddingValues(4.dp), onCheckedChange: (Boolean) -> Unit) {
-    Preference(item, paddingValues, onClick = {
+fun PreferenceSwitch(
+        checked: Boolean,
+        item: PreferenceItem,
+        paddingValues: PaddingValues = PaddingValues(4.dp),
+        descriptionColor: Color = MaterialTheme.colors.onSurface,
+        switchColors: SwitchColors = SwitchDefaults.colors(),
+        onCheckedChange: (Boolean) -> Unit
+) {
+    Preference(item, paddingValues, descriptionColor, onClick = {
         onCheckedChange(!checked)
     }) {
         Switch(
             enabled = item.enabled,
             checked = checked,
             onCheckedChange = onCheckedChange,
-            colors = SwitchDefaults.colors()
+            colors = switchColors
         )
     }
 }
 
 @Composable
-fun PreferenceCheckbox(checked: Boolean, item: PreferenceItem, paddingValues: PaddingValues = PaddingValues(4.dp), onCheckedChange: (Boolean) -> Unit) {
-    Preference(item, paddingValues, onClick = {
+fun PreferenceCheckbox(
+        checked: Boolean,
+        item: PreferenceItem,
+        paddingValues: PaddingValues = PaddingValues(4.dp),
+        descriptionColor: Color = MaterialTheme.colors.onSurface,
+        checkBoxColor: Color = MaterialTheme.colors.onBackground,
+        onCheckedChange: (Boolean) -> Unit
+) {
+    Preference(item, paddingValues, descriptionColor, onClick = {
         onCheckedChange(!checked)
     }) {
         Checkbox(
@@ -141,8 +159,8 @@ fun PreferenceCheckbox(checked: Boolean, item: PreferenceItem, paddingValues: Pa
             checked = checked,
             onCheckedChange = onCheckedChange,
             colors = CheckboxDefaults.colors(
-                uncheckedColor = MaterialTheme.colors.onBackground.copy(alpha = 0.6f),
-                disabledColor = MaterialTheme.colors.onBackground.copy(alpha = ContentAlpha.disabled),
+                uncheckedColor = checkBoxColor.copy(alpha = 0.6f),
+                disabledColor = checkBoxColor.copy(alpha = ContentAlpha.disabled),
             )
         )
     }
@@ -154,6 +172,7 @@ fun PreferencesScreen(
     modifier: Modifier = Modifier,
     onClick: (item: PreferenceItem) -> Unit = { },
     categoryColor: Color = MaterialTheme.colors.secondary,
+    descriptionColor: Color = MaterialTheme.colors.onSurface,
     placeholder: @Composable (PreferenceItem.Placeholder) -> Unit = { },
 ) {
     var listItem by remember { mutableStateOf<PreferenceItem.List?>(null) }
@@ -170,6 +189,7 @@ fun PreferencesScreen(
                         paddingValues = paddingValues,
                         checked = checked,
                         item = item,
+                        descriptionColor = descriptionColor,
                         onCheckedChange = { newChecked ->
                             checked = newChecked
                             item.checked = newChecked
@@ -179,6 +199,7 @@ fun PreferencesScreen(
                 is PreferenceItem.List -> Preference(
                     paddingValues = paddingValues,
                     item = item,
+                    descriptionColor = descriptionColor,
                     onClick = { listItem = item }
                 ) { }
                 is PreferenceItem.Switch -> {
@@ -187,6 +208,7 @@ fun PreferencesScreen(
                         paddingValues = paddingValues,
                         checked = checked,
                         item = item,
+                        descriptionColor = descriptionColor,
                         onCheckedChange = { newChecked ->
                             item.checked = newChecked
                             checked = newChecked
@@ -196,6 +218,7 @@ fun PreferencesScreen(
                 is PreferenceItem.Text -> Preference(
                     paddingValues = paddingValues,
                     item = item,
+                    descriptionColor = descriptionColor,
                     onClick = { onClick(item) }) { }
                 is PreferenceItem.Placeholder -> {
                     placeholder(item)
