@@ -22,10 +22,14 @@ fun PreferenceSlider(
     item: PreferenceItem,
     suffixText: @Composable () -> Unit = {},
     startIcon: @Composable (modifier: Modifier) -> Unit = { Box(modifier = it) {} },
-    endIcon: @Composable (modifier: Modifier) -> Unit = { Box(modifier = it) {} }
+    endIcon: @Composable (modifier: Modifier) -> Unit = { Box(modifier = it) {} },
+    paddingValues: PaddingValues = PaddingValues(0.dp),
 ) {
     var value: Float by remember { mutableStateOf(initialValue.toFloat()) }
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+            modifier = Modifier.padding(paddingValues),
+            horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Preference(item = item, onClick = { }) { }
         OutlinedTextField(
             value = value.toInt().toString(),
@@ -173,7 +177,7 @@ fun PreferencesScreen(
     onClick: (item: PreferenceItem) -> Unit = { },
     categoryColor: Color = MaterialTheme.colors.secondary,
     descriptionColor: Color = MaterialTheme.colors.onSurface,
-    placeholder: @Composable (PreferenceItem.Placeholder) -> Unit = { },
+    placeholder: @Composable (PreferenceItem.Placeholder, paddingValues: PaddingValues) -> Unit = { _,_ -> },
 ) {
     var listItem by remember { mutableStateOf<PreferenceItem.List?>(null) }
     LazyColumn(
@@ -221,7 +225,7 @@ fun PreferencesScreen(
                     descriptionColor = descriptionColor,
                     onClick = { onClick(item) }) { }
                 is PreferenceItem.Placeholder -> {
-                    placeholder(item)
+                    placeholder(item, paddingValues = paddingValues)
                 }
             }
         }
