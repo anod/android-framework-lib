@@ -1,17 +1,23 @@
 package info.anodsplace.compose
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.outlined.Cancel
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.painter.ColorPainter
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
 private val colors = listOf(
@@ -46,15 +52,20 @@ fun Color.toColorHex(withAlpha: Boolean = true): String {
 }
 
 @Composable
-fun ColorDialog(selected: Color?, onColorSelected: (Color?) -> Unit) {
-    var current = remember { mutableStateOf(selected) }
-    val currentNoAlpha = current.value?.copy(alpha = 1.0f)
+fun ColorDialog(
+        selected: Color?,
+        showNone: Boolean = true,
+        showAlpha: Boolean = true,
+        title: String = "Pick a color",
+        onColorSelected: (Color?) -> Unit = { }
+) {
+    val current = remember { mutableStateOf(selected) }
 
     AlertDialog(
             modifier = Modifier.padding(16.dp),
             title = {
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(text = "Pick a color")
+                    Text(text = title)
                     Spacer(modifier = Modifier.size(8.dp))
                     OutlinedTextField(
                             value = current.value?.toColorHex() ?: "",
@@ -64,10 +75,7 @@ fun ColorDialog(selected: Color?, onColorSelected: (Color?) -> Unit) {
                 }
             },
             text = {
-                Column {
-                    ColorsTable(current, currentNoAlpha)
-                    AlfaRow(current)
-                }
+                ColorDialogContent(current, showNone = showNone, showAlpha = showAlpha)
             },
             buttons = {
                 ButtonsPanel(saveText = "Choose") {
@@ -81,19 +89,107 @@ fun ColorDialog(selected: Color?, onColorSelected: (Color?) -> Unit) {
 }
 
 @Composable
-fun AlfaRow(current: MutableState<Color?>) {
+fun ColorDialogContent(color: MutableState<Color?>, showNone: Boolean, showAlpha: Boolean) {
+    val currentNoAlpha = color.value?.copy(alpha = 1.0f)
+
+    Column {
+        ColorsTable(
+                color,
+                currentNoAlpha,
+                showNone
+        )
+        if (showAlpha) {
+            AlphaRow(color)
+        }
+    }
+}
+
+@Composable
+fun AlphaRow(current: MutableState<Color?>) {
+    val alphas = listOf(0.2f, 0.4f, 0.6f, 0.8f, 1.0f)
+
+    val currentAlpha = current.value?.alpha
+    Row(
+            modifier = Modifier.background(
+                    brush = Brush.verticalGradient(
+                            0.0f to Color.White,
+                            1.0f to Color.Gray,
+                            startY = 0.0f,
+                            endY = 100.0f
+                    ),
+                    shape = RoundedCornerShape(8.dp)
+            )
+    ) {
+        for (alpha in alphas) {
+            val modifier = Modifier.size(48.dp)
+            val currentWithAlpha = current.value?.copy(alpha = alpha) ?: Color.Black
+            val isSelected = alpha == currentAlpha
+            Box(modifier = modifier) {
+                ColorIcon(
+                        modifier = modifier,
+                        color = currentWithAlpha,
+                        isSelected = isSelected,
+                        onClick = { current.value = it })
+                if (isSelected) {
+                    Icon(
+                            modifier = Modifier
+                                    .size(48.dp)
+                                    .padding(8.dp)
+                                    .alpha(0.8f),
+                            imageVector = Icons.Filled.Check,
+                            contentDescription = null,
+                            tint = if (currentWithAlpha.luminance() > 0.3)
+                                Color.Black else Color.White
+                    )
+                }
+            }
+        }
+    }
 
 }
 
 @Composable
-fun ColorsTable(current: MutableState<Color?>, currentNoAlpha: Color?) {
-    val rows = colors.chunked(5)
+fun ColorsTable(
+        current: MutableState<Color?>,
+        currentNoAlpha: Color?,
+        showNone: Boolean,
+        ) {
+    val rows = (if (showNone)
+        listOf(Color.Unspecified) + colors
+        else colors).chunked(5)
     Column {
         for (row in rows) {
             Row {
                 for (color in row) {
-                    val isSelected = currentNoAlpha == color
-                    ColorIcon(color, isSelected = isSelected, onClick = { current.value = it })
+                    val modifier = Modifier.size(48.dp)
+
+                    if (color == Color.Unspecified) {
+                        ColorNone(
+                                modifier = modifier,
+                                isSelected = currentNoAlpha == null,
+                                onClick = { current.value = null  })
+                    } else {
+                        val isSelected = currentNoAlpha == color
+                        Box(modifier = modifier) {
+                            ColorIcon(
+                                    modifier = modifier,
+                                    color = color,
+                                    isSelected = isSelected,
+                                    onClick = { current.value = it })
+                            if (isSelected) {
+                                Icon(
+                                        modifier = Modifier
+                                                .size(48.dp)
+                                                .padding(8.dp)
+                                                .alpha(0.8f),
+                                        imageVector = Icons.Filled.Check,
+                                        contentDescription = null,
+                                        tint = if (color.luminance() > 0.3)
+                                            Color.Black else Color.White
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -101,10 +197,9 @@ fun ColorsTable(current: MutableState<Color?>, currentNoAlpha: Color?) {
 }
 
 @Composable
-fun ColorIcon(color: Color, isSelected: Boolean, onClick: (Color) -> Unit) {
+fun ColorIcon(modifier: Modifier, color: Color, isSelected: Boolean, onClick: (Color) -> Unit) {
     Icon(
-            modifier = Modifier
-                    .size(48.dp)
+            modifier = modifier
                     .padding(4.dp)
                     .border(
                             width = if (isSelected) 2.dp else 0.dp,
@@ -117,4 +212,33 @@ fun ColorIcon(color: Color, isSelected: Boolean, onClick: (Color) -> Unit) {
             tint = Color.Unspecified,
             contentDescription = color.toString()
     )
+}
+
+@Composable
+fun ColorNone(modifier: Modifier, isSelected: Boolean, onClick: () -> Unit) {
+    Icon(
+            modifier = modifier
+                    .padding(4.dp)
+                    .border(
+                            width = if (isSelected) 2.dp else 0.dp,
+                            color = Color.Gray,
+                            shape = CircleShape
+                    )
+                    .clip(shape = CircleShape)
+                    .clickable { onClick() },
+            imageVector = Icons.Outlined.Cancel,
+            tint = Color.Unspecified,
+            contentDescription = "None"
+    )
+}
+
+@Preview
+@Composable
+fun ColorDialogPreview() {
+    val color: MutableState<Color?> = remember {
+        mutableStateOf(Color(0xFF673AB7))
+    }
+    Surface {
+        ColorDialogContent(color = color, showNone = true, showAlpha = true)
+    }
 }
