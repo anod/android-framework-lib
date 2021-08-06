@@ -16,7 +16,9 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.isVisible
+import androidx.lifecycle.lifecycleScope
 import info.anodsplace.framework.R
+import kotlinx.coroutines.flow.collect
 
 /**
  * @author Alex Gavrishev
@@ -53,9 +55,11 @@ abstract class ToolbarActivity : AppCompatActivity(), CustomThemeActivity {
         super.onCreate(savedInstanceState)
         setContentView(layoutView)
         setupToolbar()
-        duoDevice.hinge.observe(this, {
-            updateWideLayout(resources.getBoolean(R.bool.wide_layout), it)
-        })
+        lifecycleScope.launchWhenCreated {
+            duoDevice.hinge.collect {
+                updateWideLayout(resources.getBoolean(R.bool.wide_layout), it)
+            }
+        }
     }
 
     override fun onAttachedToWindow() {
@@ -70,7 +74,7 @@ abstract class ToolbarActivity : AppCompatActivity(), CustomThemeActivity {
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        val hinge = duoDevice.hinge.value ?: Rect()
+        val hinge = duoDevice.hinge.value
         updateWideLayout(resources.getBoolean(R.bool.wide_layout), hinge)
     }
 
