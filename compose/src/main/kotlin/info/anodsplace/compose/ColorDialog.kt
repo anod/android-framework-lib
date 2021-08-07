@@ -16,9 +16,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.*
+import androidx.compose.ui.graphics.colorspace.ColorSpaces
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import java.util.*
 
 private val colors = listOf(
         Color(0xFFF44336),
@@ -44,7 +46,7 @@ private val colors = listOf(
 )
 
 fun Color.toColorHex(withAlpha: Boolean = true): String {
-    var hexStr = String.format("%08X", value.toInt())
+    var hexStr = "%08X".format(Locale.ROOT, (value shr 32).toLong())
     if (!withAlpha) {
         hexStr = hexStr.substring(2)
     }
