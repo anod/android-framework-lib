@@ -177,6 +177,7 @@ fun PreferencesScreen(
     onClick: (item: PreferenceItem) -> Unit = { },
     categoryColor: Color = MaterialTheme.colors.secondary,
     descriptionColor: Color = MaterialTheme.colors.onSurface,
+    checkBoxColor: Color = MaterialTheme.colors.onBackground,
     placeholder: @Composable (PreferenceItem.Placeholder, paddingValues: PaddingValues) -> Unit = { _,_ -> },
 ) {
     var listItem by remember { mutableStateOf<PreferenceItem.List?>(null) }
@@ -194,6 +195,7 @@ fun PreferencesScreen(
                         checked = checked,
                         item = item,
                         descriptionColor = descriptionColor,
+                        checkBoxColor = checkBoxColor,
                         onCheckedChange = { newChecked ->
                             checked = newChecked
                             item.checked = newChecked
