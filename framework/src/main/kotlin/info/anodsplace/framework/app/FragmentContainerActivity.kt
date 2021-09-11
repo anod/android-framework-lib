@@ -7,14 +7,14 @@ import androidx.annotation.IdRes
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.commit
-import info.anodsplace.applog.AppLog
 import info.anodsplace.framework.R
 import java.io.Serializable
 
-open class FragmentFactory(val fragmentTag: String) : Serializable {
-    open fun create(): Fragment? {
-        return null
-    }
+abstract class FragmentContainerFactory(
+        val fragmentTag: String,
+        val themeResId: Int = 0
+) : Serializable {
+    abstract fun create(): Fragment
 }
 
 class FragmentContainerActivity: FragmentActivity() {
@@ -23,7 +23,7 @@ class FragmentContainerActivity: FragmentActivity() {
         private const val extraFactory = "extra_factory"
         private const val extraArguments = "extra_arguments"
 
-        fun intent(context: Context, factory: FragmentFactory, arguments: Bundle = Bundle.EMPTY, clazz: Class<*> = FragmentContainerActivity::class.java): Intent {
+        fun intent(context: Context, factory: FragmentContainerFactory, arguments: Bundle = Bundle.EMPTY, clazz: Class<*> = FragmentContainerActivity::class.java): Intent {
             return Intent(context, clazz).apply {
                 putExtra(extraFactory, factory)
                 putExtra(extraArguments, arguments)
@@ -31,13 +31,11 @@ class FragmentContainerActivity: FragmentActivity() {
         }
 
         fun attach(@IdRes containerViewId: Int, activity: FragmentActivity) {
-            val factory: FragmentFactory = activity.intent.getSerializableExtra(extraFactory) as FragmentFactory
-            val f = factory.create()
-            if (f == null) {
-                AppLog.e("Missing fragment for tag: ${factory.fragmentTag}")
-                activity.finish()
-                return
+            val factory = activity.intent.getSerializableExtra(extraFactory) as FragmentContainerFactory
+            if (factory.themeResId != 0) {
+                activity.setTheme(factory.themeResId)
             }
+            val f = factory.create()
             if (activity.intent.hasExtra(extraArguments)) {
                 val extra = activity.intent.getBundleExtra(extraArguments)!!
                 if (f.arguments == null) {
