@@ -48,7 +48,7 @@ object BluetoothScan : AppPermission(AppPermissions.Permission.BLUETOOTH_SCAN)
 class RequestPermission(private val permission: AppPermission): ActivityResultContract<Void, Boolean>() {
     private val request = ActivityResultContracts.RequestPermission()
 
-    override fun createIntent(context: Context, input: Void?): Intent {
+    override fun createIntent(context: Context, input: Void): Intent {
         return request.createIntent(context, permission.value)
     }
 
@@ -62,7 +62,7 @@ typealias MultiplePermissionsResult = Pair<Boolean, Map<String, Boolean>>
 class RequestMultiplePermissions(private val permissions: List<AppPermission>): ActivityResultContract<Void, MultiplePermissionsResult>() {
     private val request = ActivityResultContracts.RequestMultiplePermissions()
 
-    override fun createIntent(context: Context, input: Void?): Intent {
+    override fun createIntent(context: Context, input: Void): Intent {
         return request.createIntent(context, permissions.map { it.value }.toTypedArray())
     }
 
