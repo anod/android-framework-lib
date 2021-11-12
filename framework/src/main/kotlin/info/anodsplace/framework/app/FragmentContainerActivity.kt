@@ -22,19 +22,18 @@ class FragmentContainerActivity: FragmentActivity() {
     companion object {
         private const val extraFactory = "extra_factory"
         private const val extraArguments = "extra_arguments"
+        private const val extraThemeId = "extra_theme_id"
 
         fun intent(context: Context, factory: FragmentContainerFactory, arguments: Bundle = Bundle.EMPTY, clazz: Class<*> = FragmentContainerActivity::class.java): Intent {
             return Intent(context, clazz).apply {
                 putExtra(extraFactory, factory)
                 putExtra(extraArguments, arguments)
+                putExtra(extraThemeId, factory.themeResId)
             }
         }
 
         fun attach(@IdRes containerViewId: Int, activity: FragmentActivity) {
             val factory = activity.intent.getSerializableExtra(extraFactory) as FragmentContainerFactory
-            if (factory.themeResId != 0) {
-                activity.setTheme(factory.themeResId)
-            }
             val f = factory.create()
             if (activity.intent.hasExtra(extraArguments)) {
                 val extra = activity.intent.getBundleExtra(extraArguments)!!
@@ -53,8 +52,16 @@ class FragmentContainerActivity: FragmentActivity() {
         }
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        val themeResId = intent.getIntExtra(extraThemeId, 0)
+        if (themeResId != 0) {
+            setTheme(themeResId)
+        }
         setContentView(R.layout.activity_fragment_container)
 
         if (savedInstanceState == null) {
