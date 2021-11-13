@@ -68,7 +68,7 @@ fun loadPicassoImage(
                 PicassoImage.Loaded(result.asImageBitmap())
             }
         } catch (e: Exception) {
-            AppLog.e(e)
+            AppLog.e("Failed to load $url", e)
             PicassoImage.Error
         }
     }
