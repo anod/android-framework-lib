@@ -5,8 +5,7 @@ import android.graphics.Rect
 import androidx.activity.ComponentActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.window.layout.FoldingFeature
-import androidx.window.layout.WindowInfoRepository
-import androidx.window.layout.WindowInfoRepository.Companion.windowInfoRepository
+import androidx.window.layout.WindowInfoTracker
 import androidx.window.layout.WindowLayoutInfo
 import kotlinx.coroutines.flow.*
 
@@ -35,13 +34,13 @@ fun WindowLayoutInfo.hingeBounds(): Rect {
 class HingeDeviceReal(activity: ComponentActivity) : HingeDevice {
     override var attachedToWindow = false
 
-    private val window: WindowInfoRepository? = try {
-        activity.windowInfoRepository()
+    private val window: WindowInfoTracker? = try {
+        WindowInfoTracker.getOrCreate(activity)
     } catch (e: Exception) {
         null
     }
 
-    override val hinge: StateFlow<Rect> = window?.windowLayoutInfo?.map {
+    override val hinge: StateFlow<Rect> = window?.windowLayoutInfo(activity)?.map {
         it.hingeBounds()
     }?.stateIn(activity.lifecycleScope, SharingStarted.WhileSubscribed(), Rect())
         ?: MutableStateFlow(Rect())
