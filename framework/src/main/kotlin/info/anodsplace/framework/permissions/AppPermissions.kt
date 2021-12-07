@@ -59,16 +59,16 @@ class RequestPermission(private val permission: AppPermission): ActivityResultCo
 
 typealias MultiplePermissionsResult = Pair<Boolean, Map<String, Boolean>>
 
-class RequestMultiplePermissions(private val permissions: List<AppPermission>): ActivityResultContract<Void, MultiplePermissionsResult>() {
+class RequestMultiplePermissions(private val permissions: List<AppPermission>): ActivityResultContract<Unit, MultiplePermissionsResult>() {
     private val request = ActivityResultContracts.RequestMultiplePermissions()
 
-    override fun createIntent(context: Context, input: Void): Intent {
+    override fun createIntent(context: Context, input: Unit): Intent {
         return request.createIntent(context, permissions.map { it.value }.toTypedArray())
     }
 
     override fun parseResult(resultCode: Int, intent: Intent?): MultiplePermissionsResult {
         val result = request.parseResult(resultCode, intent)
-        val failed = result.values.firstOrNull { it == false } != false
+        val failed = result.values.firstOrNull { !it } != false
         return Pair(failed, result)
     }
 }
@@ -123,7 +123,7 @@ object AppPermissions {
         return fragment.registerForActivityResult(RequestPermission(permission), callback)
     }
 
-    fun register(fragment: Fragment, permissions: List<AppPermission>, callback: ActivityResultCallback<MultiplePermissionsResult>): ActivityResultLauncher<Void> {
+    fun register(fragment: Fragment, permissions: List<AppPermission>, callback: ActivityResultCallback<MultiplePermissionsResult>): ActivityResultLauncher<Unit> {
         return fragment.registerForActivityResult(RequestMultiplePermissions(permissions), callback)
     }
 
@@ -131,7 +131,7 @@ object AppPermissions {
         return activity.registerForActivityResult(RequestPermission(permission), callback)
     }
 
-    fun register(activity: FragmentActivity, permissions: List<AppPermission>, callback: ActivityResultCallback<MultiplePermissionsResult>): ActivityResultLauncher<Void> {
+    fun register(activity: FragmentActivity, permissions: List<AppPermission>, callback: ActivityResultCallback<MultiplePermissionsResult>): ActivityResultLauncher<Unit> {
         return activity.registerForActivityResult(RequestMultiplePermissions(permissions), callback)
     }
 
