@@ -27,7 +27,7 @@ sealed class PicassoImage {
 }
 
 @Composable
-fun PicassoIcon(uri: Uri, contentDescription: String? = null, modifier: Modifier = Modifier) {
+fun PicassoIcon(uri: Uri, modifier: Modifier = Modifier, contentDescription: String? = null) {
     val imageResult by loadPicassoImage(uri)
     when (imageResult) {
         is PicassoImage.Loading -> {
