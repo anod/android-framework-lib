@@ -39,7 +39,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.1.0-rc02"
+        kotlinCompilerExtensionVersion = "1.1.0-rc03"
     }
 }
 
@@ -48,11 +48,11 @@ dependencies {
 
     implementation("com.squareup.picasso:picasso:2.8")
     implementation("androidx.activity:activity:1.4.0")
-    implementation("androidx.compose.ui:ui:1.1.0-rc01")
-    implementation("androidx.compose.material:material:1.1.0-rc01")
-    implementation("androidx.compose.foundation:foundation:1.1.0-rc01")
-    implementation("androidx.compose.material:material-icons-core:1.1.0-rc01")
-    implementation("androidx.compose.material:material-icons-extended:1.1.0-rc01")
+    implementation("androidx.compose.ui:ui:1.1.0-rc03")
+    implementation("androidx.compose.material:material:1.1.0-rc03")
+    implementation("androidx.compose.foundation:foundation:1.1.0-rc03")
+    implementation("androidx.compose.material:material-icons-core:1.1.0-rc03")
+    implementation("androidx.compose.material:material-icons-extended:1.1.0-rc03")
 
     implementation("androidx.compose.ui:ui-tooling:1.0.5")
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.6.10")
