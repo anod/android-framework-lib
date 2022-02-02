@@ -41,6 +41,7 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = "1.1.0-rc03"
     }
+    namespace = "info.anodsplace.compose"
 }
 
 dependencies {
