@@ -9,11 +9,11 @@ repositories {
 }
 
 android {
-    compileSdk = 30
+    compileSdk = 31
 
     defaultConfig {
         minSdk = 21
-        targetSdk = 30
+        targetSdk = 31
     }
 
     sourceSets {
@@ -40,7 +40,7 @@ dependencies {
     implementation("androidx.core:core-ktx:1.7.0")
 
     implementation("com.google.android.gms:play-services-identity:18.0.1")
-    implementation("com.google.android.gms:play-services-auth:20.0.1")
+    implementation("com.google.android.gms:play-services-auth:20.1.0")
 
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.6.10")
 }

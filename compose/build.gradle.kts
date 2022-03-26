@@ -9,11 +9,11 @@ repositories {
 }
 
 android {
-    compileSdk = 30
+    compileSdk = 31
 
     defaultConfig {
         minSdk = 21
-        targetSdk = 30
+        targetSdk = 31
     }
 
     sourceSets {
@@ -39,7 +39,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.1.0-rc03"
+        kotlinCompilerExtensionVersion = "1.2.0-alpha06"
     }
     namespace = "info.anodsplace.compose"
 }
@@ -49,12 +49,12 @@ dependencies {
 
     implementation("com.squareup.picasso:picasso:2.8")
     implementation("androidx.activity:activity:1.4.0")
-    implementation("androidx.compose.ui:ui:1.1.0-rc03")
-    implementation("androidx.compose.material:material:1.1.0-rc03")
-    implementation("androidx.compose.foundation:foundation:1.1.0-rc03")
-    implementation("androidx.compose.material:material-icons-core:1.1.0-rc03")
-    implementation("androidx.compose.material:material-icons-extended:1.1.0-rc03")
+    implementation("androidx.compose.ui:ui:1.2.0-alpha06")
+    implementation("androidx.compose.material:material:1.2.0-alpha06")
+    implementation("androidx.compose.foundation:foundation:1.2.0-alpha06")
+    implementation("androidx.compose.material:material-icons-core:1.2.0-alpha06")
+    implementation("androidx.compose.material:material-icons-extended:1.2.0-alpha06")
 
-    implementation("androidx.compose.ui:ui-tooling:1.0.5")
+    implementation("androidx.compose.ui:ui-tooling:1.1.1")
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.6.10")
 }
