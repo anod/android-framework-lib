@@ -47,7 +47,6 @@ android {
 dependencies {
     implementation(project(":lib:applog"))
 
-    implementation("com.squareup.picasso:picasso:2.8")
     implementation("androidx.activity:activity:1.4.0")
     implementation("androidx.compose.ui:ui:1.2.0-alpha06")
     implementation("androidx.compose.material:material:1.2.0-alpha06")
