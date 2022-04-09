@@ -1,4 +1,4 @@
-package info.anodsplace.framework.graphics
+package info.anodsplace.graphics
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
