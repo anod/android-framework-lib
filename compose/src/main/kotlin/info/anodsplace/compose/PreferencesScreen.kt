@@ -46,9 +46,9 @@ fun PreferenceSlider(
             verticalAlignment = Alignment.CenterVertically
         ) {
             startIcon(
-                Modifier
-                    .size(24.dp)
-                    .weight(1f)
+                    Modifier
+                            .size(24.dp)
+                            .weight(1f)
             )
             Slider(
                 enabled = item.enabled,
@@ -61,9 +61,9 @@ fun PreferenceSlider(
                 onValueChange = { value = it }
             )
             endIcon(
-                Modifier
-                    .size(24.dp)
-                    .weight(1f)
+                    Modifier
+                            .size(24.dp)
+                            .weight(1f)
             )
         }
     }
@@ -78,13 +78,39 @@ fun PreferenceCategory(
     Text(
         text = if (item.titleRes != 0) stringResource(id = item.titleRes) else item.title,
         modifier = modifier
-            .fillMaxWidth()
-            .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp),
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp),
         style = MaterialTheme.typography.overline.copy(
             color,
             fontSize = 14.sp,
         )
     )
+}
+
+@Composable
+fun PreferencePick(
+        item: PreferenceItem.Pick,
+        paddingValues: PaddingValues = PaddingValues(4.dp),
+        descriptionColor: Color = MaterialTheme.colors.onSurface,
+        onPickValue: (String) -> Unit
+) {
+    val entries = if (item.entriesRes == 0) item.entries else stringArrayResource(id = item.entriesRes)
+    val entryValues = if (item.entryValuesRes == 0) {
+        if (item.entryValues.isEmpty()) entries.mapIndexed { index, _ -> index.toString() }.toTypedArray() else item.entryValues
+    } else stringArrayResource(id = item.entryValuesRes)
+    var value by remember { mutableStateOf(item.value) }
+
+    Preference(item, paddingValues, descriptionColor, onClick = { })
+    val selected = entryValues.indexOf(value)
+    PickGroup(
+            modifier = Modifier.padding(paddingValues),
+            options = entries,
+            selectedIndex = selected
+    ) { newIndex ->
+        value = entryValues[newIndex]
+        item.value = value
+        onPickValue(value)
+    }
 }
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -93,14 +119,16 @@ fun Preference(
         item: PreferenceItem,
         paddingValues: PaddingValues = PaddingValues(4.dp),
         descriptionColor: Color = MaterialTheme.colors.onSurface,
-        onClick: () -> Unit, content: @Composable (() -> Unit)? = null) {
+        onClick: () -> Unit,
+        content: @Composable (() -> Unit)? = null
+) {
     ListItem(
         modifier = Modifier
-            .defaultMinSize(minHeight = 48.dp)
-            .fillMaxWidth()
-            .alpha(if (item.enabled) 1.0f else 0.6f)
-            .clickable(onClick = onClick, enabled = item.enabled)
-            .padding(paddingValues),
+                .defaultMinSize(minHeight = 48.dp)
+                .fillMaxWidth()
+                .alpha(if (item.enabled) 1.0f else 0.6f)
+                .clickable(onClick = onClick, enabled = item.enabled)
+                .padding(paddingValues),
         icon = null,
         text = {
             Text(
@@ -208,6 +236,15 @@ fun PreferencesScreen(
                     descriptionColor = descriptionColor,
                     onClick = { listItem = item }
                 ) { }
+                is PreferenceItem.Pick -> PreferencePick(
+                    paddingValues = paddingValues,
+                    item = item,
+                    descriptionColor = descriptionColor,
+                    onPickValue = { value ->
+                        item.value = value
+                        onClick(item)
+                    }
+                )
                 is PreferenceItem.Switch -> {
                     var checked by remember { mutableStateOf(item.checked) }
                     PreferenceSwitch(
@@ -234,7 +271,7 @@ fun PreferencesScreen(
     }
 
     if (listItem != null) {
-        PreferenceListDialog(item = listItem!!) { value ->
+        PreferenceListDialog(item = listItem!!) {
             onClick(listItem!!)
             listItem = null
         }
@@ -274,6 +311,13 @@ fun InCarScreenLight() {
         BackgroundSurface {
             PreferencesScreen(listOf(
                 PreferenceItem.Category(title = "Category"),
+                PreferenceItem.Pick(
+                    entries = arrayOf("Manually", "Every hour", "Every 2 hours", "Every 3 hours", "Every 6 hours", "Every 12 hours"),
+                    value = "Every 2 hours",
+                    title ="Check for new updates",
+                    summary = "Every 3600 minutes",
+                    key = "update_frequency"
+                ),
                 PreferenceItem.Text(title = "Bluetooth device", summary = "Choose bluetooth device which enable InCar mode"),
                 PreferenceItem.CheckBox(checked = true, title = "Keep screen On", summary = "When checked, prevents screen from automatically turning off"),
                 PreferenceItem.Switch(checked = true, title = "Route to speaker", summary = "Route all incoming calls to phones speaker"),
@@ -296,4 +340,3 @@ fun InCarScreenDark() {
         }
     }
 }
-
