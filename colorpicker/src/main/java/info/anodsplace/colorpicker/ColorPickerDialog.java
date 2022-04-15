@@ -58,7 +58,7 @@ public class ColorPickerDialog extends ColorPickerDialogSystem {
     }
 
     ColorPickerDialog() {
-        this(R.style.Theme_AppCompat_Dialog);
+        this(androidx.appcompat.R.style.Theme_AppCompat_Dialog);
     }
 
     @Override

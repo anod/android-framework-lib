@@ -1,8 +1,8 @@
 package info.anodsplace.compose
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.selection.selectableGroup
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -17,15 +17,21 @@ import com.google.accompanist.flowlayout.FlowRow
 fun PickGroup(options: Array<String>, selectedIndex: Int, modifier: Modifier = Modifier, onValueChanged: (index: Int) -> Unit = {}) {
     val (selectedOption, onOptionSelected) = remember { mutableStateOf(selectedIndex) }
     FlowRow(
-            modifier = modifier.selectableGroup()
+            modifier = modifier,
+            mainAxisSpacing = 8.dp,
+            crossAxisSpacing = 4.dp
     ) {
         options.forEachIndexed { index, text ->
             val selected = (index == selectedOption)
             Chip(
-                    modifier = Modifier.padding(start = if (index > 0) 8.dp else 0.dp),
-                    border = BorderStroke(1.dp, MaterialTheme.colors.onSurface.copy(
+                    modifier = Modifier.height(32.dp),
+                    shape = MaterialTheme.shapes.small.copy(CornerSize(percent = 25)),
+                    border = BorderStroke(1.dp, MaterialTheme.colors.secondaryVariant.copy(
                            alpha = if (selected) 1.0f else 0.3f
                     )),
+                    colors = ChipDefaults.chipColors(
+                            backgroundColor = MaterialTheme.colors.secondary.copy(alpha = 0.1f)
+                    ),
                     onClick = {
                         onValueChanged(index)
                         onOptionSelected(index)
@@ -41,10 +47,9 @@ fun PickGroup(options: Array<String>, selectedIndex: Int, modifier: Modifier = M
     }
 }
 
-
 @Preview(showBackground = true)
 @Composable
-fun WithGreenBackground() {
+fun PickGroupPreview() {
     MaterialTheme {
         BackgroundSurface {
             PickGroup(

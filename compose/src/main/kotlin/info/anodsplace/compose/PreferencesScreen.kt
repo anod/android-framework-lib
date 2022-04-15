@@ -99,18 +99,24 @@ fun PreferencePick(
         if (item.entryValues.isEmpty()) entries.mapIndexed { index, _ -> index.toString() }.toTypedArray() else item.entryValues
     } else stringArrayResource(id = item.entryValuesRes)
     var value by remember { mutableStateOf(item.value) }
-
-    Preference(item, paddingValues, descriptionColor, onClick = { })
     val selected = entryValues.indexOf(value)
-    PickGroup(
-            modifier = Modifier.padding(paddingValues),
-            options = entries,
-            selectedIndex = selected
-    ) { newIndex ->
-        value = entryValues[newIndex]
-        item.value = value
-        onPickValue(value)
-    }
+
+    Preference(
+            item,
+            paddingValues,
+            descriptionColor,
+            secondaryText = {
+                PickGroup(
+                        modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                        options = entries,
+                        selectedIndex = selected
+                ) { newIndex ->
+                    value = entryValues[newIndex]
+                    item.value = value
+                    onPickValue(value)
+                }
+            },
+            onClick = { })
 }
 
 @OptIn(ExperimentalMaterialApi::class)
@@ -120,6 +126,7 @@ fun Preference(
         paddingValues: PaddingValues = PaddingValues(4.dp),
         descriptionColor: Color = MaterialTheme.colors.onSurface,
         onClick: () -> Unit,
+        secondaryText: @Composable (() -> Unit)? = null,
         content: @Composable (() -> Unit)? = null
 ) {
     ListItem(
@@ -138,17 +145,18 @@ fun Preference(
                 )
             )
         },
-        secondaryText = if (item.summaryRes != 0 || item.summary.isNotEmpty()) {
-            {
-                Text(
-                    modifier = Modifier.padding(top = 4.dp),
-                    text = if (item.summaryRes != 0) stringResource(id = item.summaryRes) else item.summary,
-                    style = MaterialTheme.typography.body2.copy(
-                        color = descriptionColor
-                    )
-                )
-            }
-        } else null,
+        secondaryText = secondaryText
+                ?: if (item.summaryRes != 0 || item.summary.isNotEmpty()) {
+                    {
+                        Text(
+                                modifier = Modifier.padding(top = 4.dp),
+                                text = if (item.summaryRes != 0) stringResource(id = item.summaryRes) else item.summary,
+                                style = MaterialTheme.typography.body2.copy(
+                                        color = descriptionColor
+                                )
+                        )
+                    }
+                } else null,
         trailing = content
     )
 }
@@ -213,7 +221,7 @@ fun PreferencesScreen(
         modifier = modifier.fillMaxWidth()
     ) {
         items(preferences.size) { index ->
-            val paddingValues = PaddingValues(16.dp)
+            val paddingValues = PaddingValues(top = 16.dp, bottom = 8.dp)
             when (val item = preferences[index]) {
                 is PreferenceItem.Category -> PreferenceCategory(item = item, color = categoryColor)
                 is PreferenceItem.CheckBox -> {
