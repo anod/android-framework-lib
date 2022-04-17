@@ -106,14 +106,26 @@ fun PreferencePick(
             paddingValues,
             descriptionColor,
             secondaryText = {
-                PickGroup(
-                        modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-                        options = entries,
-                        selectedIndex = selected
-                ) { newIndex ->
-                    value = entryValues[newIndex]
-                    item.value = value
-                    onPickValue(value)
+                Column {
+                    if (item.summaryRes != 0 || item.summary.isNotEmpty()) {
+                        Text(
+                                modifier = Modifier.padding(top = 4.dp),
+                                text = if (item.summaryRes != 0) stringResource(id = item.summaryRes) else item.summary,
+                                style = MaterialTheme.typography.body2.copy(
+                                        color = descriptionColor
+                                )
+                        )
+                    }
+                    PickGroup(
+                            modifier = Modifier
+                                    .padding(top = 8.dp),
+                            options = entries,
+                            selectedIndex = selected
+                    ) { newIndex ->
+                        value = entryValues[newIndex]
+                        item.value = value
+                        onPickValue(value)
+                    }
                 }
             },
             onClick = { })
@@ -323,7 +335,6 @@ fun InCarScreenLight() {
                     entries = arrayOf("Manually", "Every hour", "Every 2 hours", "Every 3 hours", "Every 6 hours", "Every 12 hours"),
                     value = "Every 2 hours",
                     title ="Check for new updates",
-                    summary = "Every 3600 minutes",
                     key = "update_frequency"
                 ),
                 PreferenceItem.Text(title = "Bluetooth device", summary = "Choose bluetooth device which enable InCar mode"),
@@ -344,6 +355,13 @@ fun InCarScreenDark() {
                 PreferenceItem.Text(title = "Bluetooth device", summary = "Choose bluetooth device which enable InCar mode"),
                 PreferenceItem.CheckBox(checked = true, title = "Keep screen On", summary = "When checked, prevents screen from automatically turning off"),
                 PreferenceItem.Switch(checked = true, title = "Route to speaker", summary = "Route all incoming calls to phones speaker"),
+                PreferenceItem.Pick(
+                        entries = arrayOf("All", "Installed", "Not Installed", "Updatable"),
+                        value = "All",
+                        title = "Default list",
+                        summary = "Choose which filter will be applied when app is opened",
+                        key = "default-filter"
+                ),
             ), onClick = {})
         }
     }

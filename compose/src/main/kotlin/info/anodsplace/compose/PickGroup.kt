@@ -30,7 +30,8 @@ fun PickGroup(options: Array<String>, selectedIndex: Int, modifier: Modifier = M
                            alpha = if (selected) 1.0f else 0.3f
                     )),
                     colors = ChipDefaults.chipColors(
-                            backgroundColor = MaterialTheme.colors.secondary.copy(alpha = 0.1f)
+                            backgroundColor = if (selected) MaterialTheme.colors.secondaryVariant else MaterialTheme.colors.secondary.copy(alpha = 0.1f),
+                            contentColor = if (selected) MaterialTheme.colors.onSecondary else MaterialTheme.colors.onSurface
                     ),
                     onClick = {
                         onValueChanged(index)
@@ -47,7 +48,7 @@ fun PickGroup(options: Array<String>, selectedIndex: Int, modifier: Modifier = M
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, widthDp = 260, heightDp = 200)
 @Composable
 fun PickGroupPreview() {
     MaterialTheme {
