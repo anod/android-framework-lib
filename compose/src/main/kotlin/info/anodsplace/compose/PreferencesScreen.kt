@@ -291,15 +291,15 @@ fun PreferencesScreen(
     }
 
     if (listItem != null) {
-        PreferenceListDialog(item = listItem!!) {
-            onClick(listItem!!)
+        PreferenceListDialog(item = listItem!!) { changedListItem ->
+            onClick(changedListItem)
             listItem = null
         }
     }
 }
 
 @Composable
-fun PreferenceListDialog(item: PreferenceItem.List, onValueChange: (value: String) -> Unit) {
+fun PreferenceListDialog(item: PreferenceItem.List, onValueChange: (item: PreferenceItem.List) -> Unit) {
     val entries = stringArrayResource(id = item.entries)
     val entryValues = if (item.entryValues == 0)
         entries.mapIndexed { index, _ -> index.toString() }.toTypedArray()
@@ -313,12 +313,12 @@ fun PreferenceListDialog(item: PreferenceItem.List, onValueChange: (value: Strin
             RadioGroup(entries, selected) { newIndex ->
                 value = entryValues[newIndex]
                 item.value = value
-                onValueChange(value)
+                onValueChange(item)
             }
         },
         buttons = { },
         onDismissRequest = {
-            onValueChange(value)
+            onValueChange(item)
         }
     )
 }

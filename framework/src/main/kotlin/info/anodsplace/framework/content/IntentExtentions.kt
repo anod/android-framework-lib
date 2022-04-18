@@ -48,7 +48,6 @@ fun Intent.forIconTheme(): Intent {
     return this
 }
 
-@RequiresApi(Build.VERSION_CODES.M)
 fun Intent.forOverlayPermission(packageName: String): Intent {
     action = Settings.ACTION_MANAGE_OVERLAY_PERMISSION
     data = Uri.parse("package:$packageName")
