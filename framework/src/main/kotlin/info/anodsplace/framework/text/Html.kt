@@ -15,10 +15,7 @@ object Html {
             if (source.isBlank()) {
                 return SpannableString(source)
             }
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
-                return android.text.Html.fromHtml(source, android.text.Html.FROM_HTML_MODE_COMPACT)
-            }
-            return android.text.Html.fromHtml(source)
+            return android.text.Html.fromHtml(source, android.text.Html.FROM_HTML_MODE_COMPACT)
         } catch (e: RuntimeException) {
             AppLog.e(e)
             return SpannableString(source)

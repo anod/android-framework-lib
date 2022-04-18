@@ -107,19 +107,9 @@ abstract class ToolbarActivity : AppCompatActivity(), CustomThemeActivity {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         val result = super.onCreateOptionsMenu(menu)
         if (!themeColors.statusBarColor.isLight) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                for (i in 0 until menu.size()) {
-                    menu.getItem(i).iconTintList = ColorStateList.valueOf(Color.WHITE)
-                    menu.getItem(i).iconTintMode = PorterDuff.Mode.SRC_IN
-                }
-            } else {
-                for (i in 0 until menu.size()) {
-                    menu.getItem(i).icon?.let {
-                        val icon = DrawableCompat.wrap(it)
-                        DrawableCompat.setTint(icon, Color.WHITE)
-                        menu.getItem(i).icon = icon
-                    }
-                }
+            for (i in 0 until menu.size()) {
+                menu.getItem(i).iconTintList = ColorStateList.valueOf(Color.WHITE)
+                menu.getItem(i).iconTintMode = PorterDuff.Mode.SRC_IN
             }
         }
         return result

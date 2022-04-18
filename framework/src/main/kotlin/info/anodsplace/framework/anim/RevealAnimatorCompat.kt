@@ -17,15 +17,9 @@ object RevealAnimatorCompat {
 
     fun show(viewRoot: View, x: Int, y: Int, delay: Int): Animator {
         val anim: Animator
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            val finalRadius = max(viewRoot.width, viewRoot.height)
-            anim = ViewAnimationUtils.createCircularReveal(viewRoot, x, y, 0f, finalRadius.toFloat())
-            anim.duration = duration
-        } else {
-            // Kitkat compatibility
-            anim = ValueAnimator.ofInt(0, 1)
-            anim.duration = 10
-        }
+        val finalRadius = max(viewRoot.width, viewRoot.height)
+        anim = ViewAnimationUtils.createCircularReveal(viewRoot, x, y, 0f, finalRadius.toFloat())
+        anim.duration = duration
         anim.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationStart(animation: Animator) {
                 viewRoot.visibility = View.VISIBLE
@@ -37,21 +31,15 @@ object RevealAnimatorCompat {
 
     fun hide(viewRoot: View, x: Int, y: Int, delay: Int): Animator {
         val anim: Animator
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            val initialRadius = viewRoot.width
-            anim = ViewAnimationUtils.createCircularReveal(viewRoot, x, y, initialRadius.toFloat(), 0f)
-            anim.duration = duration.toLong()
-        } else {
-            // Kitkat compatibility
-            anim = ValueAnimator.ofInt(0, 1)
-            anim.duration = 10
-        }
+        val initialRadius = viewRoot.width
+        anim = ViewAnimationUtils.createCircularReveal(viewRoot, x, y, initialRadius.toFloat(), 0f)
+        anim.duration = duration
         anim.addListener(object : AnimatorListenerAdapter() {
             override fun onAnimationEnd(animation: Animator) {
                 viewRoot.visibility = View.INVISIBLE
             }
         })
-        anim.duration = duration.toLong()
+        anim.duration = duration
         anim.startDelay = delay.toLong()
         return anim
     }

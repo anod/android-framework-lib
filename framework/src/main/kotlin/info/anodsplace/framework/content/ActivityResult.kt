@@ -21,9 +21,7 @@ class CreateDocument : ActivityResultContract<CreateDocument.Args, Uri?>() {
             try {
                 setDataAndType(input.initialUri, input.dataType)
                 if (input.initialUri != null) {
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                        putExtra(DocumentsContract.EXTRA_INITIAL_URI, input.initialUri)
-                    }
+                    putExtra(DocumentsContract.EXTRA_INITIAL_URI, input.initialUri)
                 }
             } catch (e: Exception) {
                 AppLog.e(e)

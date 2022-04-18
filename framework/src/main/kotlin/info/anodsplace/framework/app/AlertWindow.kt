@@ -14,22 +14,13 @@ class AlertWindow(private val context: Context) {
     private var view: View? = null
 
     companion object {
-        val isSupported = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
-
         fun hasPermission(context: Context): Boolean {
-            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-                return false
-            }
 
             return Settings.canDrawOverlays(context)
         }
     }
 
     fun show(params: WindowManager.LayoutParams, configure: (view: View) -> Unit) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            AppLog.e("Old sdk")
-            return
-        }
 
         if (!hasPermission(context)) {
             AppLog.e("No permission")
