@@ -1,7 +1,6 @@
 package info.anodsplace.framework.permissions
 
 import android.Manifest
-import android.annotation.TargetApi
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -31,7 +30,6 @@ sealed class AppPermission(val value: String)
 object CallPhone : AppPermission(Manifest.permission.CALL_PHONE)
 object ReadContacts : AppPermission(Manifest.permission.READ_CONTACTS)
 
-@TargetApi(Build.VERSION_CODES.O)
 object AnswerPhoneCalls : AppPermission(Manifest.permission.ANSWER_PHONE_CALLS)
 object ModifyPhoneState : AppPermission(Manifest.permission.MODIFY_PHONE_STATE)
 object CanDrawOverlay : AppPermission(AppPermissions.Permission.CAN_DRAW_OVERLAY)
@@ -84,7 +82,6 @@ object AppPermissions {
         }
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     fun isGranted(context: Context, permission: AppPermission): Boolean {
         if (permission == CanDrawOverlay) {
             return Settings.canDrawOverlays(context)
@@ -98,7 +95,6 @@ object AppPermissions {
         return ContextCompat.checkSelfPermission(context, permission.value) == PackageManager.PERMISSION_GRANTED
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
     fun shouldShowMessage(activity: FragmentActivity, permission: AppPermission): Boolean {
         if (isGranted(activity, permission)) {
             return false
@@ -135,33 +131,21 @@ object AppPermissions {
         return activity.registerForActivityResult(RequestMultiplePermissions(permissions), callback)
     }
 
-//    fun request(requestMultiple: ActivityResultLauncher<Array<String>>, permissions: List<AppPermission>) {
-//        requestMultiple.launch(permissions.map { it.value }.toTypedArray())
-//    }
-//
-//    fun request(requestSingle: ActivityResultLauncher<String>, permission: AppPermission) {
-//        requestSingle.launch(permission.value)
-//    }
-
-    @TargetApi(Build.VERSION_CODES.M)
     fun requestDrawOverlay(fragment: Fragment, requestCode: Int) {
         val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + fragment.requireContext().packageName))
         fragment.startActivityForResult(intent, requestCode)
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
     fun requestDrawOverlay(activity: FragmentActivity, requestCode: Int) {
         val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:" + activity.packageName))
         activity.startActivityForResult(intent, requestCode)
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
     fun requestWriteSettings(fragment: Fragment, requestCode: Int) {
         val intent = Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS, Uri.parse("package:" + fragment.requireContext().packageName))
         fragment.startActivityForResult(intent, requestCode)
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
     fun requestWriteSettings(activity: FragmentActivity, requestCode: Int) {
         val intent = Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS, Uri.parse("package:" + activity.packageName))
         activity.startActivityForResult(intent, requestCode)
