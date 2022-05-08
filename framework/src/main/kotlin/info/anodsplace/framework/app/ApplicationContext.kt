@@ -1,17 +1,13 @@
 package info.anodsplace.framework.app
 
 import android.app.Application
-import android.app.NotificationManager
-import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.content.res.Resources
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
-import android.util.LruCache
 import androidx.fragment.app.Fragment
 
 /**
@@ -20,8 +16,6 @@ import androidx.fragment.app.Fragment
  */
 
 interface ApplicationInstance {
-    val notificationManager: NotificationManager
-    val memoryCache: LruCache<String, Any?>
     val nightMode: Int
 
     fun sendBroadcast(intent: Intent)
@@ -36,18 +30,10 @@ class ApplicationContext(context: Context) {
     val actual: Context = context.applicationContext as Context
     private val app: ApplicationInstance = context.applicationContext as ApplicationInstance
 
-    val contentResolver: ContentResolver
-        get() = actual.contentResolver
-    val notificationManager: NotificationManager
-        get() = app.notificationManager
-    val memoryCache: LruCache<String, Any?>
-        get() = app.memoryCache
     val nightMode: Int
         get() = app.nightMode
     val resources: Resources
         get() = actual.resources
-    val packageManager: PackageManager
-        get() = actual.packageManager
 
     fun getString(@StringRes resId: Int): String {
         return actual.getString(resId)
@@ -68,5 +54,5 @@ class ApplicationContext(context: Context) {
 }
 
 fun Fragment.applicationContext(): ApplicationContext {
-    return ApplicationContext(this.activity!!)
+    return ApplicationContext(this.requireActivity())
 }
