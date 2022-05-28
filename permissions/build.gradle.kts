@@ -28,9 +28,10 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    namespace = "info.anodsplace.applog"
 }
 
 dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.6.21")
+    implementation("androidx.annotation:annotation:1.3.0")
+    implementation("androidx.activity:activity-ktx:1.4.0")
 }
