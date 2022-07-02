@@ -9,11 +9,11 @@ repositories {
 }
 
 android {
-    compileSdk = 31
+    compileSdk = 32
 
     defaultConfig {
         minSdk = 27
-        targetSdk = 31
+        targetSdk = 32
     }
 
     sourceSets {
@@ -32,5 +32,5 @@ android {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.6.21")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.7.0")
 }

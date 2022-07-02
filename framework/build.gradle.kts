@@ -9,11 +9,11 @@ repositories {
 }
 
 android {
-    compileSdk = 31
+    compileSdk = 32
 
     defaultConfig {
         minSdk = 27
-        targetSdk = 31
+        targetSdk = 32
     }
 
     sourceSets {
@@ -33,14 +33,14 @@ android {
 
 dependencies {
     implementation(project(":lib:applog"))
-    implementation("androidx.activity:activity-ktx:1.4.0")
-    implementation("androidx.fragment:fragment-ktx:1.4.1")
-    implementation("com.google.android.material:material:1.6.0")
+    implementation("androidx.activity:activity-ktx:1.5.0")
+    implementation("androidx.fragment:fragment-ktx:1.5.0")
+    implementation("com.google.android.material:material:1.6.1")
     implementation("androidx.window:window:1.0.0")
-    implementation("androidx.core:core-ktx:1.7.0")
+    implementation("androidx.core:core-ktx:1.8.0")
 
     implementation("com.google.android.gms:play-services-identity:18.0.1")
     implementation("com.google.android.gms:play-services-auth:20.2.0")
 
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.6.21")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.7.0")
 }

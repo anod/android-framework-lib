@@ -1,4 +1,3 @@
-
 plugins {
     id("com.android.library")
 }
@@ -9,11 +8,11 @@ repositories {
 }
 
 android {
-    compileSdk = 31
+    compileSdk = 32
 
     defaultConfig {
         minSdk = 27
-        targetSdk = 31
+        targetSdk = 32
     }
 
     compileOptions {
@@ -24,6 +23,6 @@ android {
 }
 
 dependencies {
-    implementation("com.google.android.material:material:1.6.0")
-    implementation("androidx.fragment:fragment:1.4.1")
+    implementation("com.google.android.material:material:1.6.1")
+    implementation("androidx.fragment:fragment:1.5.0")
 }

@@ -1,6 +1,7 @@
 package info.anodsplace.framework.app
 
 import android.app.Application
+import android.content.ContentResolver
 import android.content.Context
 import android.content.Intent
 import android.content.res.Resources
@@ -34,6 +35,8 @@ class ApplicationContext(context: Context) {
         get() = app.nightMode
     val resources: Resources
         get() = actual.resources
+    val contentResolver: ContentResolver
+        get() = actual.contentResolver
 
     fun getString(@StringRes resId: Int): String {
         return actual.getString(resId)

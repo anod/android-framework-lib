@@ -9,11 +9,11 @@ repositories {
 }
 
 android {
-    compileSdk = 31
+    compileSdk = 32
 
     defaultConfig {
         minSdk = 27
-        targetSdk = 31
+        targetSdk = 32
     }
 
     sourceSets {
@@ -33,7 +33,7 @@ android {
 
 dependencies {
     implementation("androidx.palette:palette-ktx:1.0.0")
-    implementation("androidx.core:core-ktx:1.7.0")
-    implementation("androidx.annotation:annotation:1.3.0")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.6.21")
+    implementation("androidx.core:core-ktx:1.8.0")
+    implementation("androidx.annotation:annotation:1.4.0")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.7.0")
 }
