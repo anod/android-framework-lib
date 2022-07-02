@@ -5,7 +5,6 @@ import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.Rect
-import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -14,11 +13,9 @@ import androidx.annotation.IdRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
-import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import info.anodsplace.framework.R
-import kotlinx.coroutines.flow.collect
 
 /**
  * @author Alex Gavrishev
@@ -44,7 +41,7 @@ abstract class ToolbarActivity : AppCompatActivity(), CustomThemeActivity {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val app = ApplicationContext(this)
-        AppCompatDelegate.setDefaultNightMode(app.nightMode)
+        AppCompatDelegate.setDefaultNightMode(app.appCompatNightMode)
         if (this.themeRes > 0) {
             this.setTheme(this.themeRes)
         }

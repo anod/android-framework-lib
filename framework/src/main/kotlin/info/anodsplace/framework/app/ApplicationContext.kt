@@ -17,7 +17,7 @@ import androidx.fragment.app.Fragment
  */
 
 interface ApplicationInstance {
-    val nightMode: Int
+    val appCompatNightMode: Int
 
     fun sendBroadcast(intent: Intent)
     fun getString(@StringRes resId: Int): String
@@ -31,8 +31,8 @@ class ApplicationContext(context: Context) {
     val actual: Context = context.applicationContext as Context
     private val app: ApplicationInstance = context.applicationContext as ApplicationInstance
 
-    val nightMode: Int
-        get() = app.nightMode
+    val appCompatNightMode: Int
+        get() = app.appCompatNightMode
     val resources: Resources
         get() = actual.resources
     val contentResolver: ContentResolver
