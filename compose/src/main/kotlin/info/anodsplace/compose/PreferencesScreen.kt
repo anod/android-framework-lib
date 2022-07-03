@@ -17,13 +17,13 @@ import androidx.compose.ui.unit.sp
 
 @Composable
 fun PreferenceSlider(
-    initialValue: Int,
-    onValueChanged: (Int) -> Unit,
-    item: PreferenceItem,
-    suffixText: @Composable () -> Unit = {},
-    startIcon: @Composable (modifier: Modifier) -> Unit = { Box(modifier = it) {} },
-    endIcon: @Composable (modifier: Modifier) -> Unit = { Box(modifier = it) {} },
-    paddingValues: PaddingValues = PaddingValues(0.dp),
+        initialValue: Int,
+        onValueChanged: (Int) -> Unit,
+        item: PreferenceItem,
+        suffixText: @Composable () -> Unit = {},
+        startIcon: @Composable (modifier: Modifier) -> Unit = { Box(modifier = it) {} },
+        endIcon: @Composable (modifier: Modifier) -> Unit = { Box(modifier = it) {} },
+        paddingValues: PaddingValues = PaddingValues(0.dp),
 ) {
     var value: Float by remember { mutableStateOf(initialValue.toFloat()) }
     Column(
@@ -32,18 +32,18 @@ fun PreferenceSlider(
     ) {
         Preference(item = item, onClick = { }) { }
         OutlinedTextField(
-            value = value.toInt().toString(),
-            onValueChange = { value ->
-                if (value.isEmpty()) {
-                    onValueChanged(value.trim().toInt())
-                }
-            },
-            trailingIcon = suffixText
+                value = value.toInt().toString(),
+                onValueChange = { value ->
+                    if (value.isEmpty()) {
+                        onValueChanged(value.trim().toInt())
+                    }
+                },
+                trailingIcon = suffixText
         )
         Row(
-            modifier = Modifier
-                .padding(horizontal = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier
+                        .padding(horizontal = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
         ) {
             startIcon(
                     Modifier
@@ -51,14 +51,14 @@ fun PreferenceSlider(
                             .weight(1f)
             )
             Slider(
-                enabled = item.enabled,
-                modifier = Modifier.weight(6f),
-                value = value,
-                valueRange = 0f..100f,
-                onValueChangeFinished = {
-                    onValueChanged(value.toInt())
-                },
-                onValueChange = { value = it }
+                    enabled = item.enabled,
+                    modifier = Modifier.weight(6f),
+                    value = value,
+                    valueRange = 0f..100f,
+                    onValueChangeFinished = {
+                        onValueChanged(value.toInt())
+                    },
+                    onValueChange = { value = it }
             )
             endIcon(
                     Modifier
@@ -71,19 +71,19 @@ fun PreferenceSlider(
 
 @Composable
 fun PreferenceCategory(
-    item: PreferenceItem.Category,
-    modifier: Modifier = Modifier,
-    color: Color = MaterialTheme.colors.secondary,
+        item: PreferenceItem.Category,
+        modifier: Modifier = Modifier,
+        color: Color = MaterialTheme.colors.secondary,
 ) {
     Text(
-        text = if (item.titleRes != 0) stringResource(id = item.titleRes) else item.title,
-        modifier = modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp),
-        style = MaterialTheme.typography.overline.copy(
-            color,
-            fontSize = 14.sp,
-        )
+            text = if (item.titleRes != 0) stringResource(id = item.titleRes) else item.title,
+            modifier = modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp),
+            style = MaterialTheme.typography.overline.copy(
+                    color,
+                    fontSize = 14.sp,
+            )
     )
 }
 
@@ -142,34 +142,34 @@ fun Preference(
         content: @Composable (() -> Unit)? = null
 ) {
     ListItem(
-        modifier = Modifier
-                .defaultMinSize(minHeight = 48.dp)
-                .fillMaxWidth()
-                .alpha(if (item.enabled) 1.0f else 0.6f)
-                .clickable(onClick = onClick, enabled = item.enabled)
-                .padding(paddingValues),
-        icon = null,
-        text = {
-            Text(
-                text = if (item.titleRes != 0) stringResource(id = item.titleRes) else item.title,
-                style = MaterialTheme.typography.h5.copy(
-                    fontSize = 20.sp,
-                )
-            )
-        },
-        secondaryText = secondaryText
-                ?: if (item.summaryRes != 0 || item.summary.isNotEmpty()) {
-                    {
-                        Text(
-                                modifier = Modifier.padding(top = 4.dp),
-                                text = if (item.summaryRes != 0) stringResource(id = item.summaryRes) else item.summary,
-                                style = MaterialTheme.typography.body2.copy(
-                                        color = descriptionColor
-                                )
+            modifier = Modifier
+                    .defaultMinSize(minHeight = 48.dp)
+                    .fillMaxWidth()
+                    .alpha(if (item.enabled) 1.0f else 0.6f)
+                    .clickable(onClick = onClick, enabled = item.enabled)
+                    .padding(paddingValues),
+            icon = null,
+            text = {
+                Text(
+                        text = if (item.titleRes != 0) stringResource(id = item.titleRes) else item.title,
+                        style = MaterialTheme.typography.h5.copy(
+                                fontSize = 20.sp,
                         )
-                    }
-                } else null,
-        trailing = content
+                )
+            },
+            secondaryText = secondaryText
+                    ?: if (item.summaryRes != 0 || item.summary.isNotEmpty()) {
+                        {
+                            Text(
+                                    modifier = Modifier.padding(top = 4.dp),
+                                    text = if (item.summaryRes != 0) stringResource(id = item.summaryRes) else item.summary,
+                                    style = MaterialTheme.typography.body2.copy(
+                                            color = descriptionColor
+                                    )
+                            )
+                        }
+                    } else null,
+            trailing = content
     )
 }
 
@@ -179,17 +179,19 @@ fun PreferenceSwitch(
         item: PreferenceItem,
         paddingValues: PaddingValues = PaddingValues(4.dp),
         descriptionColor: Color = MaterialTheme.colors.onSurface,
-        switchColors: SwitchColors = SwitchDefaults.colors(),
+        switchColors: SwitchColors = SwitchDefaults.colors(
+                uncheckedThumbColor = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
+        ),
         onCheckedChange: (Boolean) -> Unit
 ) {
     Preference(item, paddingValues, descriptionColor, onClick = {
         onCheckedChange(!checked)
     }) {
         Switch(
-            enabled = item.enabled,
-            checked = checked,
-            onCheckedChange = onCheckedChange,
-            colors = switchColors
+                enabled = item.enabled,
+                checked = checked,
+                onCheckedChange = onCheckedChange,
+                colors = switchColors
         )
     }
 }
@@ -207,30 +209,30 @@ fun PreferenceCheckbox(
         onCheckedChange(!checked)
     }) {
         Checkbox(
-            enabled = item.enabled,
-            checked = checked,
-            onCheckedChange = onCheckedChange,
-            colors = CheckboxDefaults.colors(
-                uncheckedColor = checkBoxColor.copy(alpha = 0.6f),
-                disabledColor = checkBoxColor.copy(alpha = ContentAlpha.disabled),
-            )
+                enabled = item.enabled,
+                checked = checked,
+                onCheckedChange = onCheckedChange,
+                colors = CheckboxDefaults.colors(
+                        uncheckedColor = checkBoxColor.copy(alpha = 0.6f),
+                        disabledColor = checkBoxColor.copy(alpha = ContentAlpha.disabled)
+                )
         )
     }
 }
 
 @Composable
 fun PreferencesScreen(
-    preferences: List<PreferenceItem>,
-    modifier: Modifier = Modifier,
-    onClick: (item: PreferenceItem) -> Unit = { },
-    categoryColor: Color = MaterialTheme.colors.secondary,
-    descriptionColor: Color = MaterialTheme.colors.onSurface,
-    checkBoxColor: Color = MaterialTheme.colors.onBackground,
-    placeholder: @Composable (PreferenceItem.Placeholder, paddingValues: PaddingValues) -> Unit = { _,_ -> },
+        preferences: List<PreferenceItem>,
+        modifier: Modifier = Modifier,
+        onClick: (item: PreferenceItem) -> Unit = { },
+        categoryColor: Color = MaterialTheme.colors.secondary,
+        descriptionColor: Color = MaterialTheme.colors.onSurface,
+        checkBoxColor: Color = MaterialTheme.colors.onBackground,
+        placeholder: @Composable (PreferenceItem.Placeholder, paddingValues: PaddingValues) -> Unit = { _, _ -> },
 ) {
     var listItem by remember { mutableStateOf<PreferenceItem.List?>(null) }
     LazyColumn(
-        modifier = modifier.fillMaxWidth()
+            modifier = modifier.fillMaxWidth()
     ) {
         items(preferences.size) { index ->
             val paddingValues = PaddingValues(top = 16.dp, bottom = 8.dp)
@@ -239,50 +241,50 @@ fun PreferencesScreen(
                 is PreferenceItem.CheckBox -> {
                     var checked by remember { mutableStateOf(item.checked) }
                     PreferenceCheckbox(
-                        paddingValues = paddingValues,
-                        checked = checked,
-                        item = item,
-                        descriptionColor = descriptionColor,
-                        checkBoxColor = checkBoxColor,
-                        onCheckedChange = { newChecked ->
-                            checked = newChecked
-                            item.checked = newChecked
-                            onClick(item)
-                        })
+                            paddingValues = paddingValues,
+                            checked = checked,
+                            item = item,
+                            descriptionColor = descriptionColor,
+                            checkBoxColor = checkBoxColor,
+                            onCheckedChange = { newChecked ->
+                                checked = newChecked
+                                item.checked = newChecked
+                                onClick(item)
+                            })
                 }
                 is PreferenceItem.List -> Preference(
-                    paddingValues = paddingValues,
-                    item = item,
-                    descriptionColor = descriptionColor,
-                    onClick = { listItem = item }
+                        paddingValues = paddingValues,
+                        item = item,
+                        descriptionColor = descriptionColor,
+                        onClick = { listItem = item }
                 ) { }
                 is PreferenceItem.Pick -> PreferencePick(
-                    paddingValues = paddingValues,
-                    item = item,
-                    descriptionColor = descriptionColor,
-                    onPickValue = { value ->
-                        item.value = value
-                        onClick(item)
-                    }
+                        paddingValues = paddingValues,
+                        item = item,
+                        descriptionColor = descriptionColor,
+                        onPickValue = { value ->
+                            item.value = value
+                            onClick(item)
+                        }
                 )
                 is PreferenceItem.Switch -> {
                     var checked by remember { mutableStateOf(item.checked) }
                     PreferenceSwitch(
-                        paddingValues = paddingValues,
-                        checked = checked,
-                        item = item,
-                        descriptionColor = descriptionColor,
-                        onCheckedChange = { newChecked ->
-                            item.checked = newChecked
-                            checked = newChecked
-                            onClick(item)
-                        })
+                            paddingValues = paddingValues,
+                            checked = checked,
+                            item = item,
+                            descriptionColor = descriptionColor,
+                            onCheckedChange = { newChecked ->
+                                item.checked = newChecked
+                                checked = newChecked
+                                onClick(item)
+                            })
                 }
                 is PreferenceItem.Text -> Preference(
-                    paddingValues = paddingValues,
-                    item = item,
-                    descriptionColor = descriptionColor,
-                    onClick = { onClick(item) }) { }
+                        paddingValues = paddingValues,
+                        item = item,
+                        descriptionColor = descriptionColor,
+                        onClick = { onClick(item) }) { }
                 is PreferenceItem.Placeholder -> {
                     placeholder(item, paddingValues = paddingValues)
                 }
@@ -306,20 +308,20 @@ fun PreferenceListDialog(item: PreferenceItem.List, onValueChange: (item: Prefer
     else stringArrayResource(id = item.entryValues)
     var value by remember { mutableStateOf(item.value) }
     AlertDialog(
-        modifier = Modifier.padding(16.dp),
-        title = { Text(text = if (item.titleRes != 0) stringResource(id = item.titleRes) else item.title) },
-        text = {
-            val selected = entryValues.indexOf(value)
-            RadioGroup(entries, selected) { newIndex ->
-                value = entryValues[newIndex]
-                item.value = value
+            modifier = Modifier.padding(16.dp),
+            title = { Text(text = if (item.titleRes != 0) stringResource(id = item.titleRes) else item.title) },
+            text = {
+                val selected = entryValues.indexOf(value)
+                RadioGroup(entries, selected) { newIndex ->
+                    value = entryValues[newIndex]
+                    item.value = value
+                    onValueChange(item)
+                }
+            },
+            buttons = { },
+            onDismissRequest = {
                 onValueChange(item)
             }
-        },
-        buttons = { },
-        onDismissRequest = {
-            onValueChange(item)
-        }
     )
 }
 
@@ -330,16 +332,17 @@ fun InCarScreenLight() {
     MaterialTheme {
         BackgroundSurface {
             PreferencesScreen(listOf(
-                PreferenceItem.Category(title = "Category"),
-                PreferenceItem.Pick(
-                    entries = arrayOf("Manually", "Every hour", "Every 2 hours", "Every 3 hours", "Every 6 hours", "Every 12 hours"),
-                    value = "Every 2 hours",
-                    title ="Check for new updates",
-                    key = "update_frequency"
-                ),
-                PreferenceItem.Text(title = "Bluetooth device", summary = "Choose bluetooth device which enable InCar mode"),
-                PreferenceItem.CheckBox(checked = true, title = "Keep screen On", summary = "When checked, prevents screen from automatically turning off"),
-                PreferenceItem.Switch(checked = true, title = "Route to speaker", summary = "Route all incoming calls to phones speaker"),
+                    PreferenceItem.Category(title = "Category"),
+                    PreferenceItem.Pick(
+                            entries = arrayOf("Manually", "Every hour", "Every 2 hours", "Every 3 hours", "Every 6 hours", "Every 12 hours"),
+                            value = "Every 2 hours",
+                            title = "Check for new updates",
+                            key = "update_frequency"
+                    ),
+                    PreferenceItem.Text(title = "Bluetooth device", summary = "Choose bluetooth device which enable InCar mode"),
+                    PreferenceItem.CheckBox(checked = true, title = "Keep screen On", summary = "When checked, prevents screen from automatically turning off"),
+                    PreferenceItem.Switch(checked = true, title = "Route to speaker", summary = "Route all incoming calls to phones speaker"),
+                    PreferenceItem.Switch(checked = false, title = "Wi-Fi Only"),
             ), onClick = {})
         }
     }
@@ -348,20 +351,23 @@ fun InCarScreenLight() {
 @Preview("InCarScreen Dark")
 @Composable
 fun InCarScreenDark() {
-    MaterialTheme {
+    MaterialTheme(
+            colors = darkColors()
+    ) {
         BackgroundSurface {
             PreferencesScreen(listOf(
-                PreferenceItem.Category(title = "Category"),
-                PreferenceItem.Text(title = "Bluetooth device", summary = "Choose bluetooth device which enable InCar mode"),
-                PreferenceItem.CheckBox(checked = true, title = "Keep screen On", summary = "When checked, prevents screen from automatically turning off"),
-                PreferenceItem.Switch(checked = true, title = "Route to speaker", summary = "Route all incoming calls to phones speaker"),
-                PreferenceItem.Pick(
-                        entries = arrayOf("All", "Installed", "Not Installed", "Updatable"),
-                        value = "All",
-                        title = "Default list",
-                        summary = "Choose which filter will be applied when app is opened",
-                        key = "default-filter"
-                ),
+                    PreferenceItem.Category(title = "Category"),
+                    PreferenceItem.Text(title = "Bluetooth device", summary = "Choose bluetooth device which enable InCar mode"),
+                    PreferenceItem.CheckBox(checked = true, title = "Keep screen On", summary = "When checked, prevents screen from automatically turning off"),
+                    PreferenceItem.Switch(checked = true, title = "Route to speaker", summary = "Route all incoming calls to phones speaker"),
+                    PreferenceItem.Switch(checked = false, title = "Wi-Fi Only"),
+                    PreferenceItem.Pick(
+                            entries = arrayOf("All", "Installed", "Not Installed", "Updatable"),
+                            value = "All",
+                            title = "Default list",
+                            summary = "Choose which filter will be applied when app is opened",
+                            key = "default-filter"
+                    ),
             ), onClick = {})
         }
     }
