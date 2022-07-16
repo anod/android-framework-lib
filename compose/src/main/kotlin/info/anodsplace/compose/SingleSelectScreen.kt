@@ -5,14 +5,14 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.compose.material.Text
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 
 class SingleScreenState(
         val title: String,
@@ -25,11 +25,11 @@ fun SingleScreenList(listContent: Map<String, String>, modifier: Modifier = Modi
     LazyColumn(modifier = modifier) {
         items(listContent.entries.toList()) { item ->
             Row(modifier = Modifier
-                            .clickable(onClick = { onSelect(item.key, item.value) })
+                    .clickable(onClick = { onSelect(item.key, item.value) })
             ) {
                 Text(
                         text = item.key,
-                        style = MaterialTheme.typography.body1,
+                        style = MaterialTheme.typography.bodyLarge,
                         modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(horizontal = 4.dp, vertical = 8.dp)
@@ -47,13 +47,13 @@ fun SingleScreenList(listContent: Map<String, String>, modifier: Modifier = Modi
 fun SingleListScreen(state: SingleScreenState, onSelect: (key: String, value: String) -> Unit) {
     Surface(
             modifier = Modifier.padding(16.dp),
-            elevation = 2.dp,
-            color = MaterialTheme.colors.surface) {
+            shadowElevation = 2.dp,
+            color = MaterialTheme.colorScheme.surface) {
         Column {
             Box(modifier = Modifier.padding(16.dp)) {
-                CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.high) {
-                    Text(text = state.title, style = MaterialTheme.typography.subtitle1)
-                }
+                //CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.high) {
+                Text(text = state.title, style = MaterialTheme.typography.titleMedium)
+                //}
             }
             SingleScreenList(
                     listContent = state.items,
@@ -72,7 +72,7 @@ fun SingleListScreenPreview() {
     val state = SingleScreenState("Action", emptyMap())
     MaterialTheme {
         Box(contentAlignment = Alignment.Center) {
-            SingleListScreen(state, onSelect = { _, _ ->  })
+            SingleListScreen(state, onSelect = { _, _ -> })
         }
     }
 }

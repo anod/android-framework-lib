@@ -3,7 +3,7 @@ package info.anodsplace.compose
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -13,7 +13,6 @@ import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 
 @Composable
 fun PreferenceSlider(
@@ -73,25 +72,21 @@ fun PreferenceSlider(
 fun PreferenceCategory(
         item: PreferenceItem.Category,
         modifier: Modifier = Modifier,
-        color: Color = MaterialTheme.colors.secondary,
+        color: Color = MaterialTheme.colorScheme.secondary,
 ) {
     Text(
             text = if (item.titleRes != 0) stringResource(id = item.titleRes) else item.title,
             modifier = modifier
                     .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 8.dp),
-            style = MaterialTheme.typography.overline.copy(
-                    color,
-                    fontSize = 14.sp,
-            )
+                    .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 4.dp),
+            style = MaterialTheme.typography.titleSmall.copy(color)
     )
 }
 
 @Composable
 fun PreferencePick(
         item: PreferenceItem.Pick,
-        paddingValues: PaddingValues = PaddingValues(4.dp),
-        descriptionColor: Color = MaterialTheme.colors.onSurface,
+        descriptionColor: Color = MaterialTheme.colorScheme.onSurface,
         onPickValue: (String) -> Unit
 ) {
     val entries = if (item.entriesRes == 0) item.entries else stringArrayResource(id = item.entriesRes)
@@ -103,7 +98,6 @@ fun PreferencePick(
 
     Preference(
             item,
-            paddingValues,
             descriptionColor,
             secondaryText = {
                 Column {
@@ -111,7 +105,7 @@ fun PreferencePick(
                         Text(
                                 modifier = Modifier.padding(top = 4.dp),
                                 text = if (item.summaryRes != 0) stringResource(id = item.summaryRes) else item.summary,
-                                style = MaterialTheme.typography.body2.copy(
+                                style = MaterialTheme.typography.bodyMedium.copy(
                                         color = descriptionColor
                                 )
                         )
@@ -131,12 +125,11 @@ fun PreferencePick(
             onClick = { })
 }
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Preference(
         item: PreferenceItem,
-        paddingValues: PaddingValues = PaddingValues(4.dp),
-        descriptionColor: Color = MaterialTheme.colors.onSurface,
+        descriptionColor: Color = MaterialTheme.colorScheme.onSurface,
         onClick: () -> Unit,
         secondaryText: @Composable (() -> Unit)? = null,
         content: @Composable (() -> Unit)? = null
@@ -147,29 +140,26 @@ fun Preference(
                     .fillMaxWidth()
                     .alpha(if (item.enabled) 1.0f else 0.6f)
                     .clickable(onClick = onClick, enabled = item.enabled)
-                    .padding(paddingValues),
-            icon = null,
-            text = {
+                    .padding(top = 8.dp),
+            headlineText = {
                 Text(
                         text = if (item.titleRes != 0) stringResource(id = item.titleRes) else item.title,
-                        style = MaterialTheme.typography.h5.copy(
-                                fontSize = 20.sp,
-                        )
+                        style = MaterialTheme.typography.titleLarge
                 )
             },
-            secondaryText = secondaryText
+            supportingText = secondaryText
                     ?: if (item.summaryRes != 0 || item.summary.isNotEmpty()) {
                         {
                             Text(
                                     modifier = Modifier.padding(top = 4.dp),
                                     text = if (item.summaryRes != 0) stringResource(id = item.summaryRes) else item.summary,
-                                    style = MaterialTheme.typography.body2.copy(
+                                    style = MaterialTheme.typography.bodyMedium.copy(
                                             color = descriptionColor
                                     )
                             )
                         }
                     } else null,
-            trailing = content
+            trailingContent = content
     )
 }
 
@@ -177,14 +167,13 @@ fun Preference(
 fun PreferenceSwitch(
         checked: Boolean,
         item: PreferenceItem,
-        paddingValues: PaddingValues = PaddingValues(4.dp),
-        descriptionColor: Color = MaterialTheme.colors.onSurface,
+        descriptionColor: Color = MaterialTheme.colorScheme.onSurface,
         switchColors: SwitchColors = SwitchDefaults.colors(
-                uncheckedThumbColor = MaterialTheme.colors.onSurface.copy(alpha = ContentAlpha.medium)
+                uncheckedThumbColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.72f)
         ),
         onCheckedChange: (Boolean) -> Unit
 ) {
-    Preference(item, paddingValues, descriptionColor, onClick = {
+    Preference(item, descriptionColor, onClick = {
         onCheckedChange(!checked)
     }) {
         Switch(
@@ -196,16 +185,16 @@ fun PreferenceSwitch(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PreferenceCheckbox(
         checked: Boolean,
         item: PreferenceItem,
-        paddingValues: PaddingValues = PaddingValues(4.dp),
-        descriptionColor: Color = MaterialTheme.colors.onSurface,
-        checkBoxColor: Color = MaterialTheme.colors.onBackground,
+        descriptionColor: Color = MaterialTheme.colorScheme.onSurface,
+        checkBoxColor: Color = MaterialTheme.colorScheme.onBackground,
         onCheckedChange: (Boolean) -> Unit
 ) {
-    Preference(item, paddingValues, descriptionColor, onClick = {
+    Preference(item, descriptionColor, onClick = {
         onCheckedChange(!checked)
     }) {
         Checkbox(
@@ -214,7 +203,7 @@ fun PreferenceCheckbox(
                 onCheckedChange = onCheckedChange,
                 colors = CheckboxDefaults.colors(
                         uncheckedColor = checkBoxColor.copy(alpha = 0.6f),
-                        disabledColor = checkBoxColor.copy(alpha = ContentAlpha.disabled)
+                        // disabledColor = checkBoxColor.copy(alpha = 0.38f)
                 )
         )
     }
@@ -225,9 +214,9 @@ fun PreferencesScreen(
         preferences: List<PreferenceItem>,
         modifier: Modifier = Modifier,
         onClick: (item: PreferenceItem) -> Unit = { },
-        categoryColor: Color = MaterialTheme.colors.secondary,
-        descriptionColor: Color = MaterialTheme.colors.onSurface,
-        checkBoxColor: Color = MaterialTheme.colors.onBackground,
+        categoryColor: Color = MaterialTheme.colorScheme.secondary,
+        descriptionColor: Color = MaterialTheme.colorScheme.onSurface,
+        checkBoxColor: Color = MaterialTheme.colorScheme.onBackground,
         placeholder: @Composable (PreferenceItem.Placeholder, paddingValues: PaddingValues) -> Unit = { _, _ -> },
 ) {
     var listItem by remember { mutableStateOf<PreferenceItem.List?>(null) }
@@ -241,7 +230,6 @@ fun PreferencesScreen(
                 is PreferenceItem.CheckBox -> {
                     var checked by remember { mutableStateOf(item.checked) }
                     PreferenceCheckbox(
-                            paddingValues = paddingValues,
                             checked = checked,
                             item = item,
                             descriptionColor = descriptionColor,
@@ -253,13 +241,11 @@ fun PreferencesScreen(
                             })
                 }
                 is PreferenceItem.List -> Preference(
-                        paddingValues = paddingValues,
                         item = item,
                         descriptionColor = descriptionColor,
                         onClick = { listItem = item }
                 ) { }
                 is PreferenceItem.Pick -> PreferencePick(
-                        paddingValues = paddingValues,
                         item = item,
                         descriptionColor = descriptionColor,
                         onPickValue = { value ->
@@ -270,7 +256,6 @@ fun PreferencesScreen(
                 is PreferenceItem.Switch -> {
                     var checked by remember { mutableStateOf(item.checked) }
                     PreferenceSwitch(
-                            paddingValues = paddingValues,
                             checked = checked,
                             item = item,
                             descriptionColor = descriptionColor,
@@ -281,7 +266,6 @@ fun PreferencesScreen(
                             })
                 }
                 is PreferenceItem.Text -> Preference(
-                        paddingValues = paddingValues,
                         item = item,
                         descriptionColor = descriptionColor,
                         onClick = { onClick(item) }) { }
@@ -318,7 +302,7 @@ fun PreferenceListDialog(item: PreferenceItem.List, onValueChange: (item: Prefer
                     onValueChange(item)
                 }
             },
-            buttons = { },
+            confirmButton = { },
             onDismissRequest = {
                 onValueChange(item)
             }
@@ -352,7 +336,7 @@ fun InCarScreenLight() {
 @Composable
 fun InCarScreenDark() {
     MaterialTheme(
-            colors = darkColors()
+            colorScheme = darkColorScheme()
     ) {
         BackgroundSurface {
             PreferencesScreen(listOf(

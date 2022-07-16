@@ -5,7 +5,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.*
+import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -14,19 +14,19 @@ import info.anodsplace.permissions.AppPermissions
 import info.anodsplace.permissions.toRequestInputs
 
 data class PermissionDescription(
-    val permission: AppPermission,
-    @DrawableRes val iconsRes: Int,
-    @StringRes val titleRes: Int,
-    @StringRes val descRes: Int
+        val permission: AppPermission,
+        @DrawableRes val iconsRes: Int,
+        @StringRes val titleRes: Int,
+        @StringRes val descRes: Int
 )
 
 data class RequestPermissionsScreenDescription(
-    @StringRes val descRes: Int,
-    @StringRes val titleRes: Int,
-    @StringRes val allowAccessRes: Int,
+        @StringRes val descRes: Int,
+        @StringRes val titleRes: Int,
+        @StringRes val allowAccessRes: Int,
 )
 
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RequestPermissionsScreen(input: List<PermissionDescription>, screenDescription: RequestPermissionsScreenDescription, onResult: (List<AppPermission>) -> Unit) {
     val currentRequest = remember { mutableStateOf(-1) }
@@ -44,15 +44,15 @@ fun RequestPermissionsScreen(input: List<PermissionDescription>, screenDescripti
     }
 
     Column {
-        Text(text = stringResource(id = screenDescription.descRes), style = MaterialTheme.typography.overline)
-        Text(text = stringResource(id = screenDescription.titleRes), style = MaterialTheme.typography.overline)
+        Text(text = stringResource(id = screenDescription.descRes), style = MaterialTheme.typography.labelSmall)
+        Text(text = stringResource(id = screenDescription.titleRes), style = MaterialTheme.typography.labelSmall)
         LazyColumn {
             items(input.size) { index ->
                 val desc = input[index]
                 ListItem(
-                    icon = { Icon(painter = painterResource(id = desc.iconsRes), contentDescription = null) },
-                    text = { Text(text = stringResource(id = desc.titleRes)) },
-                    secondaryText = { Text(text = stringResource(id = desc.descRes)) },
+                        leadingContent = { Icon(painter = painterResource(id = desc.iconsRes), contentDescription = null) },
+                        headlineText = { Text(text = stringResource(id = desc.titleRes)) },
+                        supportingText = { Text(text = stringResource(id = desc.descRes)) },
                 )
             }
         }

@@ -6,17 +6,21 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.outlined.Cancel
-import androidx.compose.runtime.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.*
-import androidx.compose.ui.graphics.colorspace.ColorSpaces
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -79,11 +83,12 @@ fun ColorDialog(
             text = {
                 ColorDialogContent(current, showNone = showNone, showAlpha = showAlpha)
             },
-            buttons = {
-                ButtonsPanel(saveText = "Choose") {
-
-                }
-            },
+            confirmButton = { },
+//            buttons = {
+//                ButtonsPanel(saveText = "Choose") {
+//
+//                }
+//            },
             onDismissRequest = {
                 onColorSelected(current.value)
             }
@@ -155,10 +160,10 @@ fun ColorsTable(
         current: MutableState<Color?>,
         currentNoAlpha: Color?,
         showNone: Boolean,
-        ) {
+) {
     val rows = (if (showNone)
         listOf(Color.Unspecified) + colors
-        else colors).chunked(5)
+    else colors).chunked(5)
     Column {
         for (row in rows) {
             Row {
@@ -169,7 +174,7 @@ fun ColorsTable(
                         ColorNone(
                                 modifier = modifier,
                                 isSelected = currentNoAlpha == null,
-                                onClick = { current.value = null  })
+                                onClick = { current.value = null })
                     } else {
                         val isSelected = currentNoAlpha == color
                         Box(modifier = modifier) {

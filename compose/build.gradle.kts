@@ -52,7 +52,7 @@ dependencies {
     implementation("androidx.activity:activity-compose:1.5.0")
     implementation("com.google.accompanist:accompanist-flowlayout:0.24.9-beta")
     api("androidx.compose.ui:ui:1.3.0-alpha01")
-    api("androidx.compose.material:material:1.3.0-alpha01")
+    api("androidx.compose.material3:material3:1.0.0-alpha14")
     api("androidx.compose.foundation:foundation:1.3.0-alpha01")
     api("androidx.compose.material:material-icons-core:1.3.0-alpha01")
     api("androidx.compose.material:material-icons-extended:1.3.0-alpha01")
