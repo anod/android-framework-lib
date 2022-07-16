@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.appbar.MaterialToolbar
-    android:id="@+id/toolbar"
+<com.google.android.material.appbar.MaterialToolbar android:id="@+id/toolbar"
     android:layout_width="match_parent"
     android:layout_height="?attr/actionBarSize"
-    android:background="?attr/colorPrimary"
+    android:background="?attr/colorSurface"
+    app:navigationIconTint="?attr/colorControlNormal"
     android:theme="?android:attr/actionBarTheme"
-    app:subtitleTextAppearance="?attr/textAppearanceOverline"
-    app:titleTextAppearance="?attr/textAppearanceHeadline6"
+    app:titleTextAppearance="?attr/textAppearanceLabelLarge"
+    app:subtitleTextAppearance="?attr/textAppearanceLabelSmall"
     app:layout_scrollFlags="scroll|enterAlways"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"/>
-
+    xmlns:app="http://schemas.android.com/apk/res-auto" />

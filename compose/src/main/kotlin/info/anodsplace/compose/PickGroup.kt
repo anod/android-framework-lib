@@ -26,8 +26,8 @@ fun PickGroup(options: Array<String>, selectedIndex: Int, modifier: Modifier = M
                     modifier = Modifier.height(32.dp),
                     // shape = MaterialTheme.shapes.small.copy(CornerSize(percent = 25)),
                     border = FilterChipDefaults.filterChipBorder(
-                            borderColor = MaterialTheme.colorScheme.tertiary.copy(alpha = 0.3f),
-                            selectedBorderColor = MaterialTheme.colorScheme.tertiary,
+                            borderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+                            selectedBorderColor = MaterialTheme.colorScheme.primary,
                             borderWidth = 1.dp,
                             selectedBorderWidth = 1.dp
                     ),

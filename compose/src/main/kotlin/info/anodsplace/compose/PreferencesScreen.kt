@@ -72,7 +72,7 @@ fun PreferenceSlider(
 fun PreferenceCategory(
         item: PreferenceItem.Category,
         modifier: Modifier = Modifier,
-        color: Color = MaterialTheme.colorScheme.secondary,
+        color: Color = MaterialTheme.colorScheme.primary,
 ) {
     Text(
             text = if (item.titleRes != 0) stringResource(id = item.titleRes) else item.title,
@@ -169,7 +169,7 @@ fun PreferenceSwitch(
         item: PreferenceItem,
         descriptionColor: Color = MaterialTheme.colorScheme.onSurface,
         switchColors: SwitchColors = SwitchDefaults.colors(
-                uncheckedThumbColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.72f)
+                //  uncheckedThumbColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.72f)
         ),
         onCheckedChange: (Boolean) -> Unit
 ) {
