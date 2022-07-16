@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.Toolbar
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.color.DynamicColors
 import info.anodsplace.framework.R
 
 /**
@@ -45,6 +46,7 @@ abstract class ToolbarActivity : AppCompatActivity(), CustomThemeActivity {
         if (this.themeRes > 0) {
             this.setTheme(this.themeRes)
         }
+        DynamicColors.applyToActivityIfAvailable(this)
         if (themeColors.available) {
             WindowCustomTheme.apply(themeColors, window, this)
         }
