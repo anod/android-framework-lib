@@ -4,7 +4,6 @@
     android:layout_height="?attr/actionBarSize"
     android:background="?attr/colorSurface"
     app:navigationIconTint="?attr/colorControlNormal"
-    android:theme="?android:attr/actionBarTheme"
     app:titleTextAppearance="?attr/textAppearanceTitleLarge"
     app:subtitleTextAppearance="?attr/textAppearanceLabelSmall"
     app:layout_scrollFlags="scroll|enterAlways"
