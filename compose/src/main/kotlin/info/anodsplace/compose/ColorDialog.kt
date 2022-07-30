@@ -57,6 +57,7 @@ fun Color.toColorHex(withAlpha: Boolean = true): String {
     return hexStr
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ColorDialog(
         selected: Color?,

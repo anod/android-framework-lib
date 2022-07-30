@@ -31,7 +31,7 @@ android {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.7.0")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.7.10")
     implementation("androidx.annotation:annotation:1.4.0")
-    implementation("androidx.activity:activity-ktx:1.5.0")
+    implementation("androidx.activity:activity-ktx:1.5.1")
 }
