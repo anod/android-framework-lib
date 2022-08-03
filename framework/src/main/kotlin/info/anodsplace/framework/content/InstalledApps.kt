@@ -11,7 +11,7 @@ interface InstalledApps {
 
     fun packageInfo(packageName: String): Info
 
-    class Info(val versionCode: Int, val versionName: String) {
+    data class Info(val versionCode: Int, val versionName: String) {
 
         fun isUpdatable(versionNumber: Int): Boolean {
             return this.versionCode in 1 until versionNumber
@@ -56,7 +56,9 @@ interface InstalledApps {
         fun reset() {
             cache.clear()
         }
-
     }
 
+    class StaticMap(private val infos: Map<String, Info>) : InstalledApps {
+        override fun packageInfo(packageName: String): Info = infos[packageName] ?: Info(0, "")
+    }
 }
