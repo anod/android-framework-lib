@@ -4,7 +4,6 @@ import android.content.res.ColorStateList
 import android.content.res.Configuration
 import android.graphics.Color
 import android.graphics.PorterDuff
-import android.graphics.Rect
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -55,8 +54,8 @@ abstract class ToolbarActivity : AppCompatActivity(), CustomThemeActivity {
         setContentView(layoutView)
         setupToolbar()
         lifecycleScope.launchWhenCreated {
-            duoDevice.hinge.collect {
-                updateWideLayout(resources.getBoolean(R.bool.wide_layout), it)
+            duoDevice.layout.collect {
+                updateWideLayout(it)
             }
         }
     }
@@ -73,23 +72,23 @@ abstract class ToolbarActivity : AppCompatActivity(), CustomThemeActivity {
 
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
-        val hinge = duoDevice.hinge.value
-        updateWideLayout(resources.getBoolean(R.bool.wide_layout), hinge)
+        val wideLayout = duoDevice.layout.value
+        updateWideLayout(wideLayout)
     }
 
-    protected open fun updateWideLayout(isWideLayout: Boolean, hinge: Rect) {
+    protected open fun updateWideLayout(wideLayout: HingeDeviceLayout) {
         if (hingeLayoutId != 0) {
             if (this.hinge == null) {
                 this.hinge = findViewById(hingeLayoutId)
             }
-            this.hinge!!.isVisible = isWideLayout && hinge.width() > 0
-            this.hinge!!.layoutParams.width = hinge.width()
+            this.hinge!!.isVisible = wideLayout.isWideLayout && wideLayout.hinge.width() > 0
+            this.hinge!!.layoutParams.width = wideLayout.hinge.width()
         }
         if (detailsLayoutId != 0) {
             if (details == null) {
                 details = findViewById(detailsLayoutId)
             }
-            details!!.isVisible = isWideLayout
+            details!!.isVisible = wideLayout.isWideLayout
         }
     }
 

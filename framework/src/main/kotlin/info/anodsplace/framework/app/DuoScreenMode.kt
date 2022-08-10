@@ -7,15 +7,18 @@ import androidx.lifecycle.lifecycleScope
 import androidx.window.layout.FoldingFeature
 import androidx.window.layout.WindowInfoTracker
 import androidx.window.layout.WindowLayoutInfo
+import info.anodsplace.framework.R
 import kotlinx.coroutines.flow.*
 
+data class HingeDeviceLayout(val isWideLayout: Boolean, val hinge: Rect)
+
 interface HingeDevice {
-    val hinge: StateFlow<Rect>
+    val layout: StateFlow<HingeDeviceLayout>
     var attachedToWindow: Boolean
 
     class NoOp : HingeDevice {
         override var attachedToWindow = false
-        override val hinge = MutableStateFlow(Rect())
+        override val layout = MutableStateFlow(HingeDeviceLayout(false, Rect()))
     }
 
     companion object {
@@ -31,7 +34,7 @@ fun WindowLayoutInfo.hingeBounds(): Rect {
     return foldingFeature?.bounds ?: Rect()
 }
 
-class HingeDeviceReal(activity: ComponentActivity) : HingeDevice {
+class HingeDeviceReal(private val activity: ComponentActivity) : HingeDevice {
     override var attachedToWindow = false
 
     private val window: WindowInfoTracker? = try {
@@ -40,9 +43,9 @@ class HingeDeviceReal(activity: ComponentActivity) : HingeDevice {
         null
     }
 
-    override val hinge: StateFlow<Rect> = window?.windowLayoutInfo(activity)?.map {
-        it.hingeBounds()
-    }?.stateIn(activity.lifecycleScope, SharingStarted.WhileSubscribed(), Rect())
-        ?: MutableStateFlow(Rect())
+    override val layout: StateFlow<HingeDeviceLayout> = window?.windowLayoutInfo(activity)?.map {
+        HingeDeviceLayout(isWideLayout = activity.resources.getBoolean(R.bool.wide_layout), hinge = it.hingeBounds())
+    }?.stateIn(activity.lifecycleScope, SharingStarted.WhileSubscribed(), HingeDeviceLayout(false, Rect()))
+            ?: MutableStateFlow(HingeDeviceLayout(false, Rect()))
 
 }
