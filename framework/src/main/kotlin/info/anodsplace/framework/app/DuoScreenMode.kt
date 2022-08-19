@@ -10,7 +10,7 @@ import androidx.window.layout.WindowLayoutInfo
 import info.anodsplace.framework.R
 import kotlinx.coroutines.flow.*
 
-data class HingeDeviceLayout(val isWideLayout: Boolean, val hinge: Rect)
+data class HingeDeviceLayout(val isWideLayout: Boolean = false, val hinge: Rect = Rect())
 
 interface HingeDevice {
     val layout: StateFlow<HingeDeviceLayout>
