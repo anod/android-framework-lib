@@ -49,7 +49,7 @@ dependencies {
     implementation(project(":lib:permissions"))
 
     implementation("androidx.activity:activity-compose:1.5.1")
-    implementation("com.google.accompanist:accompanist-flowlayout:0.25.0")
+    implementation("com.google.accompanist:accompanist-flowlayout:0.25.1")
     api("androidx.compose.ui:ui:1.3.0-alpha03")
     api("androidx.compose.material3:material3:1.0.0-alpha16")
     api("androidx.compose.foundation:foundation:1.3.0-alpha03")
