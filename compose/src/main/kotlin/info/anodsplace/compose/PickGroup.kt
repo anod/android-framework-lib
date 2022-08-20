@@ -12,7 +12,7 @@ import com.google.accompanist.flowlayout.FlowRow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PickGroup(options: Array<String>, selectedIndex: Int, modifier: Modifier = Modifier, onValueChanged: (index: Int) -> Unit = {}) {
+fun PickGroup(options: Array<String>, selectedIndex: Int, enabled: Boolean = true, modifier: Modifier = Modifier, onValueChanged: (index: Int) -> Unit = {}) {
     val (selectedOption, onOptionSelected) = remember { mutableStateOf(selectedIndex) }
     FlowRow(
             modifier = modifier,
@@ -23,6 +23,7 @@ fun PickGroup(options: Array<String>, selectedIndex: Int, modifier: Modifier = M
             val selected = (index == selectedOption)
             FilterChip(
                     selected = selected,
+                    enabled = enabled,
                     modifier = Modifier.height(32.dp),
                     // shape = MaterialTheme.shapes.small.copy(CornerSize(percent = 25)),
                     border = FilterChipDefaults.filterChipBorder(

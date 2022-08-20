@@ -31,10 +31,15 @@ sealed class AppPermission(val value: String) {
     object CanDrawOverlay : AppPermission(AppPermissions.Permission.CAN_DRAW_OVERLAY)
     object WriteSettings : AppPermission(AppPermissions.Permission.WRITE_SETTINGS)
 
+    @RequiresApi(33)
+    object PostNotification : AppPermission(Manifest.permission.POST_NOTIFICATIONS)
+
     @RequiresApi(Build.VERSION_CODES.Q)
     object ActivityRecognition : AppPermission(Manifest.permission.ACTIVITY_RECOGNITION)
+
     @RequiresApi(31)
     object BluetoothConnect : AppPermission(AppPermissions.Permission.BLUETOOTH_CONNECT)
+
     @RequiresApi(31)
     object BluetoothScan : AppPermission(AppPermissions.Permission.BLUETOOTH_SCAN)
 }
@@ -47,6 +52,10 @@ fun List<AppPermission>.filterRequired(activity: ComponentActivity, needPermissi
         }
     }
     return permissions
+}
+
+fun AppPermission.toRequestInput(): AppPermissions.Request.Input {
+    return listOf(this).toRequestInputs().first()
 }
 
 fun List<AppPermission>.toRequestInputs(): List<AppPermissions.Request.Input> {
@@ -74,7 +83,7 @@ fun List<AppPermission>.toRequestInputs(): List<AppPermissions.Request.Input> {
         if (writeSettings) {
             add(AppPermissions.Request.Input.WriteSettings)
         }
-        if (manifestPermissions.isNotEmpty()){
+        if (manifestPermissions.isNotEmpty()) {
             add(AppPermissions.Request.Input.Permissions(manifestPermissions.toTypedArray()))
         }
     }
@@ -91,7 +100,7 @@ object AppPermissions {
         }
     }
 
-    class Request: ActivityResultContract<Request.Input, Map<String, Boolean>>() {
+    class Request : ActivityResultContract<Request.Input, Map<String, Boolean>>() {
         private var input: Input? = null
         private val request = ActivityResultContracts.RequestMultiplePermissions()
         private val startActivity = ActivityResultContracts.StartActivityForResult()
@@ -106,25 +115,25 @@ object AppPermissions {
             this.input = input
             return when (input) {
                 is Input.CanDrawOverlay -> startActivity.createIntent(
-                    context,
-                    Intent(
-                        Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                        Uri.parse("package:" + context.packageName)
-                    )
+                        context,
+                        Intent(
+                                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                Uri.parse("package:" + context.packageName)
+                        )
                 )
                 is Input.WriteSettings -> startActivity.createIntent(
-                    context,
-                    Intent(
-                        Settings.ACTION_MANAGE_WRITE_SETTINGS,
-                        Uri.parse("package:" + context.packageName)
-                    )
+                        context,
+                        Intent(
+                                Settings.ACTION_MANAGE_WRITE_SETTINGS,
+                                Uri.parse("package:" + context.packageName)
+                        )
                 )
                 is Input.Permissions -> request.createIntent(context, input.value)
             }
         }
 
         override fun parseResult(resultCode: Int, intent: Intent?): Map<String, Boolean> {
-            return when(input) {
+            return when (input) {
                 is Input.CanDrawOverlay -> {
                     val granted = startActivity.parseResult(resultCode, intent).resultCode == Activity.RESULT_OK
                     return mapOf(Permission.CAN_DRAW_OVERLAY to granted)
