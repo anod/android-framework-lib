@@ -133,12 +133,12 @@ fun Preference(
     Column(
             modifier = Modifier
                     .fillMaxWidth()
-                    .alpha(if (item.enabled) 1.0f else 0.6f)
                     .padding(top = 8.dp)
     ) {
         ListItem(
                 modifier = Modifier
                         .defaultMinSize(minHeight = 48.dp)
+                        .alpha(if (item.enabled) 1.0f else 0.6f)
                         .clickable(onClick = onClick, enabled = item.enabled),
                 headlineText = {
                     Text(
