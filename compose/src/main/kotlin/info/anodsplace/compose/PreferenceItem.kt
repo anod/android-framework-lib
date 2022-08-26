@@ -5,6 +5,14 @@ import androidx.annotation.StringRes
 import info.anodsplace.ktx.equalsHash
 import info.anodsplace.ktx.hashCodeOf
 
+interface CheckablePreferenceItem {
+    var checked: Boolean
+}
+
+interface SingleValuePreferenceItem {
+    var value: String
+}
+
 sealed class PreferenceItem{
     abstract val titleRes: Int
     abstract val title: String
@@ -31,47 +39,47 @@ sealed class PreferenceItem{
         override val enabled: Boolean = true
     ) : PreferenceItem()
     data class Switch(
-        var checked: Boolean,
+        override var checked: Boolean,
         @StringRes override val titleRes: Int = 0,
         override val title: String = "",
         @StringRes override val summaryRes: Int = 0,
         override val summary: String = "",
         override val key: String = "",
         override val enabled: Boolean = true
-    ): PreferenceItem()
+    ): PreferenceItem(), CheckablePreferenceItem
     data class CheckBox(
-        var checked: Boolean,
+        override var checked: Boolean,
         @StringRes override val titleRes: Int = 0,
         override val title: String = "",
         @StringRes override val summaryRes: Int = 0,
         override val summary: String = "",
         override val key: String = "",
         override val enabled: Boolean = true
-    ): PreferenceItem()
+    ): PreferenceItem(), CheckablePreferenceItem
     data class List(
         @ArrayRes val entries: Int,
         @ArrayRes val entryValues: Int,
-        var value: String = "",
+        override var value: String = "",
         @StringRes override val titleRes: Int = 0,
         override val title: String = "",
         @StringRes override val summaryRes: Int = 0,
         override val summary: String = "",
         override val key: String = "",
         override val enabled: Boolean = true
-    ): PreferenceItem()
+    ): PreferenceItem(), SingleValuePreferenceItem
     data class Pick(
-            @ArrayRes val entriesRes: Int = 0,
-            @ArrayRes val entryValuesRes: Int = 0,
-            val entries: Array<String> = emptyArray(),
-            val entryValues: Array<String> = emptyArray(),
-            var value: String = "",
-            @StringRes override val titleRes: Int = 0,
-            override val title: String = "",
-            @StringRes override val summaryRes: Int = 0,
-            override val summary: String = "",
-            override val key: String = "",
-            override val enabled: Boolean = true
-    ): PreferenceItem() {
+        @ArrayRes val entriesRes: Int = 0,
+        @ArrayRes val entryValuesRes: Int = 0,
+        val entries: Array<String> = emptyArray(),
+        val entryValues: Array<String> = emptyArray(),
+        override var value: String = "",
+        @StringRes override val titleRes: Int = 0,
+        override val title: String = "",
+        @StringRes override val summaryRes: Int = 0,
+        override val summary: String = "",
+        override val key: String = "",
+        override val enabled: Boolean = true
+    ): PreferenceItem(), SingleValuePreferenceItem {
         override fun equals(other: Any?) = equalsHash(this, other)
         override fun hashCode() = hashCodeOf(entriesRes, entryValuesRes, entries, entryValues, value,
                 titleRes, title, summaryRes, summary, key, enabled)
@@ -94,3 +102,9 @@ fun PreferenceItem.Placeholder.toTextItem() = PreferenceItem.Text(
     summary = summary,
     key = key
 )
+
+val PreferenceItem.checked: Boolean
+    get() = (this as CheckablePreferenceItem).checked
+
+val PreferenceItem.value: String
+    get() = (this as SingleValuePreferenceItem).value

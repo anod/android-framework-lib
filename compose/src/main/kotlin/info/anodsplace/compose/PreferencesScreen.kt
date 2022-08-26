@@ -3,6 +3,9 @@ package info.anodsplace.compose
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.VolumeDown
+import androidx.compose.material.icons.filled.VolumeUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -20,7 +23,7 @@ fun PreferenceSlider(
         initialValue: Int,
         onValueChanged: (Int) -> Unit,
         item: PreferenceItem,
-        suffixText: @Composable () -> Unit = {},
+        suffixText: @Composable (() -> Unit)? = null,
         startIcon: @Composable (modifier: Modifier) -> Unit = { Box(modifier = it) {} },
         endIcon: @Composable (modifier: Modifier) -> Unit = { Box(modifier = it) {} },
         paddingValues: PaddingValues = PaddingValues(0.dp),
@@ -30,15 +33,26 @@ fun PreferenceSlider(
             modifier = Modifier.padding(paddingValues),
             horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Preference(item = item, onClick = { }) { }
-        OutlinedTextField(
-                value = value.toInt().toString(),
-                onValueChange = { value ->
-                    if (value.isEmpty()) {
-                        onValueChanged(value.trim().toInt())
-                    }
-                },
-                trailingIcon = suffixText
+        Preference(
+            item = item,
+            onClick = { },
+            trailing = {
+                OutlinedTextField(
+                    modifier = Modifier
+                        .width(IntrinsicSize.Min)
+                        .widthIn(max = 100.dp)
+                    ,
+                    value = value.toInt().toString(),
+                    onValueChange = { value ->
+                        if (value.isEmpty()) {
+                            onValueChanged(value.trim().toInt())
+                        }
+                    },
+                    textStyle = MaterialTheme.typography.labelLarge,
+                    singleLine = true,
+                    trailingIcon = suffixText
+                )
+            }
         )
         Row(
                 modifier = Modifier
@@ -46,9 +60,9 @@ fun PreferenceSlider(
                 verticalAlignment = Alignment.CenterVertically
         ) {
             startIcon(
-                    Modifier
-                            .size(24.dp)
-                            .weight(1f)
+                Modifier
+                    .size(24.dp)
+                    .weight(1f)
             )
             Slider(
                     enabled = item.enabled,
@@ -61,9 +75,9 @@ fun PreferenceSlider(
                     onValueChange = { value = it }
             )
             endIcon(
-                    Modifier
-                            .size(24.dp)
-                            .weight(1f)
+                Modifier
+                    .size(24.dp)
+                    .weight(1f)
             )
         }
     }
@@ -78,8 +92,8 @@ fun PreferenceCategory(
     Text(
             text = if (item.titleRes != 0) stringResource(id = item.titleRes) else item.title,
             modifier = modifier
-                    .fillMaxWidth()
-                    .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 4.dp),
+                .fillMaxWidth()
+                .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 4.dp),
             style = MaterialTheme.typography.titleSmall.copy(color)
     )
 }
@@ -97,8 +111,7 @@ fun PreferencePick(
         if (item.entryValues.isEmpty()) entries.mapIndexed { index, _ -> index.toString() }
                 .toTypedArray() else item.entryValues
     } else stringArrayResource(id = item.entryValuesRes)
-    var value by remember { mutableStateOf(item.value) }
-    val selected = entryValues.indexOf(value)
+    val selected = remember(item.value) { entryValues.indexOf(item.value) }
 
     Preference(
             item,
@@ -110,7 +123,7 @@ fun PreferencePick(
                             selectedIndex = selected,
                             enabled = item.enabled
                     ) { newIndex ->
-                        value = entryValues[newIndex]
+                        val value = entryValues[newIndex]
                         item.value = value
                         onPickValue(value)
                     }
@@ -132,14 +145,14 @@ fun Preference(
 
     Column(
             modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 8.dp)
+                .fillMaxWidth()
+                .padding(top = 8.dp)
     ) {
         ListItem(
                 modifier = Modifier
-                        .defaultMinSize(minHeight = 48.dp)
-                        .alpha(if (item.enabled) 1.0f else 0.6f)
-                        .clickable(onClick = onClick, enabled = item.enabled),
+                    .defaultMinSize(minHeight = 48.dp)
+                    .alpha(if (item.enabled) 1.0f else 0.6f)
+                    .clickable(onClick = onClick, enabled = item.enabled),
                 headlineText = {
                     Text(
                             text = if (item.titleRes != 0) stringResource(id = item.titleRes) else item.title,
@@ -335,11 +348,44 @@ fun PreferenceListDialog(
 }
 
 
+@Preview
+@Composable
+fun PreferenceSliderPreview() {
+    MaterialTheme(
+        colorScheme = darkColorScheme()
+    ) {
+        Surface {
+            PreferenceSlider(
+                initialValue = 100,
+                onValueChanged = { },
+                item = PreferenceItem.Text(
+                    title = "Media level",
+                    summary = "Change desired level of volume"
+                ),
+                startIcon = {
+                    Icon(
+                        modifier = it,
+                        imageVector = Icons.Filled.VolumeDown,
+                        contentDescription = null
+                    )
+                },
+                endIcon = {
+                    Icon(
+                        modifier = it,
+                        imageVector = Icons.Filled.VolumeUp,
+                        contentDescription = null
+                    )
+                }
+            )
+        }
+    }
+}
+
 @Preview("InCarScreen Light", showSystemUi = true)
 @Composable
 fun InCarScreenLight() {
     MaterialTheme {
-        BackgroundSurface {
+        Surface {
             PreferencesScreen(listOf(
                     PreferenceItem.Category(title = "Category"),
                     PreferenceItem.Pick(
@@ -381,7 +427,7 @@ fun InCarScreenDark() {
     MaterialTheme(
             colorScheme = darkColorScheme()
     ) {
-        BackgroundSurface {
+        Surface {
             PreferencesScreen(listOf(
                     PreferenceItem.Category(title = "Category"),
                     PreferenceItem.Text(

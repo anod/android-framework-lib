@@ -10,7 +10,10 @@ fun equalsHash(self: Any, other: Any?) : Boolean {
 fun hashCodeOf(vararg input: Any?): Int {
     var hashCode = 1
     for (item in input) {
-        hashCode = 31 * hashCode + item.hashCode()
+        hashCode = 31 * hashCode + when (item) {
+            is Array<*> -> item.contentHashCode()
+            else -> item.hashCode()
+        }
     }
     return hashCode
 }
