@@ -47,6 +47,7 @@ dependencies {
     implementation(project(":lib:applog"))
     implementation(project(":lib:ktx"))
     implementation(project(":lib:permissions"))
+    implementation(project(":lib:graphics"))
 
     implementation("androidx.activity:activity-compose:1.5.1")
     implementation("com.google.accompanist:accompanist-flowlayout:0.25.1")
