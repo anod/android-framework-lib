@@ -152,7 +152,7 @@ fun Preference(
                 modifier = Modifier
                     .defaultMinSize(minHeight = 48.dp)
                     .alpha(if (item.enabled) 1.0f else 0.6f)
-                    .clickable(onClick = onClick, enabled = item.enabled),
+                    .clickable(onClick = onClick, enabled = item.clickable && item.enabled),
                 headlineText = {
                     Text(
                             text = if (item.titleRes != 0) stringResource(id = item.titleRes) else item.title,

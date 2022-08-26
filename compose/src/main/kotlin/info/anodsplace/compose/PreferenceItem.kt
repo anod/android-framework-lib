@@ -20,6 +20,7 @@ sealed class PreferenceItem{
     abstract val summary: String
     abstract val key: String
     abstract val enabled: Boolean
+    abstract val clickable: Boolean
 
     data class Category(
         @StringRes override val titleRes: Int = 0,
@@ -27,7 +28,8 @@ sealed class PreferenceItem{
         @StringRes override val summaryRes: Int = 0,
         override val summary: String = "",
         override val key: String = "",
-        override val enabled: Boolean = true
+        override val enabled: Boolean = true,
+        override val clickable: Boolean = enabled
     ) : PreferenceItem()
 
     data class Text(
@@ -36,7 +38,8 @@ sealed class PreferenceItem{
         @StringRes override val summaryRes: Int = 0,
         override val summary: String = "",
         override val key: String = "",
-        override val enabled: Boolean = true
+        override val enabled: Boolean = true,
+        override val clickable: Boolean = enabled
     ) : PreferenceItem()
     data class Switch(
         override var checked: Boolean,
@@ -45,7 +48,8 @@ sealed class PreferenceItem{
         @StringRes override val summaryRes: Int = 0,
         override val summary: String = "",
         override val key: String = "",
-        override val enabled: Boolean = true
+        override val enabled: Boolean = true,
+        override val clickable: Boolean = enabled
     ): PreferenceItem(), CheckablePreferenceItem
     data class CheckBox(
         override var checked: Boolean,
@@ -54,7 +58,8 @@ sealed class PreferenceItem{
         @StringRes override val summaryRes: Int = 0,
         override val summary: String = "",
         override val key: String = "",
-        override val enabled: Boolean = true
+        override val enabled: Boolean = true,
+        override val clickable: Boolean = enabled
     ): PreferenceItem(), CheckablePreferenceItem
     data class List(
         @ArrayRes val entries: Int,
@@ -65,7 +70,8 @@ sealed class PreferenceItem{
         @StringRes override val summaryRes: Int = 0,
         override val summary: String = "",
         override val key: String = "",
-        override val enabled: Boolean = true
+        override val enabled: Boolean = true,
+        override val clickable: Boolean = enabled
     ): PreferenceItem(), SingleValuePreferenceItem
     data class Pick(
         @ArrayRes val entriesRes: Int = 0,
@@ -78,7 +84,8 @@ sealed class PreferenceItem{
         @StringRes override val summaryRes: Int = 0,
         override val summary: String = "",
         override val key: String = "",
-        override val enabled: Boolean = true
+        override val enabled: Boolean = true,
+        override val clickable: Boolean = enabled
     ): PreferenceItem(), SingleValuePreferenceItem {
         override fun equals(other: Any?) = equalsHash(this, other)
         override fun hashCode() = hashCodeOf(entriesRes, entryValuesRes, entries, entryValues, value,
@@ -91,7 +98,8 @@ sealed class PreferenceItem{
         @StringRes override val summaryRes: Int = 0,
         override val summary: String = "",
         override val key: String = "",
-        override val enabled: Boolean = true
+        override val enabled: Boolean = true,
+        override val clickable: Boolean = false
     ): PreferenceItem()
 }
 
