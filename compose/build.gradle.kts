@@ -38,7 +38,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.3.0-rc01"
+        kotlinCompilerExtensionVersion = "1.3.1"
     }
     namespace = "info.anodsplace.compose"
 }
@@ -51,11 +51,11 @@ dependencies {
 
     implementation("androidx.activity:activity-compose:1.5.1")
     implementation("com.google.accompanist:accompanist-flowlayout:0.25.1")
-    api("androidx.compose.ui:ui:1.3.0-alpha03")
-    api("androidx.compose.material3:material3:1.0.0-alpha16")
-    api("androidx.compose.foundation:foundation:1.3.0-alpha03")
-    api("androidx.compose.material:material-icons-core:1.3.0-alpha03")
-    api("androidx.compose.material:material-icons-extended:1.3.0-alpha03")
+    api("androidx.compose.ui:ui:1.3.0-beta02")
+    api("androidx.compose.material3:material3:1.0.0-beta02")
+    api("androidx.compose.foundation:foundation:1.3.0-beta02")
+    api("androidx.compose.material:material-icons-core:1.3.0-beta02")
+    api("androidx.compose.material:material-icons-extended:1.3.0-beta02")
 
     debugApi("androidx.compose.ui:ui-tooling:1.2.1")
     debugApi("androidx.customview:customview:1.2.0-alpha01")
