@@ -1,6 +1,7 @@
 package info.anodsplace.compose
 
 import android.graphics.Typeface
+import android.text.Html
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
 import android.text.style.StyleSpan
@@ -12,6 +13,8 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
+
+fun String.toHtmlAnnotatedString(): AnnotatedString = Html.fromHtml(this, Html.FROM_HTML_MODE_COMPACT).toAnnotatedString()
 
 fun Spanned.toAnnotatedString(): AnnotatedString = buildAnnotatedString {
     val spanned = this@toAnnotatedString
