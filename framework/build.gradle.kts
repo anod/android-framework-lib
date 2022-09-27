@@ -32,8 +32,8 @@ android {
 
 dependencies {
     implementation(project(":lib:applog"))
-    implementation("androidx.activity:activity-ktx:1.5.1")
-    implementation("androidx.fragment:fragment-ktx:1.5.2")
+    implementation("androidx.activity:activity-ktx:1.6.0")
+    implementation("androidx.fragment:fragment-ktx:1.5.3")
     implementation("com.google.android.material:material:1.6.1")
     implementation("androidx.window:window:1.1.0-alpha03")
     implementation("androidx.core:core-ktx:1.9.0")
