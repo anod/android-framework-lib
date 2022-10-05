@@ -18,6 +18,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asComposePath
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.google.accompanist.flowlayout.FlowRow
 import info.anodsplace.graphics.AdaptiveIcon
@@ -27,6 +28,8 @@ fun IconShapeSelector(
         pathMasks: Array<String>,
         names: Array<String>,
         selected: String,
+        defaultSystemMask: String,
+        systemMaskName: String,
         modifier: Modifier = Modifier,
         maxSize: Float = AdaptiveIcon.MASK_SIZE,
         onPathChange: (String) -> Unit = {}
@@ -63,28 +66,63 @@ fun IconShapeSelector(
             )
         }
 
-        pathMasks.filter { it.isNotEmpty() }.forEachIndexed { index, pathMask ->
-            val path = AdaptiveIcon.maskToPath(pathMask)
-            val outline = Path()
-            val maskMatrix = Matrix().apply {
-                setScale(iconSizePx / maxSize, iconSizePx / maxSize)
-            }
-            path.transform(maskMatrix, outline)
-
-            val selected = value == pathMask
-            Box(
-                    modifier = Modifier
-                            .size(iconSize, iconSize)
-                            .clip(GenericShape { _, _ ->
-                                addPath(outline.asComposePath())
-                            })
-                            .clickable(onClick = {
-                                value = pathMask
-                                onPathChange(pathMask)
-                            }, role = Role.Button, onClickLabel = names[index])
-                            .background(color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f))
-            ) {
+        if (!isNone) {
+            val exists = pathMasks.firstOrNull { it == defaultSystemMask } != null
+            if (!exists) {
+                IconShape(
+                        pathMask = defaultSystemMask,
+                        isSelected = value == defaultSystemMask,
+                        title = systemMaskName,
+                        onClick = {
+                            value = defaultSystemMask
+                            onPathChange(defaultSystemMask)
+                        },
+                        iconSizePx = iconSizePx,
+                        maxSize = maxSize,
+                        iconSize = iconSize
+                )
             }
         }
+
+        pathMasks.filter { it.isNotEmpty() }.forEachIndexed { index, pathMask ->
+            IconShape(
+                    pathMask = pathMask,
+                    isSelected = value == pathMask,
+                    title = names[index],
+                    onClick = {
+                        value = pathMask
+                        onPathChange(pathMask)
+                    },
+                    iconSizePx = iconSizePx,
+                    maxSize = maxSize,
+                    iconSize = iconSize
+            )
+        }
+    }
+}
+
+@Composable
+private fun IconShape(
+        pathMask: String,
+        isSelected: Boolean,
+        title: String,
+        iconSizePx: Int,
+        maxSize: Float,
+        iconSize: Dp,
+        onClick: () -> Unit
+) {
+    val path = AdaptiveIcon.maskToPath(pathMask)
+    val outline = Path()
+    val maskMatrix = Matrix().apply {
+        setScale(iconSizePx / maxSize, iconSizePx / maxSize)
+    }
+    path.transform(maskMatrix, outline)
+    Box(
+            modifier = Modifier
+                    .size(iconSize, iconSize)
+                    .clip(GenericShape { _, _ -> addPath(outline.asComposePath()) })
+                    .clickable(onClick = onClick, role = Role.Button, onClickLabel = title)
+                    .background(color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f))
+    ) {
     }
 }
