@@ -28,9 +28,9 @@ fun IconShapeSelector(
         pathMasks: Array<String>,
         names: Array<String>,
         selected: String,
-        defaultSystemMask: String,
-        systemMaskName: String,
         modifier: Modifier = Modifier,
+        defaultSystemMask: String = "",
+        systemMaskName: String = "",
         maxSize: Float = AdaptiveIcon.MASK_SIZE,
         onPathChange: (String) -> Unit = {}
 ) {
