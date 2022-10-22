@@ -3,11 +3,6 @@ plugins {
     kotlin("android")
 }
 
-repositories {
-    mavenCentral()
-    google()
-}
-
 android {
     compileSdk = 33
 
@@ -38,7 +33,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.3.1"
+        kotlinCompilerExtensionVersion = "1.3.2"
     }
     namespace = "info.anodsplace.compose"
 }
@@ -51,8 +46,8 @@ dependencies {
 
     implementation("androidx.activity:activity-compose:1.6.0")
     implementation("com.google.accompanist:accompanist-flowlayout:0.25.1")
-    api("androidx.compose.ui:ui:1.3.0-beta03")
-    api("androidx.compose.material3:material3:1.0.0-beta03")
+    api("androidx.compose.ui:ui:1.3.0-rc01")
+    api("androidx.compose.material3:material3:1.0.0-rc01")
     api("androidx.compose.foundation:foundation:1.3.0-rc01")
     api("androidx.compose.material:material-icons-core:1.3.0-rc01")
     api("androidx.compose.material:material-icons-extended:1.3.0-rc01")
@@ -62,5 +57,5 @@ dependencies {
     debugApi("androidx.customview:customview-poolingcontainer:1.0.0")
     api("androidx.compose.ui:ui-tooling-preview:1.2.1")
 
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.7.10")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.7.20")
 }

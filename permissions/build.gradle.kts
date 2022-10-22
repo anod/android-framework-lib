@@ -3,11 +3,6 @@ plugins {
     kotlin("android")
 }
 
-repositories {
-    mavenCentral()
-    google()
-}
-
 android {
     compileSdk = 33
 
@@ -31,7 +26,7 @@ android {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.7.10")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.7.20")
     implementation("androidx.annotation:annotation:1.5.0")
     implementation("androidx.activity:activity-ktx:1.6.0")
 }

@@ -3,11 +3,6 @@ plugins {
     kotlin("android")
 }
 
-repositories {
-    mavenCentral()
-    google()
-}
-
 android {
     namespace = "info.anodsplace.viewmodel"
     compileSdk = 33
@@ -29,5 +24,5 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.5.1")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.4")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.4")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.7.10")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.7.20")
 }

@@ -2,11 +2,6 @@ plugins {
     id("com.android.library")
 }
 
-repositories {
-    mavenCentral()
-    google()
-}
-
 android {
     compileSdk = 33
 
@@ -22,6 +17,6 @@ android {
 }
 
 dependencies {
-    implementation("com.google.android.material:material:1.6.1")
+    implementation("com.google.android.material:material:1.7.0")
     implementation("androidx.fragment:fragment:1.5.3")
 }

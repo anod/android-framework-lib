@@ -3,11 +3,6 @@ plugins {
     kotlin("android")
 }
 
-repositories {
-    mavenCentral()
-    google()
-}
-
 android {
     compileSdk = 33
 
@@ -34,12 +29,12 @@ dependencies {
     implementation(project(":lib:applog"))
     implementation("androidx.activity:activity-ktx:1.6.0")
     implementation("androidx.fragment:fragment-ktx:1.5.3")
-    implementation("com.google.android.material:material:1.6.1")
+    implementation("com.google.android.material:material:1.7.0")
     implementation("androidx.window:window:1.1.0-alpha03")
     implementation("androidx.core:core-ktx:1.9.0")
 
     implementation("com.google.android.gms:play-services-identity:18.0.1")
     implementation("com.google.android.gms:play-services-auth:20.3.0")
 
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.7.10")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.7.20")
 }
