@@ -92,6 +92,17 @@ sealed class PreferenceItem{
                 titleRes, title, summaryRes, summary, key, enabled)
     }
 
+    data class Color(
+        val color: androidx.compose.ui.graphics.Color?,
+        @StringRes override val titleRes: Int = 0,
+        override val title: String = "",
+        @StringRes override val summaryRes: Int = 0,
+        override val summary: String = "",
+        override val key: String = "",
+        override val enabled: Boolean = true,
+        override val clickable: Boolean = enabled
+    ) : PreferenceItem()
+
     data class Placeholder(
         @StringRes override val titleRes: Int = 0,
         override val title: String = "",

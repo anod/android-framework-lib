@@ -15,6 +15,13 @@ fun PickGroup(
     selectedIndex: Int, modifier:
     Modifier = Modifier,
     enabled: Boolean = true,
+    border: SelectableChipBorder = FilterChipDefaults.filterChipBorder(
+        borderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
+        selectedBorderColor = MaterialTheme.colorScheme.primary,
+        borderWidth = 1.dp,
+        selectedBorderWidth = 1.dp
+    ),
+    colors: SelectableChipColors = FilterChipDefaults.filterChipColors(),
     onValueChanged: (index: Int) -> Unit = {}
 ) {
     FlowRow(
@@ -28,13 +35,8 @@ fun PickGroup(
                     selected = selected,
                     enabled = enabled,
                     modifier = Modifier.height(32.dp),
-                    border = FilterChipDefaults.filterChipBorder(
-                            borderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
-                            selectedBorderColor = MaterialTheme.colorScheme.primary,
-                            borderWidth = 1.dp,
-                            selectedBorderWidth = 1.dp
-                    ),
-                    colors = FilterChipDefaults.filterChipColors(),
+                    border = border,
+                    colors = colors,
                     onClick = {
                         onValueChanged(index)
                     },
@@ -50,6 +52,7 @@ fun PickGroup(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true, widthDp = 260, heightDp = 200)
 @Composable
 fun PickGroupPreview() {
