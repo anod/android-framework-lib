@@ -14,10 +14,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
@@ -135,6 +137,54 @@ fun PreferencePick(
             }
         },
         onClick = { })
+}
+
+@Composable
+fun PreferenceColor(
+    item: PreferenceItem.Color,
+    colors: PreferencesColors,
+    onClick: () -> Unit,
+    secondary: @Composable (() -> Unit)? = null,
+) {
+    Preference(
+        item = item,
+        descriptionColor = colors.descriptionColor,
+        secondary = secondary,
+        onClick = onClick,
+        trailing = {
+            val isNotVisible = item.color.isNotVisible
+            val size = 40.dp
+            val lineWidth = 1.dp
+            val colorModifier = Modifier
+                .size(size)
+                .clip(shape = MaterialTheme.shapes.medium)
+                .let {
+                    if (isNotVisible) {
+                        it.drawWithCache {
+                            onDrawWithContent {
+                                drawContent()
+                                drawLine(
+                                    color = colors.selectedBorderColor,
+                                    start = Offset(0f, size.toPx()),
+                                    end = Offset(size.toPx(), 0f),
+                                    strokeWidth = lineWidth.toPx())
+                                drawLine(
+                                    color = colors.selectedBorderColor,
+                                    start = Offset(0f, 0f),
+                                    end = Offset(size.toPx(), size.toPx()),
+                                    strokeWidth = lineWidth.toPx())
+                            }
+                        }
+                    } else if (item.color != null) it.background(item.color) else it
+                }
+                .border(
+                    border = BorderStroke(1.dp, colors.selectedBorderColor),
+                    shape = MaterialTheme.shapes.medium
+                )
+
+            Box(modifier = colorModifier)
+        }
+    )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -329,38 +379,13 @@ fun PreferencesScreen(
                         })
                 }
 
-                is PreferenceItem.Color -> Preference(
+                is PreferenceItem.Color -> PreferenceColor(
                     item = item,
-                    descriptionColor = colors.descriptionColor,
+                    colors = colors,
                     secondary = {
                         placeholder(item, paddingValues = paddingValues)
                     },
-                    onClick = { onClick(item) },
-                    trailing = {
-                        val colorModifier = Modifier
-                            .size(40.dp)
-                            .let {
-                                if (item.color != null) {
-                                    it.background(item.color, shape = MaterialTheme.shapes.medium)
-                                } else it
-                            }
-                            .border(
-                                border = BorderStroke(1.dp, colors.selectedBorderColor),
-                                shape = MaterialTheme.shapes.medium
-                            )
-
-                        Box(modifier = colorModifier, contentAlignment = Alignment.Center) {
-                            if (item.color == null) {
-                                Text(
-                                    text = "X",
-                                    style = MaterialTheme.typography.labelLarge,
-                                    textAlign = TextAlign.Center,
-                                    color = colors.selectedBorderColor
-                                )
-                            }
-                        }
-                    }
-                )
+                    onClick = { onClick(item) })
 
                 is PreferenceItem.Text -> Preference(
                     item = item,

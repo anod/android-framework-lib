@@ -46,6 +46,15 @@ private val colors = listOf(
         Color(0xFF000000),
 )
 
+val Color.isVisible: Boolean
+    get() = alpha > 0.00001
+
+val Color.isNotVisible: Boolean
+    get() = !isVisible
+
+val Color?.isNotVisible: Boolean
+    get() = this?.isNotVisible ?: true
+
 fun Color.toColorHex(withAlpha: Boolean = true): String {
     var hexStr = "%08X".format(Locale.ROOT, (value shr 32).toLong())
     if (!withAlpha) {
