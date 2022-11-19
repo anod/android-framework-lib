@@ -48,6 +48,7 @@ dependencies {
     implementation("com.google.accompanist:accompanist-flowlayout:0.27.0")
     api("androidx.compose.ui:ui:1.3.1")
     api("androidx.compose.material3:material3:1.0.1")
+    api("androidx.compose.material3:material3-window-size-class:1.0.1")
     api("androidx.compose.foundation:foundation:1.3.1")
     api("androidx.compose.material:material-icons-core:1.3.1")
     api("androidx.compose.material:material-icons-extended:1.3.1")
