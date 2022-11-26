@@ -45,7 +45,7 @@ dependencies {
     implementation(project(":lib:graphics"))
 
     implementation("androidx.activity:activity-compose:1.6.1")
-    implementation("com.google.accompanist:accompanist-flowlayout:0.27.0")
+    implementation("com.google.accompanist:accompanist-flowlayout:0.27.1")
     api("androidx.compose.ui:ui:1.3.1")
     api("androidx.compose.material3:material3:1.0.1")
     api("androidx.compose.material3:material3-window-size-class:1.0.1")

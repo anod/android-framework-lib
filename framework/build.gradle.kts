@@ -34,7 +34,7 @@ dependencies {
     implementation("androidx.core:core-ktx:1.9.0")
 
     implementation("com.google.android.gms:play-services-identity:18.0.1")
-    implementation("com.google.android.gms:play-services-auth:20.3.0")
+    implementation("com.google.android.gms:play-services-auth:20.4.0")
 
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.7.20")
 }
