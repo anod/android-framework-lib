@@ -10,16 +10,16 @@ import androidx.activity.result.contract.ActivityResultContract
 import androidx.activity.result.contract.ActivityResultContracts
 import info.anodsplace.applog.AppLog
 
-class CreateDocument : ActivityResultContract<CreateDocument.Args, Uri?>() {
-    private val inner = ActivityResultContracts.CreateDocument()
-    class Args(val dataType: String, val title: String?, val initialUri: Uri? = null)
+class CreateDocument(private val mimeType: String) : ActivityResultContract<CreateDocument.Args, Uri?>() {
+    private val inner = ActivityResultContracts.CreateDocument(mimeType)
+    class Args(val title: String?, val initialUri: Uri? = null)
     
     @SuppressLint("MissingSuperCall")
     override fun createIntent(context: Context, input: Args): Intent {
         return Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
             putExtra(Intent.EXTRA_TITLE, input.title)
             try {
-                setDataAndType(input.initialUri, input.dataType)
+                setDataAndType(input.initialUri, mimeType)
                 if (input.initialUri != null) {
                     putExtra(DocumentsContract.EXTRA_INITIAL_URI, input.initialUri)
                 }
