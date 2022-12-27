@@ -3,6 +3,7 @@ package info.anodsplace.applog
 import android.os.Looper
 import android.util.Log
 import java.util.*
+import java.util.regex.Pattern
 
 /**
  * @author alex
@@ -55,12 +56,12 @@ class AppLog {
             log(Log.DEBUG, format(msg, null))
         }
 
-        fun i(msg: String, tag: String? = null) {
+        fun i(msg: String, tag: String = "") {
             log(Log.INFO, format(msg, tag))
         }
 
         fun v(msg: String) {
-            log(Log.VERBOSE, format(msg, null))
+            log(Log.VERBOSE, format(msg, ""))
         }
 
         fun e(msg: String, tag: String?) {
@@ -78,7 +79,7 @@ class AppLog {
         }
 
         fun e(tr: Throwable) {
-            val message = tr.message ?: "Throwable is null"
+            val message = tr.message ?: "Throwable message is null"
             e(message, tr)
         }
 
@@ -95,7 +96,7 @@ class AppLog {
         }
 
         fun v(msg: String, vararg params: Any) {
-            log(Log.VERBOSE, format(msg, null, *params))
+            log(Log.VERBOSE, format(msg, "", *params))
         }
 
         private fun log(priority: Int, msg: String) {
@@ -109,7 +110,7 @@ class AppLog {
             logger.println(Log.ERROR, tag, message + '\n'.toString() + trace)
         }
 
-        private fun format(msg: String, method: String?, vararg array: Any): String {
+        private fun format(msg: String, tag: String?, vararg array: Any): String {
             val formatted: String = if (array.isEmpty()) {
                 msg
             } else {
@@ -120,27 +121,57 @@ class AppLog {
                     "$msg (An error occurred while formatting the message.)"
                 }
             }
-            val stackTrace = Throwable().fillInStackTrace().stackTrace
-            val tag = if (method == null) {
+
+            val messageTag = if (tag == null) {
                 var methodFromTrace = "<unknown>"
+                val stackTrace = Throwable().fillInStackTrace().stackTrace
                 for (i in 2 until stackTrace.size) {
                     val className = stackTrace[i].className
                     if (className != AppLog::class.java.name) {
-                        val substring = className.substring(1 + className.lastIndexOf(46.toChar()))
-                        methodFromTrace = substring.substring(1 + substring.lastIndexOf(36.toChar())) + "." + stackTrace[i].methodName
+                        val methodName = stackTrace[i].methodName
+                        methodFromTrace = if (methodName == "invokeSuspend" || methodName == "invoke") {
+                            createStackElementTag(stackTrace[i]) + ":" + stackTrace[i].lineNumber
+                        } else {
+                            createStackElementTag(stackTrace[i]).let {
+                                if (it.isEmpty()) it else "$it."
+                            } + stackTrace[i].methodName
+                        }
                         break
                     }
                 }
                 methodFromTrace
             } else {
-                method
+                tag
             }
             val isMain = Looper.myLooper() == Looper.getMainLooper()
-            return String.format(Locale.US, "[%s%d] %s: %s",
+            return String.format(Locale.US, "[%s%d] %s %s",
                     if (isMain) "MAIN:" else "",
                     Thread.currentThread().id,
-                    tag,
+                    messageTag,
                     formatted)
         }
+
+        private val anonymousClass = Regex("(\\$\\d+)+$")
+
+        private fun createStackElementTag(element: StackTraceElement): String {
+            val tag = element.className
+                .substringAfterLast('.')
+                .replace(anonymousClass, "")
+
+            val indexOfSign = tag.indexOf('$')
+            val fileName = element.fileName.replace(".", "").lowercase(Locale.ROOT)
+
+            if (indexOfSign == -1) {
+                if (tag.lowercase(Locale.ROOT) == fileName) {
+                    return ""
+                }
+                return tag
+            }
+
+            return tag
+                .replace("$fileName$", "", ignoreCase = true)
+                .replace('$', '.')
+        }
     }
+
 }
