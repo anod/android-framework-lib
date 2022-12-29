@@ -104,7 +104,7 @@ fun ColorDialogContent(color: Color?, title: String, showNone: Boolean = true, s
 }
 
 @Composable
-fun AlphaRow(color: Color?, onColorChange: (Color?) -> Unit, modifier: Modifier = Modifier) {
+private fun AlphaRow(color: Color?, onColorChange: (Color?) -> Unit, modifier: Modifier = Modifier) {
     val alphas = listOf(0.2f, 0.4f, 0.6f, 0.8f, 1.0f)
 
     val currentAlpha = color?.alpha
@@ -148,7 +148,7 @@ fun AlphaRow(color: Color?, onColorChange: (Color?) -> Unit, modifier: Modifier 
 }
 
 @Composable
-fun ColorsTable(
+private fun ColorsTable(
     currentNoAlpha: Color?,
     showNone: Boolean,
     onColorChange: (Color?) -> Unit,
@@ -199,7 +199,7 @@ fun ColorsTable(
 }
 
 @Composable
-fun ColorIcon(modifier: Modifier, color: Color, isSelected: Boolean, onClick: (Color) -> Unit) {
+private fun ColorIcon(modifier: Modifier, color: Color, isSelected: Boolean, onClick: (Color) -> Unit) {
     Icon(
             modifier = modifier
                 .padding(4.dp)
@@ -217,7 +217,7 @@ fun ColorIcon(modifier: Modifier, color: Color, isSelected: Boolean, onClick: (C
 }
 
 @Composable
-fun ColorNone(modifier: Modifier, isSelected: Boolean, onClick: () -> Unit) {
+private fun ColorNone(modifier: Modifier, isSelected: Boolean, onClick: () -> Unit) {
     Icon(
             modifier = modifier
                 .padding(4.dp)
@@ -236,7 +236,7 @@ fun ColorNone(modifier: Modifier, isSelected: Boolean, onClick: () -> Unit) {
 
 @Preview
 @Composable
-fun ColorDialogPreview() {
+private fun ColorDialogPreview() {
     var color: Color? by remember { mutableStateOf(Color(0xFF673AB7)) }
     ColorDialogContent(color = color, title = "Pick a color", onColorChange = { color = it })
 }

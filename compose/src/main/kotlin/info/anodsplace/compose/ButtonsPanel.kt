@@ -11,7 +11,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun ButtonsPanel(actionText: String, onDismissRequest: () -> Unit, onAction: () -> Unit) {
+fun ButtonsPanel(
+    actionText: String,
+    onDismissRequest: () -> Unit,
+    onAction: () -> Unit,
+    leadingContent: @Composable (() -> Unit)? = null
+) {
     Column {
         Divider()
         Row(
@@ -20,11 +25,14 @@ fun ButtonsPanel(actionText: String, onDismissRequest: () -> Unit, onAction: () 
                         .fillMaxWidth()
                         .padding(vertical = 8.dp, horizontal = 16.dp)
         ) {
+            if (leadingContent != null) {
+                leadingContent()
+            }
+            Spacer(modifier = Modifier.weight(1.0f))
             Button(onClick = onDismissRequest, modifier = Modifier.align(Alignment.CenterVertically)) {
                 Text(text = stringResource(id = android.R.string.cancel))
             }
-            Spacer(modifier = Modifier.weight(1.0f))
-            Button(onClick = onAction, modifier = Modifier.align(Alignment.CenterVertically)) {
+            Button(onClick = onAction, modifier = Modifier.align(Alignment.CenterVertically).padding(start = 8.dp)) {
                 Text(text = actionText)
             }
         }
