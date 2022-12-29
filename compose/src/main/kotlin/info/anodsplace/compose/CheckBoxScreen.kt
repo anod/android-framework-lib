@@ -23,7 +23,6 @@ class CheckBoxScreenState(
         val checked: SnapshotStateList<String>
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CheckBoxList(items: Map<String, Any?>, checked: SnapshotStateList<String>, modifier: Modifier = Modifier, onCheckedChange: (key: String, value: Any?, checked: Boolean) -> Unit) {
     val checkedMap = checked.associateWith { true }
@@ -86,7 +85,7 @@ fun CheckBoxScreen(saveText: String, state: CheckBoxScreenState, onDismissReques
                             .padding(horizontal = 16.dp)
                             .weight(0.1f, fill = true),
             ) { _: String, _: Any?, _: Boolean -> }
-            ButtonsPanel(saveText = saveText, onDismissRequest = onDismissRequest)
+            ButtonsPanel(actionText = saveText, onDismissRequest = onDismissRequest, onAction = onDismissRequest)
         }
     }
 }
