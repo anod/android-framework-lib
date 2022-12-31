@@ -65,30 +65,32 @@ fun Color.toColorHex(withAlpha: Boolean = true): String {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ColorDialogContent(color: Color?, title: String, showNone: Boolean = true, showAlpha: Boolean = true, onColorChange: (Color?) -> Unit = { }) {
+fun ColorDialogContent(
+    color: Color?,
+    showNone: Boolean = true,
+    showAlpha: Boolean = true,
+    surfaceColor: Color = MaterialTheme.colorScheme.surface,
+    surfaceContent: Color = MaterialTheme.colorScheme.onSurface,
+    onColorChange: (Color?) -> Unit = { }
+) {
     val currentNoAlpha = color?.copy(alpha = 1.0f)
 
-    Surface {
+    Surface(
+        color = surfaceColor,
+        contentColor = surfaceContent
+    ) {
         Column(
             modifier = Modifier
                 .padding(all = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Text(text = title, style = MaterialTheme.typography.titleMedium)
-                Spacer(modifier = Modifier.weight(1f))
-                OutlinedTextField(
-                    modifier = Modifier
-                        .width(140.dp)
-                        .padding(start = 8.dp),
-                    value = color?.toColorHex() ?: "",
-                    singleLine = true,
-                    onValueChange = {},
-                    textStyle = MaterialTheme.typography.labelMedium
-                )
-            }
+            OutlinedTextField(
+                modifier = Modifier.width(140.dp),
+                value = color?.toColorHex() ?: "",
+                singleLine = true,
+                onValueChange = {},
+                textStyle = MaterialTheme.typography.labelMedium
+            )
 
             ColorsTable(
                 modifier = Modifier.padding(top = 16.dp),
@@ -154,9 +156,8 @@ private fun ColorsTable(
     onColorChange: (Color?) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val rows = (if (showNone)
-        listOf(Color.Unspecified) + colors
-    else colors).chunked(5)
+    val rows = (if (showNone) listOf(Color.Unspecified) + colors else colors)
+        .chunked(5)
     Column(
         modifier = modifier
     ) {
@@ -238,5 +239,5 @@ private fun ColorNone(modifier: Modifier, isSelected: Boolean, onClick: () -> Un
 @Composable
 private fun ColorDialogPreview() {
     var color: Color? by remember { mutableStateOf(Color(0xFF673AB7)) }
-    ColorDialogContent(color = color, title = "Pick a color", onColorChange = { color = it })
+    ColorDialogContent(color = color, onColorChange = { color = it })
 }
