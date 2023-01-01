@@ -92,7 +92,7 @@ class AppLog {
         }
 
         fun w(msg: String, tag: String? = null) {
-            log(Log.VERBOSE, format(msg, tag))
+            log(Log.WARN, format(msg, tag))
         }
 
         fun v(msg: String, vararg params: Any) {
@@ -159,7 +159,7 @@ class AppLog {
                 .replace(anonymousClass, "")
 
             val indexOfSign = tag.indexOf('$')
-            val fileName = element.fileName.replace(".", "").lowercase(Locale.ROOT)
+            val fileName = element.fileName?.replace(".", "")?.lowercase(Locale.ROOT)
 
             if (indexOfSign == -1) {
                 if (tag.lowercase(Locale.ROOT) == fileName) {
