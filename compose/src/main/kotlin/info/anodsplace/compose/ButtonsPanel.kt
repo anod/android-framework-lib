@@ -28,7 +28,7 @@ fun ButtonsPanel(
             if (leadingContent != null) {
                 leadingContent()
             }
-            Spacer(modifier = Modifier.weight(1.0f))
+            Spacer(modifier = Modifier.weight(1.0f).defaultMinSize(minWidth = 32.dp))
             Button(onClick = onDismissRequest, modifier = Modifier.align(Alignment.CenterVertically)) {
                 Text(text = stringResource(id = android.R.string.cancel))
             }
