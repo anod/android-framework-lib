@@ -125,6 +125,7 @@ fun ColorDialogContent(
                     .width(140.dp)
                     .align(Alignment.CenterEnd),
                 color = color,
+                showAlpha = showAlpha,
                 onColorChange = {}
             )
         }
@@ -162,10 +163,10 @@ fun ColorDialogContent(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun ColorInput(color: Color?, onColorChange: (Color?) -> Unit, modifier: Modifier) {
+private fun ColorInput(showAlpha: Boolean, color: Color?, onColorChange: (Color?) -> Unit, modifier: Modifier) {
     OutlinedTextField(
         modifier = modifier,
-        value = color?.toColorHex() ?: "",
+        value = color?.toColorHex(withAlpha = showAlpha) ?: "",
         singleLine = true,
         onValueChange = {
             try {
