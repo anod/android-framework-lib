@@ -28,7 +28,6 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
-import info.anodsplace.applog.AppLog
 import java.util.*
 import kotlin.math.roundToInt
 
@@ -205,7 +204,6 @@ private fun ColorInput(showAlpha: Boolean, color: Color?, onColorChange: (Color?
             }
         }
     }
-    AppLog.d("Recompose $colorValue $isError ")
     OutlinedTextField(
         modifier = modifier,
         value = colorValue,
@@ -217,7 +215,6 @@ private fun ColorInput(showAlpha: Boolean, color: Color?, onColorChange: (Color?
         visualTransformation= HexCodeVisualTransformation(),
         onValueChange = {
             colorValue = it
-            AppLog.d("onValueChange $it")
             try {
                 val parsed = parseColor(showAlpha, it)
                 onColorChange(Color(parsed))
