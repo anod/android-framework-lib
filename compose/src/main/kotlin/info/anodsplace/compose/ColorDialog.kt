@@ -21,9 +21,14 @@ import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.graphics.painter.ColorPainter
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.input.OffsetMapping
+import androidx.compose.ui.text.input.TransformedText
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
+import info.anodsplace.applog.AppLog
 import java.util.*
 import kotlin.math.roundToInt
 
@@ -97,7 +102,9 @@ fun ColorDialogContent(
 ) {
     var tableColor: Color? by remember { mutableStateOf(color) }
     Column(
-        modifier = Modifier.padding(16.dp).requiredWidth(288.dp),
+        modifier = Modifier
+            .padding(16.dp)
+            .requiredWidth(288.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Box(modifier = Modifier.fillMaxWidth()) {
@@ -126,7 +133,10 @@ fun ColorDialogContent(
                     .align(Alignment.CenterEnd),
                 color = color,
                 showAlpha = showAlpha,
-                onColorChange = {}
+                onColorChange = {
+                    tableColor = it
+                    onColorChange(it)
+                }
             )
         }
         ColorsTable(
@@ -161,23 +171,70 @@ fun ColorDialogContent(
     }
 }
 
+class HexCodeVisualTransformation : VisualTransformation, OffsetMapping {
+    override fun filter(text: AnnotatedString): TransformedText {
+      return TransformedText(
+          AnnotatedString("#$text"),
+          this
+      )
+    }
+
+    override fun originalToTransformed(offset: Int): Int {
+        return offset + 1
+    }
+
+    override fun transformedToOriginal(offset: Int): Int {
+        return offset - 1
+    }
+
+}
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ColorInput(showAlpha: Boolean, color: Color?, onColorChange: (Color?) -> Unit, modifier: Modifier) {
+    var colorValue by remember(color) {
+        mutableStateOf(color?.toColorHex(withAlpha = showAlpha) ?: "")
+    }
+    val isError by remember {
+        derivedStateOf {
+            try {
+                parseColor(showAlpha, colorValue)
+                false
+            } catch (_: Exception) {
+                true
+            }
+        }
+    }
+    AppLog.d("Recompose $colorValue $isError ")
     OutlinedTextField(
         modifier = modifier,
-        value = color?.toColorHex(withAlpha = showAlpha) ?: "",
+        value = colorValue,
         singleLine = true,
+        isError = isError,
+        placeholder = {
+            Text(text = if (showAlpha) "FF000000" else "000000")
+        },
+        visualTransformation= HexCodeVisualTransformation(),
         onValueChange = {
+            colorValue = it
+            AppLog.d("onValueChange $it")
             try {
-                if (it.length >= 6) {
-                    val parsed = it.toColorInt()
-                    onColorChange(Color(parsed))
-                }
+                val parsed = parseColor(showAlpha, it)
+                onColorChange(Color(parsed))
             } catch (_: Exception) { }
         },
         textStyle = MaterialTheme.typography.labelMedium
     )
+}
+
+private fun parseColor(showAlpha: Boolean, colorValue: String): Int {
+    return if (showAlpha && colorValue.length == 8) {
+        "#$colorValue".toColorInt()
+    } else if (!showAlpha && (colorValue.length == 3 || colorValue.length == 6)) {
+        "#$colorValue".toColorInt()
+    } else {
+        throw IllegalArgumentException("Cannot parse #$colorValue")
+    }
 }
 
 @Composable
