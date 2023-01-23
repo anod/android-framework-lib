@@ -46,17 +46,20 @@ dependencies {
 
     implementation("androidx.activity:activity-compose:1.6.1")
     implementation("com.google.accompanist:accompanist-flowlayout:0.28.0")
-    api("androidx.compose.ui:ui:1.3.3")
-    api("androidx.compose.material3:material3:1.0.1")
-    api("androidx.compose.material3:material3-window-size-class:1.0.1")
-    api("androidx.compose.foundation:foundation:1.3.1")
-    api("androidx.compose.material:material-icons-core:1.3.1")
-    api("androidx.compose.material:material-icons-extended:1.3.1")
 
-    debugApi("androidx.compose.ui:ui-tooling:1.3.3")
-    debugApi("androidx.customview:customview:1.2.0-alpha02")
-    debugApi("androidx.customview:customview-poolingcontainer:1.0.0")
-    api("androidx.compose.ui:ui-tooling-preview:1.3.3")
+    val composeBom = platform("androidx.compose:compose-bom:2023.01.00")
+    implementation(composeBom)
+    androidTestImplementation(composeBom)
+
+    api("androidx.compose.foundation:foundation")
+    api("androidx.compose.ui:ui")
+    api("androidx.compose.material3:material3")
+    api("androidx.compose.material3:material3-window-size-class")
+    api("androidx.compose.material:material-icons-core")
+    api("androidx.compose.material:material-icons-extended")
+
+    api("androidx.compose.ui:ui-tooling-preview")
+    debugApi("androidx.compose.ui:ui-tooling")
 
     implementation("org.jetbrains.kotlin:kotlin-stdlib:1.7.20")
 }
