@@ -33,7 +33,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.3.2"
+        kotlinCompilerExtensionVersion = "1.4.4"
     }
     namespace = "info.anodsplace.compose"
 }
@@ -44,10 +44,10 @@ dependencies {
     implementation(project(":lib:permissions"))
     implementation(project(":lib:graphics"))
 
-    implementation("androidx.activity:activity-compose:1.6.1")
-    implementation("com.google.accompanist:accompanist-flowlayout:0.28.0")
+    implementation("androidx.activity:activity-compose:1.7.0")
+    implementation("com.google.accompanist:accompanist-flowlayout:0.30.0")
 
-    val composeBom = platform("androidx.compose:compose-bom:2023.01.00")
+    val composeBom = platform("androidx.compose:compose-bom:2023.03.00")
     implementation(composeBom)
     androidTestImplementation(composeBom)
 
@@ -61,5 +61,5 @@ dependencies {
     api("androidx.compose.ui:ui-tooling-preview")
     debugApi("androidx.compose.ui:ui-tooling")
 
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.7.20")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.8.10")
 }

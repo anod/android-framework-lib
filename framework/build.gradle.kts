@@ -27,14 +27,14 @@ android {
 
 dependencies {
     implementation(project(":lib:applog"))
-    implementation("androidx.activity:activity-ktx:1.6.1")
-    implementation("androidx.fragment:fragment-ktx:1.5.5")
+    implementation("androidx.activity:activity-ktx:1.7.0")
+    implementation("androidx.fragment:fragment-ktx:1.5.6")
     implementation("com.google.android.material:material:1.7.0")
-    implementation("androidx.window:window:1.1.0-alpha04")
+    implementation("androidx.window:window:1.1.0-beta01")
     implementation("androidx.core:core-ktx:1.9.0")
 
     implementation("com.google.android.gms:play-services-identity:18.0.1")
     implementation("com.google.android.gms:play-services-auth:20.4.1")
 
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.7.20")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.8.10")
 }

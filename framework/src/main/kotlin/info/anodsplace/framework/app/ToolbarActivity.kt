@@ -16,6 +16,7 @@ import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import com.google.android.material.color.DynamicColors
 import info.anodsplace.framework.R
+import kotlinx.coroutines.launch
 
 /**
  * @author Alex Gavrishev
@@ -53,7 +54,7 @@ abstract class ToolbarActivity : AppCompatActivity(), CustomThemeActivity {
         super.onCreate(savedInstanceState)
         setContentView(layoutView)
         setupToolbar()
-        lifecycleScope.launchWhenCreated {
+        lifecycleScope.launch {
             duoDevice.layout.collect {
                 updateWideLayout(it)
             }
