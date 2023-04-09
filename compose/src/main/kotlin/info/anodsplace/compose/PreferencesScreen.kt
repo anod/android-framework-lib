@@ -6,7 +6,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.VolumeDown
 import androidx.compose.material.icons.filled.VolumeUp
@@ -17,7 +16,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringArrayResource
@@ -313,7 +311,7 @@ object PreferencesDefaults {
         borderColor: Color = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
         selectedBorderColor: Color = MaterialTheme.colorScheme.primary,
         containerColor: Color = MaterialTheme.colorScheme.surface,
-        spacerColor: Color = MaterialTheme.colorScheme.secondary
+        spacerColor: Color = MaterialTheme.colorScheme.surfaceVariant
     ) = PreferencesColors(
         categoryColor = categoryColor,
         descriptionColor = descriptionColor,
