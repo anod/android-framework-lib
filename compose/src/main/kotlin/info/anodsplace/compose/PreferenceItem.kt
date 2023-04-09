@@ -2,26 +2,33 @@ package info.anodsplace.compose
 
 import androidx.annotation.ArrayRes
 import androidx.annotation.StringRes
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import info.anodsplace.ktx.equalsHash
 import info.anodsplace.ktx.hashCodeOf
 
-interface CheckablePreferenceItem {
+interface CheckablePreferenceItem : ActionablePreferenceItem{
     var checked: Boolean
 }
 
-interface SingleValuePreferenceItem {
+interface SingleValuePreferenceItem : ActionablePreferenceItem {
     var value: String
 }
 
-sealed class PreferenceItem{
-    abstract val titleRes: Int
-    abstract val title: String
-    abstract val summaryRes: Int
-    abstract val summary: String
-    abstract val key: String
-    abstract val enabled: Boolean
-    abstract val clickable: Boolean
+interface ActionablePreferenceItem {
+    @get:StringRes
+    val titleRes: Int
+    val title: String
+    @get:StringRes
+    val summaryRes: Int
+    val summary: String
+    val key: String
+    val enabled: Boolean
+    val clickable: Boolean
+}
 
+sealed class PreferenceItem {
+    data class Spacer(val height: Dp = 8.dp, ) : PreferenceItem()
     data class Category(
         @StringRes override val titleRes: Int = 0,
         override val title: String = "",
@@ -29,9 +36,9 @@ sealed class PreferenceItem{
         override val summary: String = "",
         override val key: String = "",
         override val enabled: Boolean = true,
-        override val clickable: Boolean = enabled
-    ) : PreferenceItem()
-
+        override val clickable: Boolean = enabled,
+        val capitalize: Boolean = true
+    ) : PreferenceItem(), ActionablePreferenceItem
     data class Text(
         @StringRes override val titleRes: Int = 0,
         override val title: String = "",
@@ -40,7 +47,7 @@ sealed class PreferenceItem{
         override val key: String = "",
         override val enabled: Boolean = true,
         override val clickable: Boolean = enabled
-    ) : PreferenceItem()
+    ) : PreferenceItem(), ActionablePreferenceItem
     data class Switch(
         override var checked: Boolean,
         @StringRes override val titleRes: Int = 0,
@@ -101,7 +108,7 @@ sealed class PreferenceItem{
         override val key: String = "",
         override val enabled: Boolean = true,
         override val clickable: Boolean = enabled
-    ) : PreferenceItem()
+    ) : PreferenceItem(), ActionablePreferenceItem
 
     data class Placeholder(
         @StringRes override val titleRes: Int = 0,
@@ -111,7 +118,7 @@ sealed class PreferenceItem{
         override val key: String = "",
         override val enabled: Boolean = true,
         override val clickable: Boolean = false
-    ): PreferenceItem()
+    ): PreferenceItem(), ActionablePreferenceItem
 }
 
 fun PreferenceItem.Placeholder.toTextItem() = PreferenceItem.Text(
@@ -127,3 +134,24 @@ val PreferenceItem.checked: Boolean
 
 val PreferenceItem.value: String
     get() = (this as SingleValuePreferenceItem).value
+
+val PreferenceItem.enabled: Boolean
+    get() = (this as ActionablePreferenceItem).enabled
+
+val PreferenceItem.clickable: Boolean
+    get() = (this as ActionablePreferenceItem).clickable
+
+val PreferenceItem.titleRes: Int
+    get() = (this as ActionablePreferenceItem).titleRes
+
+val PreferenceItem.title: String
+    get() = (this as ActionablePreferenceItem).title
+
+val PreferenceItem.summaryRes: Int
+    get() = (this as ActionablePreferenceItem).summaryRes
+
+val PreferenceItem.summary: String
+    get() = (this as ActionablePreferenceItem).summary
+
+val PreferenceItem.key: String
+    get() = (this as ActionablePreferenceItem).key

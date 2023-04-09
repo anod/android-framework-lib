@@ -6,6 +6,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.VolumeDown
 import androidx.compose.material.icons.filled.VolumeUp
@@ -16,12 +17,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringArrayResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -57,34 +60,36 @@ fun PreferenceSlider(
                     singleLine = true,
                     trailingIcon = suffixText
                 )
+            },
+            secondary = {
+                Row(
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    startIcon(
+                        Modifier
+                            .size(24.dp)
+                            .weight(1f)
+                    )
+                    Slider(
+                        enabled = item.enabled,
+                        modifier = Modifier.weight(6f),
+                        value = value,
+                        valueRange = 0f..100f,
+                        onValueChangeFinished = {
+                            onValueChanged(value.toInt())
+                        },
+                        onValueChange = { value = it }
+                    )
+                    endIcon(
+                        Modifier
+                            .size(24.dp)
+                            .weight(1f)
+                    )
+                }
             }
         )
-        Row(
-            modifier = Modifier
-                .padding(horizontal = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            startIcon(
-                Modifier
-                    .size(24.dp)
-                    .weight(1f)
-            )
-            Slider(
-                enabled = item.enabled,
-                modifier = Modifier.weight(6f),
-                value = value,
-                valueRange = 0f..100f,
-                onValueChangeFinished = {
-                    onValueChanged(value.toInt())
-                },
-                onValueChange = { value = it }
-            )
-            endIcon(
-                Modifier
-                    .size(24.dp)
-                    .weight(1f)
-            )
-        }
     }
 }
 
@@ -92,14 +97,16 @@ fun PreferenceSlider(
 fun PreferenceCategory(
     item: PreferenceItem.Category,
     modifier: Modifier = Modifier,
-    color: Color = MaterialTheme.colorScheme.primary,
+    colors: PreferencesColors = PreferencesDefaults.colors(),
 ) {
+    val text = if (item.titleRes != 0) stringResource(id = item.titleRes) else item.title
     Text(
-        text = if (item.titleRes != 0) stringResource(id = item.titleRes) else item.title,
+        text = if (item.capitalize) text.uppercase() else text,
         modifier = modifier
             .fillMaxWidth()
             .padding(start = 16.dp, end = 16.dp, top = 16.dp, bottom = 4.dp),
-        style = MaterialTheme.typography.titleSmall.copy(color)
+        style = MaterialTheme.typography.titleSmall.copy(colors.categoryColor),
+        letterSpacing = 1.2.sp
     )
 }
 
@@ -108,7 +115,7 @@ fun PreferenceCategory(
 fun PreferencePick(
     item: PreferenceItem.Pick,
     placeholder: @Composable (() -> Unit) = { },
-    descriptionColor: Color = MaterialTheme.colorScheme.onSurface,
+    colors: PreferencesColors = PreferencesDefaults.colors(),
     onPickValue: (String) -> Unit
 ) {
     val entries =
@@ -121,7 +128,7 @@ fun PreferencePick(
 
     Preference(
         item,
-        descriptionColor,
+        colors = colors,
         secondary = {
             Column {
                 PickGroup(
@@ -148,7 +155,7 @@ fun PreferenceColor(
 ) {
     Preference(
         item = item,
-        descriptionColor = colors.descriptionColor,
+        colors = colors,
         secondary = secondary,
         onClick = onClick,
         trailing = {
@@ -167,12 +174,14 @@ fun PreferenceColor(
                                     color = colors.selectedBorderColor,
                                     start = Offset(0f, size.toPx()),
                                     end = Offset(size.toPx(), 0f),
-                                    strokeWidth = lineWidth.toPx())
+                                    strokeWidth = lineWidth.toPx()
+                                )
                                 drawLine(
                                     color = colors.selectedBorderColor,
                                     start = Offset(0f, 0f),
                                     end = Offset(size.toPx(), size.toPx()),
-                                    strokeWidth = lineWidth.toPx())
+                                    strokeWidth = lineWidth.toPx()
+                                )
                             }
                         }
                     } else if (item.color != null) it.background(item.color) else it
@@ -191,16 +200,14 @@ fun PreferenceColor(
 @Composable
 fun Preference(
     item: PreferenceItem,
-    descriptionColor: Color = MaterialTheme.colorScheme.onSurface,
+    colors: PreferencesColors = PreferencesDefaults.colors(),
     onClick: () -> Unit,
     secondary: @Composable (() -> Unit)? = null,
     trailing: @Composable (() -> Unit)? = null
 ) {
-
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 8.dp)
     ) {
         ListItem(
             modifier = Modifier
@@ -219,7 +226,7 @@ fun Preference(
                         modifier = Modifier.padding(top = 4.dp),
                         text = if (item.summaryRes != 0) stringResource(id = item.summaryRes) else item.summary,
                         style = MaterialTheme.typography.bodyMedium.copy(
-                            color = descriptionColor
+                            color = colors.descriptionColor
                         )
                     )
                 }
@@ -241,15 +248,16 @@ fun PreferenceSwitch(
     checked: Boolean,
     item: PreferenceItem,
     placeholder: @Composable (() -> Unit)? = null,
-    descriptionColor: Color = MaterialTheme.colorScheme.onSurface,
+    colors: PreferencesColors = PreferencesDefaults.colors(),
     switchColors: SwitchColors = SwitchDefaults.colors(),
     onCheckedChange: (Boolean) -> Unit
 ) {
-    Preference(item, descriptionColor,
+    Preference(
+        item,
+        colors,
         secondary = placeholder,
-        onClick = {
-            onCheckedChange(!checked)
-        }) {
+        onClick = { onCheckedChange(!checked) }
+    ) {
         Switch(
             enabled = item.enabled,
             checked = checked,
@@ -264,21 +272,21 @@ fun PreferenceCheckbox(
     checked: Boolean,
     item: PreferenceItem,
     placeholder: @Composable (() -> Unit)? = null,
-    descriptionColor: Color = MaterialTheme.colorScheme.onSurface,
-    checkBoxColor: Color = MaterialTheme.colorScheme.onBackground,
+    colors: PreferencesColors = PreferencesDefaults.colors(),
     onCheckedChange: (Boolean) -> Unit
 ) {
-    Preference(item, descriptionColor,
+    Preference(
+        item,
+        colors,
         secondary = placeholder,
-        onClick = {
-            onCheckedChange(!checked)
-        }) {
+        onClick = { onCheckedChange(!checked) }
+    ) {
         Checkbox(
             enabled = item.enabled,
             checked = checked,
             onCheckedChange = onCheckedChange,
             colors = CheckboxDefaults.colors(
-                uncheckedColor = checkBoxColor.copy(alpha = 0.6f),
+                uncheckedColor = colors.checkBoxColor.copy(alpha = 0.6f),
                 // disabledColor = checkBoxColor.copy(alpha = 0.38f)
             )
         )
@@ -291,7 +299,9 @@ data class PreferencesColors(
     val descriptionColor: Color,
     val checkBoxColor: Color,
     val borderColor: Color,
-    val selectedBorderColor: Color
+    val selectedBorderColor: Color,
+    val containerColor: Color,
+    val spacerColor: Color
 )
 
 object PreferencesDefaults {
@@ -302,12 +312,16 @@ object PreferencesDefaults {
         checkBoxColor: Color = MaterialTheme.colorScheme.onBackground,
         borderColor: Color = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
         selectedBorderColor: Color = MaterialTheme.colorScheme.primary,
+        containerColor: Color = MaterialTheme.colorScheme.surface,
+        spacerColor: Color = MaterialTheme.colorScheme.secondary
     ) = PreferencesColors(
         categoryColor = categoryColor,
         descriptionColor = descriptionColor,
         checkBoxColor = checkBoxColor,
         borderColor = borderColor,
-        selectedBorderColor = selectedBorderColor
+        selectedBorderColor = selectedBorderColor,
+        containerColor = containerColor,
+        spacerColor = spacerColor
     )
 }
 
@@ -320,83 +334,95 @@ fun PreferencesScreen(
     placeholder: @Composable (PreferenceItem, paddingValues: PaddingValues) -> Unit = { _, _ -> },
 ) {
     var listItem by remember { mutableStateOf<PreferenceItem.List?>(null) }
-    LazyColumn(
-        modifier = modifier.fillMaxWidth()
+    Surface(
+        color = colors.containerColor
     ) {
-        items(preferences.size) { index ->
-            val paddingValues = PaddingValues(top = 16.dp, bottom = 8.dp)
-            when (val item = preferences[index]) {
-                is PreferenceItem.Category -> PreferenceCategory(item = item, color = colors.categoryColor)
-                is PreferenceItem.CheckBox -> {
-                    var checked by remember { mutableStateOf(item.checked) }
-                    PreferenceCheckbox(
-                        checked = checked,
-                        item = item,
-                        placeholder = {
-                            placeholder(item, paddingValues = paddingValues)
-                        },
-                        descriptionColor = colors.descriptionColor,
-                        checkBoxColor = colors.checkBoxColor,
-                        onCheckedChange = { newChecked ->
-                            checked = newChecked
-                            item.checked = newChecked
-                            onClick(item)
-                        })
-                }
-
-                is PreferenceItem.List -> Preference(
-                    item = item,
-                    descriptionColor = colors.descriptionColor,
-                    secondary = {
-                        placeholder(item, paddingValues = paddingValues)
-                    },
-                    onClick = { listItem = item }
-                ) { }
-
-                is PreferenceItem.Pick -> PreferencePick(
-                    item = item,
-                    descriptionColor = colors.descriptionColor,
-                    placeholder = { placeholder(item, paddingValues = paddingValues) },
-                    onPickValue = { value ->
-                        item.value = value
-                        onClick(item)
+        LazyColumn(
+            modifier = modifier.fillMaxWidth()
+        ) {
+            items(preferences.size) { index ->
+                val paddingValues = PaddingValues(top = 16.dp, bottom = 8.dp)
+                when (val item = preferences[index]) {
+                    is PreferenceItem.Category -> PreferenceCategory(item = item, colors = colors)
+                    is PreferenceItem.CheckBox -> {
+                        var checked by remember { mutableStateOf(item.checked) }
+                        PreferenceCheckbox(
+                            checked = checked,
+                            item = item,
+                            placeholder = {
+                                placeholder(item, paddingValues = paddingValues)
+                            },
+                            colors = colors,
+                            onCheckedChange = { newChecked ->
+                                checked = newChecked
+                                item.checked = newChecked
+                                onClick(item)
+                            })
                     }
-                )
 
-                is PreferenceItem.Switch -> {
-                    var checked by remember { mutableStateOf(item.checked) }
-                    PreferenceSwitch(
-                        checked = checked,
+                    is PreferenceItem.List -> Preference(
                         item = item,
-                        placeholder = {
+                        colors = colors,
+                        secondary = {
                             placeholder(item, paddingValues = paddingValues)
                         },
-                        descriptionColor = colors.descriptionColor,
-                        onCheckedChange = { newChecked ->
-                            item.checked = newChecked
-                            checked = newChecked
+                        onClick = { listItem = item }
+                    ) { }
+
+                    is PreferenceItem.Pick -> PreferencePick(
+                        item = item,
+                        colors = colors,
+                        placeholder = { placeholder(item, paddingValues = paddingValues) },
+                        onPickValue = { value ->
+                            item.value = value
                             onClick(item)
-                        })
-                }
+                        }
+                    )
 
-                is PreferenceItem.Color -> PreferenceColor(
-                    item = item,
-                    colors = colors,
-                    secondary = {
+                    is PreferenceItem.Switch -> {
+                        var checked by remember { mutableStateOf(item.checked) }
+                        PreferenceSwitch(
+                            checked = checked,
+                            item = item,
+                            placeholder = {
+                                placeholder(item, paddingValues = paddingValues)
+                            },
+                            colors = colors,
+                            onCheckedChange = { newChecked ->
+                                item.checked = newChecked
+                                checked = newChecked
+                                onClick(item)
+                            })
+                    }
+
+                    is PreferenceItem.Color -> PreferenceColor(
+                        item = item,
+                        colors = colors,
+                        secondary = {
+                            placeholder(item, paddingValues = paddingValues)
+                        },
+                        onClick = { onClick(item) })
+
+                    is PreferenceItem.Text -> Preference(
+                        item = item,
+                        colors = colors,
+                        secondary = {
+                            placeholder(item, paddingValues = paddingValues)
+                        },
+                        onClick = { onClick(item) }) { }
+
+                    is PreferenceItem.Placeholder -> {
                         placeholder(item, paddingValues = paddingValues)
-                    },
-                    onClick = { onClick(item) })
+                    }
 
-                is PreferenceItem.Text -> Preference(
-                    item = item,
-                    descriptionColor = colors.descriptionColor,
-                    secondary = {
-                        placeholder(item, paddingValues = paddingValues)
-                    },
-                    onClick = { onClick(item) }) { }
-
-                is PreferenceItem.Placeholder -> {
-                    placeholder(item, paddingValues = paddingValues)
+                    is PreferenceItem.Spacer -> {
+                        Spacer(
+                            modifier = Modifier
+                            .fillMaxWidth()
+                            .height(item.height)
+                            .background(color = colors.spacerColor)
+                        )
+                    }
                 }
             }
         }
@@ -438,99 +464,102 @@ fun PreferenceListDialog(
     )
 }
 
-
-@Preview
+@Preview("InCarScreen Light", widthDp = 360, heightDp = 1020)
 @Composable
-fun PreferenceSliderPreview() {
-    MaterialTheme(
-        colorScheme = darkColorScheme()
-    ) {
-        Surface {
-            PreferenceSlider(
-                initialValue = 100,
-                onValueChanged = { },
-                item = PreferenceItem.Text(
-                    title = "Media level",
-                    summary = "Change desired level of volume"
+fun InCarScreenLight() {
+    MaterialTheme {
+        Surface(
+            color = MaterialTheme.colorScheme.secondary
+        ) {
+            PreferencesScreen(
+                preferences = listOf(
+                    PreferenceItem.Category(title = "Category"),
+                    PreferenceItem.Pick(
+                        entries = arrayOf(
+                            "Manually",
+                            "Every hour",
+                            "Every 2 hours",
+                            "Every 3 hours",
+                            "Every 6 hours",
+                            "Every 12 hours"
+                        ),
+                        value = "Every 2 hours",
+                        title = "Check for new updates",
+                        key = "update_frequency"
+                    ),
+                    PreferenceItem.Color(
+                        title = "Background color",
+                        summary = "#${Color(48340).toColorHex()}",
+                        color = Color(48340)
+                    ),
+                    PreferenceItem.Text(
+                        title = "Bluetooth device",
+                        summary = "Choose bluetooth device which enable InCar mode"
+                    ),
+                    PreferenceItem.CheckBox(
+                        checked = true,
+                        title = "Keep screen On",
+                        summary = "When checked, prevents screen from automatically turning off"
+                    ),
+                    PreferenceItem.Switch(
+                        checked = true,
+                        title = "Route to speaker",
+                        summary = "Route all incoming calls to phones speaker"
+                    ),
+                    PreferenceItem.Placeholder(key = "slider"),
+                    PreferenceItem.Color(
+                        title = "No color",
+                        summary = "Item without assigned color",
+                        color = null
+                    ),
+                    PreferenceItem.Switch(checked = false, title = "Wi-Fi Only")
                 ),
-                startIcon = {
-                    Icon(
-                        modifier = it,
-                        imageVector = Icons.Filled.VolumeDown,
-                        contentDescription = null
-                    )
-                },
-                endIcon = {
-                    Icon(
-                        modifier = it,
-                        imageVector = Icons.Filled.VolumeUp,
-                        contentDescription = null
-                    )
+                onClick = {},
+                placeholder = { preferenceItem, _ ->
+                    when (preferenceItem.key) {
+                        "slider" -> {
+                            PreferenceSlider(
+                                initialValue = 100,
+                                onValueChanged = { },
+                                item = PreferenceItem.Text(
+                                    title = "Media level",
+                                    summary = "Change desired level of volume"
+                                ),
+                                startIcon = {
+                                    Icon(
+                                        modifier = it,
+                                        imageVector = Icons.Filled.VolumeDown,
+                                        contentDescription = null
+                                    )
+                                },
+                                endIcon = {
+                                    Icon(
+                                        modifier = it,
+                                        imageVector = Icons.Filled.VolumeUp,
+                                        contentDescription = null
+                                    )
+                                }
+                            )
+                        }
+                    }
                 }
             )
         }
     }
 }
 
-@Preview("InCarScreen Light", showSystemUi = true)
-@Composable
-fun InCarScreenLight() {
-    MaterialTheme {
-        Surface {
-            PreferencesScreen(listOf(
-                PreferenceItem.Category(title = "Category"),
-                PreferenceItem.Pick(
-                    entries = arrayOf(
-                        "Manually",
-                        "Every hour",
-                        "Every 2 hours",
-                        "Every 3 hours",
-                        "Every 6 hours",
-                        "Every 12 hours"
-                    ),
-                    value = "Every 2 hours",
-                    title = "Check for new updates",
-                    key = "update_frequency"
-                ),
-                PreferenceItem.Color(
-                    title = "Background color",
-                    summary = "#${Color(48340).toColorHex()}",
-                    color = Color(48340)
-                ),
-                PreferenceItem.Color(
-                    title = "No color",
-                    summary = "Item without assigned color",
-                    color = null
-                ),
-                PreferenceItem.Text(
-                    title = "Bluetooth device",
-                    summary = "Choose bluetooth device which enable InCar mode"
-                ),
-                PreferenceItem.CheckBox(
-                    checked = true,
-                    title = "Keep screen On",
-                    summary = "When checked, prevents screen from automatically turning off"
-                ),
-                PreferenceItem.Switch(
-                    checked = true,
-                    title = "Route to speaker",
-                    summary = "Route all incoming calls to phones speaker"
-                ),
-                PreferenceItem.Switch(checked = false, title = "Wi-Fi Only"),
-            ), onClick = {})
-        }
-    }
-}
-
-@Preview("InCarScreen Dark", showSystemUi = true)
+@Preview("InCarScreen Dark", widthDp = 360, heightDp = 1020)
 @Composable
 fun InCarScreenDark() {
     MaterialTheme(
         colorScheme = darkColorScheme()
     ) {
-        Surface {
+        Surface(
+            color = MaterialTheme.colorScheme.primaryContainer
+        ) {
             PreferencesScreen(listOf(
                 PreferenceItem.Category(title = "Category"),
+                PreferenceItem.Spacer(),
                 PreferenceItem.Text(
                     title = "Bluetooth device",
                     summary = "Choose bluetooth device which enable InCar mode"
@@ -544,6 +573,7 @@ fun InCarScreenDark() {
                     summary = "Item without assigned color",
                     color = null
                 ),
+                PreferenceItem.Spacer(),
                 PreferenceItem.CheckBox(
                     checked = true,
                     title = "Keep screen On",
