@@ -147,13 +147,16 @@ fun ColorDialogContent(
         DarkRow(
             color = tableColor ?: Color.White,
             selected = color,
-            onColorChange = onColorChange
+            onColorChange =  onColorChange
         )
         if (showAlpha) {
             AlphaRow(
                 color = tableColor ?: Color.Black,
                 selected = color,
-                onColorChange = onColorChange
+                onColorChange =  {
+                    tableColor = it
+                    onColorChange(it)
+                }
             )
         }
     }
@@ -162,7 +165,7 @@ fun ColorDialogContent(
 class HexCodeVisualTransformation : VisualTransformation, OffsetMapping {
     override fun filter(text: AnnotatedString): TransformedText {
         return TransformedText(
-            AnnotatedString("#$text"),
+            if (text.isEmpty()) AnnotatedString(" $text") else AnnotatedString("#$text"),
             this
         )
     }
@@ -180,8 +183,8 @@ class HexCodeVisualTransformation : VisualTransformation, OffsetMapping {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ColorInput(showAlpha: Boolean, color: Color?, onColorChange: (Color?) -> Unit, modifier: Modifier) {
-    var colorValue by remember(color) {
-        mutableStateOf(color?.toColorHex(withAlpha = showAlpha) ?: "")
+    val colorValue = remember(color) {
+        color?.toColorHex(withAlpha = showAlpha) ?: ""
     }
     val isError by remember {
         derivedStateOf {
@@ -203,14 +206,21 @@ private fun ColorInput(showAlpha: Boolean, color: Color?, onColorChange: (Color?
         },
         visualTransformation = HexCodeVisualTransformation(),
         onValueChange = {
-            colorValue = it
             try {
                 val parsed = parseColor(showAlpha, it)
                 onColorChange(Color(parsed))
             } catch (_: Exception) {
             }
         },
-        textStyle = MaterialTheme.typography.labelMedium
+        textStyle = MaterialTheme.typography.labelMedium,
+        trailingIcon = {
+            ColorIcon(
+                color = color ?: Color.Transparent,
+                modifier = Modifier.size(24.dp),
+                isSelected = false,
+                onClick = { }
+            )
+        }
     )
 }
 
