@@ -23,6 +23,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import kotlin.math.max
+import kotlin.math.min
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -31,8 +33,8 @@ fun PreferenceSlider(
     onValueChanged: (Int) -> Unit,
     item: PreferenceItem,
     suffixText: @Composable (() -> Unit)? = null,
-    startIcon: @Composable (modifier: Modifier) -> Unit = { Box(modifier = it) {} },
-    endIcon: @Composable (modifier: Modifier) -> Unit = { Box(modifier = it) {} },
+    startIcon: @Composable (() -> Unit)? = null,
+    endIcon: @Composable (() -> Unit)? = null,
     paddingValues: PaddingValues = PaddingValues(0.dp),
 ) {
     var value: Float by remember { mutableStateOf(initialValue.toFloat()) }
@@ -65,11 +67,17 @@ fun PreferenceSlider(
                         .padding(horizontal = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    startIcon(
-                        Modifier
-                            .size(24.dp)
-                            .weight(1f)
-                    )
+                    startIcon?.let {
+                        IconButton(
+                            modifier = Modifier.weight(1f),
+                            onClick = { value = max(0f, value - 1.0f) },
+                            colors = IconButtonDefaults.iconButtonColors(
+                                contentColor = MaterialTheme.colorScheme.primary
+                            )
+                        ) {
+                            startIcon()
+                        }
+                    } ?: Box(modifier = Modifier.weight(1f))
                     Slider(
                         enabled = item.enabled,
                         modifier = Modifier.weight(6f),
@@ -80,11 +88,17 @@ fun PreferenceSlider(
                         },
                         onValueChange = { value = it }
                     )
-                    endIcon(
-                        Modifier
-                            .size(24.dp)
-                            .weight(1f)
-                    )
+                    endIcon?.let {
+                        IconButton(
+                            modifier = Modifier.weight(1f),
+                            onClick = { value = min(100f, value + 1.0f) },
+                            colors = IconButtonDefaults.iconButtonColors(
+                                contentColor = MaterialTheme.colorScheme.primary
+                            )
+                        ) {
+                            endIcon()
+                        }
+                    } ?: Box(modifier = Modifier.weight(1f))
                 }
             }
         )
@@ -416,9 +430,9 @@ fun PreferencesScreen(
                     is PreferenceItem.Spacer -> {
                         Spacer(
                             modifier = Modifier
-                            .fillMaxWidth()
-                            .height(item.height)
-                            .background(color = colors.spacerColor)
+                                .fillMaxWidth()
+                                .height(item.height)
+                                .background(color = colors.spacerColor)
                         )
                     }
                 }
@@ -525,14 +539,12 @@ fun InCarScreenLight() {
                                 ),
                                 startIcon = {
                                     Icon(
-                                        modifier = it,
                                         imageVector = Icons.Filled.VolumeDown,
                                         contentDescription = null
                                     )
                                 },
                                 endIcon = {
                                     Icon(
-                                        modifier = it,
                                         imageVector = Icons.Filled.VolumeUp,
                                         contentDescription = null
                                     )
