@@ -32,28 +32,6 @@ import java.util.*
 import kotlin.math.roundToInt
 
 private val colorsAll = listOf(
-        Color(0xFFF44336),
-        Color(0xFFE91E63),
-        Color(0xFF9C27B0),
-        Color(0xFF673AB7),
-        Color(0xFF3F51B5),
-        Color(0xFF2196F3),
-        Color(0xFF03A9F4),
-        Color(0xFF00BCD4),
-        Color(0xFF009688),
-        Color(0xFF8BC34A),
-        Color(0xFFCDDC39),
-        Color(0xFFFFEB3B),
-        Color(0xFFFFC107),
-        Color(0xFFFF9800),
-        Color(0xFFFF5722),
-        Color(0xFF795548),
-        Color(0xFF9E9E9E),
-        Color(0xFF607D8B),
-)
-
-private val colorsWithNone = listOf(
-    Color.Unspecified,
     Color(0xFFF44336),
     Color(0xFFE91E63),
     Color(0xFF9C27B0),
@@ -66,6 +44,7 @@ private val colorsWithNone = listOf(
     Color(0xFF8BC34A),
     Color(0xFFCDDC39),
     Color(0xFFFFEB3B),
+    Color(0xFFFFC107),
     Color(0xFFFF9800),
     Color(0xFFFF5722),
     Color(0xFF795548),
@@ -97,6 +76,7 @@ fun ColorDialogContent(
     color: Color?,
     showNone: Boolean = true,
     showAlpha: Boolean = true,
+    showSystemColors: Boolean = false,
     onColorChange: (Color?) -> Unit = { }
 ) {
     var tableColor: Color? by remember { mutableStateOf(color) }
@@ -106,31 +86,25 @@ fun ColorDialogContent(
             .requiredWidth(288.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Box(modifier = Modifier.fillMaxWidth()) {
-            if (color == null) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            if (showNone) {
                 ColorNone(
-                    modifier = Modifier
-                        .size(52.dp)
-                        .align(Alignment.CenterStart),
-                    isSelected = false,
-                    onClick = { }
-                )
-            } else {
-                ColorIcon(
-                    modifier = Modifier
-                        .size(52.dp)
-                        .align(Alignment.CenterStart),
-                    isSelected = false,
-                    color = color,
-                    onClick = { }
+                    modifier = Modifier.size(size),
+                    isSelected = tableColor == null,
+                    onClick = {
+                        tableColor = null
+                        onColorChange(null)
+                    }
                 )
             }
+            Spacer(modifier = Modifier.weight(1f))
             ColorInput(
                 modifier = Modifier
-                    .padding(start = 16.dp)
-                    .width(140.dp)
-                    .align(Alignment.CenterEnd),
-                color = color,
+                    .width(144.dp),
+                color = tableColor,
                 showAlpha = showAlpha,
                 onColorChange = {
                     tableColor = it
@@ -138,17 +112,32 @@ fun ColorDialogContent(
                 }
             )
         }
+        Spacer(modifier = Modifier.height(2.dp))
+        if (showSystemColors) {
+            SystemColorsRow(
+                selected = color,
+                onColorChange = {
+                    tableColor = it
+                    onColorChange(it)
+                }
+            )
+            Divider(
+                modifier = Modifier
+                    .padding(top = 2.dp, bottom = 2.dp)
+                    .width(240.dp)
+            )
+        }
         ColorsTable(
             selected = color,
-            showNone = showNone,
             onColorChange = {
                 tableColor = it
                 onColorChange(it)
             }
         )
-        Divider(modifier = Modifier
-            .padding(top = 2.dp, bottom = 2.dp)
-            .width(240.dp)
+        Divider(
+            modifier = Modifier
+                .padding(top = 2.dp, bottom = 2.dp)
+                .width(240.dp)
         )
         LightRow(
             color = tableColor ?: Color.Black,
@@ -172,10 +161,10 @@ fun ColorDialogContent(
 
 class HexCodeVisualTransformation : VisualTransformation, OffsetMapping {
     override fun filter(text: AnnotatedString): TransformedText {
-      return TransformedText(
-          AnnotatedString("#$text"),
-          this
-      )
+        return TransformedText(
+            AnnotatedString("#$text"),
+            this
+        )
     }
 
     override fun originalToTransformed(offset: Int): Int {
@@ -212,13 +201,14 @@ private fun ColorInput(showAlpha: Boolean, color: Color?, onColorChange: (Color?
         placeholder = {
             Text(text = if (showAlpha) "FF000000" else "000000")
         },
-        visualTransformation= HexCodeVisualTransformation(),
+        visualTransformation = HexCodeVisualTransformation(),
         onValueChange = {
             colorValue = it
             try {
                 val parsed = parseColor(showAlpha, it)
                 onColorChange(Color(parsed))
-            } catch (_: Exception) { }
+            } catch (_: Exception) {
+            }
         },
         textStyle = MaterialTheme.typography.labelMedium
     )
@@ -242,7 +232,7 @@ private fun LightRow(
 ) {
     val colors = remember(color) {
         listOf(0.15f, 0.30f, 0.45f, 0.6f, 0.75f, 1.0f).map { interpolation ->
-           lerp(color, Color.White, interpolation)
+            lerp(color, Color.White, interpolation)
         }
     }
     ColorsRow(
@@ -268,6 +258,26 @@ private fun DarkRow(
         selected = selected,
         onColorChange = onColorChange
     )
+}
+
+
+@Composable
+private fun SystemColorsRow(selected: Color?, onColorChange: (Color?) -> Unit) {
+    val colors = listOf(
+        MaterialTheme.colorScheme.primary,
+        MaterialTheme.colorScheme.primaryContainer,
+        MaterialTheme.colorScheme.secondary,
+        MaterialTheme.colorScheme.secondaryContainer,
+        MaterialTheme.colorScheme.tertiary,
+        MaterialTheme.colorScheme.tertiaryContainer,
+    )
+    MaterialTheme {
+        ColorsRow(
+            colors = colors,
+            selected = selected,
+            onColorChange = onColorChange
+        )
+    }
 }
 
 @Composable
@@ -351,12 +361,10 @@ private fun ColorsRow(colors: List<Color>, selected: Color?, onColorChange: (Col
 @Composable
 private fun ColorsTable(
     selected: Color?,
-    showNone: Boolean,
     onColorChange: (Color?) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val rows = (if (showNone) colorsWithNone else colorsAll)
-        .chunked(6)
+    val rows = colorsAll.chunked(6)
     Column(
         modifier = modifier
     ) {
@@ -364,34 +372,25 @@ private fun ColorsTable(
             Row {
                 for (color in row) {
                     val colorModifier = Modifier.size(size)
-
-                    if (color == Color.Unspecified) {
-                        ColorNone(
+                    val isSelected = selected == color
+                    Box(modifier = colorModifier) {
+                        ColorIcon(
                             modifier = colorModifier,
-                            isSelected = selected == null,
-                            onClick = { onColorChange(null) }
+                            color = color,
+                            isSelected = isSelected,
+                            onClick = { onColorChange(it) }
                         )
-                    } else {
-                        val isSelected = selected == color
-                        Box(modifier = colorModifier) {
-                            ColorIcon(
-                                modifier = colorModifier,
-                                color = color,
-                                isSelected = isSelected,
-                                onClick = { onColorChange(it) }
+                        if (isSelected) {
+                            Icon(
+                                modifier = Modifier
+                                    .size(size)
+                                    .padding(8.dp)
+                                    .alpha(0.8f),
+                                imageVector = Icons.Filled.Check,
+                                contentDescription = null,
+                                tint = if (color.luminance() > 0.3)
+                                    Color.Black else Color.White
                             )
-                            if (isSelected) {
-                                Icon(
-                                    modifier = Modifier
-                                        .size(size)
-                                        .padding(8.dp)
-                                        .alpha(0.8f),
-                                    imageVector = Icons.Filled.Check,
-                                    contentDescription = null,
-                                    tint = if (color.luminance() > 0.3)
-                                        Color.Black else Color.White
-                                )
-                            }
                         }
                     }
                 }
@@ -403,53 +402,52 @@ private fun ColorsTable(
 @Composable
 private fun ColorIcon(modifier: Modifier, color: Color, isSelected: Boolean, onClick: (Color) -> Unit) {
     Icon(
-            modifier = modifier
-                .padding(2.dp)
-                .border(
-                    width = if (isSelected) 2.dp else 0.dp,
-                    color = Color.Gray,
-                    shape = CircleShape
-                )
-                .clip(shape = CircleShape)
-                .clickable { onClick(color) },
-            painter = ColorPainter(color),
-            tint = Color.Unspecified,
-            contentDescription = color.toString()
+        modifier = modifier
+            .padding(2.dp)
+            .border(
+                width = if (isSelected) 2.dp else 0.dp,
+                color = Color.Gray,
+                shape = CircleShape
+            )
+            .clip(shape = CircleShape)
+            .clickable { onClick(color) },
+        painter = ColorPainter(color),
+        tint = Color.Unspecified,
+        contentDescription = color.toString()
     )
 }
 
 @Composable
 private fun ColorNone(modifier: Modifier, isSelected: Boolean, onClick: () -> Unit) {
     Icon(
-            modifier = modifier
-                .padding(2.dp)
-                .border(
-                    width = if (isSelected) 2.dp else 0.dp,
-                    color = Color.Gray,
-                    shape = CircleShape
-                )
-                .clip(shape = CircleShape)
-                .clickable { onClick() },
-            imageVector = Icons.Outlined.Cancel,
-            tint = Color.Unspecified,
-            contentDescription = "None"
+        modifier = modifier
+            .padding(2.dp)
+            .border(
+                width = if (isSelected) 2.dp else 0.dp,
+                color = Color.Gray,
+                shape = CircleShape
+            )
+            .clip(shape = CircleShape)
+            .clickable { onClick() },
+        imageVector = Icons.Outlined.Cancel,
+        contentDescription = "None"
     )
 }
 
 @Preview
 @Composable
 private fun ColorDialogWithNonePreview() {
-    var color: Color? by remember { mutableStateOf(Color(0xFF673AB7)) }
     Surface(modifier = Modifier.fillMaxWidth()) {
-        ColorDialogContent(color = color, onColorChange = { color = it })
+        var color: Color? by remember { mutableStateOf(Color(0xFFE91E63)) }
+        ColorDialogContent(color = color, onColorChange = { color = it }, showSystemColors = true)
     }
 }
 
 @Preview
 @Composable
 private fun ColorDialogPreview() {
-    var color: Color? by remember { mutableStateOf(Color(0xFF673AB7)) }
     Surface(modifier = Modifier.fillMaxWidth()) {
+        var color: Color? by remember { mutableStateOf(Color(0xFFE91E63)) }
         ColorDialogContent(color = color, onColorChange = { color = it }, showNone = false)
     }
 }
