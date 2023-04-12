@@ -2,7 +2,14 @@ package info.anodsplace.graphics
 
 import android.content.Context
 import android.content.res.Resources
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.BitmapShader
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.Matrix
+import android.graphics.Paint
+import android.graphics.Path
+import android.graphics.Shader
 import android.graphics.drawable.AdaptiveIconDrawable
 import android.graphics.drawable.BitmapDrawable
 import android.util.TypedValue
@@ -147,6 +154,16 @@ class AdaptiveIcon(
             } catch (e: Exception) {
                 PathParser.createPathFromPathData(circlePath)
             }
+        }
+
+        fun maskToScaledPath(pathMask: String, iconSizePx: Int, maxSize: Float = MASK_SIZE): Path {
+            val path = maskToPath(pathMask)
+            val outline = Path()
+            val maskMatrix = Matrix().apply {
+                setScale(iconSizePx / maxSize, iconSizePx / maxSize)
+            }
+            path.transform(maskMatrix, outline)
+            return outline
         }
     }
 }

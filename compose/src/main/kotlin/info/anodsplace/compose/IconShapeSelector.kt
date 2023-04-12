@@ -1,7 +1,5 @@
 package info.anodsplace.compose
 
-import android.graphics.Matrix
-import android.graphics.Path
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -11,14 +9,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.GenericShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.asComposePath
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.Dp
@@ -34,14 +30,10 @@ fun IconShapeSelector(
         modifier: Modifier = Modifier,
         defaultSystemMask: String = "",
         systemMaskName: String = "",
-        maxSize: Float = AdaptiveIcon.MASK_SIZE,
         onPathChange: (String) -> Unit = {}
 ) {
     val iconSize = 48.dp
-    val iconSizePx = with(LocalDensity.current) {
-        val roundToPx = iconSize.roundToPx()
-        roundToPx
-    }
+    val iconSizePx = with(LocalDensity.current) { iconSize.roundToPx() }
     var value by remember { mutableStateOf(selected) }
 
     FlowRow(
@@ -80,7 +72,6 @@ fun IconShapeSelector(
                         onPathChange(defaultSystemMask)
                     },
                     iconSizePx = iconSizePx,
-                    maxSize = maxSize,
                     iconSize = iconSize
                 )
             }
@@ -96,7 +87,6 @@ fun IconShapeSelector(
                     onPathChange(pathMask)
                 },
                 iconSizePx = iconSizePx,
-                maxSize = maxSize,
                 iconSize = iconSize
             )
         }
@@ -109,22 +99,15 @@ private fun IconShape(
     isSelected: Boolean,
     title: String,
     iconSizePx: Int,
-    maxSize: Float,
     iconSize: Dp,
     onClick: () -> Unit
 ) {
-    val path = AdaptiveIcon.maskToPath(pathMask)
-    val outline = Path()
-    val maskMatrix = Matrix().apply {
-        setScale(iconSizePx / maxSize, iconSizePx / maxSize)
-    }
-    path.transform(maskMatrix, outline)
+    val outline = AdaptiveIcon.maskToScaledPath(pathMask, iconSizePx)
     Box(
         modifier = Modifier
             .size(iconSize, iconSize)
-            .clip(GenericShape { _, _ -> addPath(outline.asComposePath()) })
+            .clip(AndroidPathIconShape(androidPath = outline))
             .clickable(onClick = onClick, role = Role.Button, onClickLabel = title)
             .background(color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary.copy(alpha = 0.3f))
-    ) {
-    }
+    ) { }
 }
