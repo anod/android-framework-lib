@@ -17,8 +17,7 @@ interface InstalledApps {
             return this.versionCode in 1 until versionNumber
         }
 
-        val isInstalled: Boolean
-            get() = this.versionCode > 0
+        val isInstalled: Boolean = versionCode > 0
     }
 
     class PackageManager(private val packageManager: android.content.pm.PackageManager) : InstalledApps {
