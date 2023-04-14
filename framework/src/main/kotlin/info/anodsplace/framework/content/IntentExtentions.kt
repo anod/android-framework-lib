@@ -21,6 +21,12 @@ fun Intent.forAppInfo(packageName: String): Intent {
     return this
 }
 
+fun Intent.forStoreSearch(query: String): Intent {
+    this.action = Intent.ACTION_VIEW
+    this.data = Uri.parse("market://search?q=$query")
+    return this
+}
+
 fun Intent.forLauncher(): Intent {
     action = Intent.ACTION_MAIN
     addCategory(Intent.CATEGORY_LAUNCHER)
