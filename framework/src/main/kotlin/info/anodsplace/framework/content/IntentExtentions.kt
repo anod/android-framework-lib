@@ -1,11 +1,13 @@
 package info.anodsplace.framework.content
 
+import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
 import android.widget.Toast
+import androidx.annotation.RequiresPermission
 import androidx.fragment.app.Fragment
 import info.anodsplace.applog.AppLog
 
@@ -52,6 +54,13 @@ fun Intent.forIconTheme(): Intent {
 fun Intent.forOverlayPermission(packageName: String): Intent {
     action = Settings.ACTION_MANAGE_OVERLAY_PERMISSION
     data = Uri.parse("package:$packageName")
+    return this
+}
+
+@RequiresPermission(Manifest.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
+fun Intent.forRequestIgnoreBatteryOptimization(packageName: String): Intent {
+    action = Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
+    data = Uri.fromParts("package", packageName, null)
     return this
 }
 
