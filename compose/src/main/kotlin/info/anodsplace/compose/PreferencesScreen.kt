@@ -352,7 +352,11 @@ fun PreferencesScreen(
         LazyColumn(
             modifier = modifier.fillMaxWidth()
         ) {
-            items(preferences.size) { index ->
+            items(
+                preferences.size,
+                key = { index -> preferences[index].stableKey },
+                contentType = { index -> preferences[index].contentType }
+            ) { index ->
                 val paddingValues = PaddingValues(top = 16.dp, bottom = 8.dp)
                 when (val item = preferences[index]) {
                     is PreferenceItem.Category -> PreferenceCategory(item = item, colors = colors)
