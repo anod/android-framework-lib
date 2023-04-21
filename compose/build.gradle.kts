@@ -33,7 +33,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.4.4"
+        kotlinCompilerExtensionVersion = "1.4.6"
     }
     namespace = "info.anodsplace.compose"
 }
@@ -44,21 +44,20 @@ dependencies {
     implementation(project(":lib:permissions"))
     implementation(project(":lib:graphics"))
 
-    implementation("androidx.activity:activity-compose:1.7.0")
+    implementation("androidx.activity:activity-compose:1.7.1")
 
-    val composeBom = platform("androidx.compose:compose-bom:2023.03.00")
-    implementation(composeBom)
-    androidTestImplementation(composeBom)
+    implementation("androidx.compose:compose-bom:2023.04.01")
+    androidTestImplementation("androidx.compose:compose-bom:2023.04.01")
 
-    api("androidx.compose.foundation:foundation:1.5.0-alpha02")
+    api("androidx.compose.foundation:foundation:1.5.0-alpha03")
     api("androidx.compose.ui:ui")
-    api("androidx.compose.material3:material3")
-    api("androidx.compose.material3:material3-window-size-class")
+    api("androidx.compose.material3:material3:1.0.1")
+    api("androidx.compose.material3:material3-window-size-class:1.0.1")
     api("androidx.compose.material:material-icons-core")
-    api("androidx.compose.material:material-icons-extended")
+    api("androidx.compose.material:material-icons-extended:1.4.2")
 
     api("androidx.compose.ui:ui-tooling-preview")
     debugApi("androidx.compose.ui:ui-tooling")
 
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.8.10")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.8.20")
 }

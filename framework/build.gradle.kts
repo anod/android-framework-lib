@@ -27,8 +27,8 @@ android {
 
 dependencies {
     implementation(project(":lib:applog"))
-    implementation("androidx.activity:activity-ktx:1.7.0")
-    implementation("androidx.fragment:fragment-ktx:1.5.6")
+    implementation("androidx.activity:activity-ktx:1.7.1")
+    implementation("androidx.fragment:fragment-ktx:1.5.7")
     implementation("com.google.android.material:material:1.8.0")
     implementation("androidx.window:window:1.1.0-beta02")
     implementation("androidx.core:core-ktx:1.10.0")
@@ -36,5 +36,5 @@ dependencies {
     implementation("com.google.android.gms:play-services-identity:18.0.1")
     implementation("com.google.android.gms:play-services-auth:20.5.0")
 
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.8.10")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.8.20")
 }
