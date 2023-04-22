@@ -164,7 +164,7 @@ sealed class PreferenceItem {
     }
 }
 
-fun PreferenceItem.Placeholder.toTextItem(stableKey: String) = PreferenceItem.Text(
+fun PreferenceItem.Placeholder.toTextItem() = PreferenceItem.Text(
     titleRes = titleRes,
     title = title,
     summaryRes = summaryRes,
