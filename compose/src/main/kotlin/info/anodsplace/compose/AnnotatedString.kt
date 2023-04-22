@@ -4,10 +4,12 @@ import android.graphics.Typeface
 import android.text.SpannableString
 import android.text.Spanned
 import android.text.style.ForegroundColorSpan
+import android.text.style.ImageSpan
 import android.text.style.StyleSpan
 import android.text.style.URLSpan
 import android.text.style.UnderlineSpan
 import android.text.util.Linkify
+import androidx.compose.foundation.text.appendInlineContent
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.ExperimentalTextApi
@@ -38,6 +40,9 @@ fun Spanned.toAnnotatedString(linkColor: Color): AnnotatedString = buildAnnotate
                 addStyle(SpanStyle(textDecoration = TextDecoration.Underline, color = linkColor), start, end)
                 addUrlAnnotation(UrlAnnotation(span.url), start, end)
                 addStringAnnotation(tag = "URL", annotation = span.url, start, end)
+            }
+            is ImageSpan -> {
+                addStringAnnotation("androidx.compose.foundation.text.inlineContent", span.source ?: "image", start, end)
             }
         }
     }
