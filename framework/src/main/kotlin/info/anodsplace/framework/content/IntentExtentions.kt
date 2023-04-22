@@ -35,6 +35,12 @@ fun Intent.forLauncher(): Intent {
     return this
 }
 
+fun Intent.forHomeScreen(): Intent {
+    action = Intent.ACTION_MAIN
+    addCategory(Intent.CATEGORY_HOME)
+    return this
+}
+
 object IconPack {
     internal const val ACTION_ADW_PICK_ICON = "org.adw.launcher.icons.ACTION_PICK_ICON"
     internal const val THEME_CATEGORY = "com.anddoes.launcher.THEME"
