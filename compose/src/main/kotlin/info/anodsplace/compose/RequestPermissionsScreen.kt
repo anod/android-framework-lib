@@ -13,17 +13,19 @@ import info.anodsplace.permissions.AppPermission
 import info.anodsplace.permissions.AppPermissions
 import info.anodsplace.permissions.toRequestInputs
 
+@Immutable
 data class PermissionDescription(
-        val permission: AppPermission,
-        @DrawableRes val iconsRes: Int,
-        @StringRes val titleRes: Int,
-        @StringRes val descRes: Int
+    val permission: AppPermission,
+    @DrawableRes val iconsRes: Int,
+    @StringRes val titleRes: Int,
+    @StringRes val descRes: Int
 )
 
+@Immutable
 data class RequestPermissionsScreenDescription(
-        @StringRes val descRes: Int,
-        @StringRes val titleRes: Int,
-        @StringRes val allowAccessRes: Int,
+    @StringRes val descRes: Int,
+    @StringRes val titleRes: Int,
+    @StringRes val allowAccessRes: Int,
 )
 
 @OptIn(ExperimentalMaterial3Api::class)

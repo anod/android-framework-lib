@@ -2,6 +2,7 @@ package info.anodsplace.compose
 
 import androidx.annotation.ArrayRes
 import androidx.annotation.StringRes
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import info.anodsplace.ktx.equalsHash
@@ -32,7 +33,10 @@ sealed class PreferenceItem {
     val stableKey: String = UUID.randomUUID().toString()
     abstract val contentType: String
 
+    @Immutable
     data class Spacer(val height: Dp = 8.dp, override val contentType: String = "Spacer") : PreferenceItem()
+
+    @Immutable
     data class Category(
         @StringRes override val titleRes: Int = 0,
         override val title: String = "",
@@ -48,6 +52,7 @@ sealed class PreferenceItem {
         override fun hashCode() = hashCode
     }
 
+    @Immutable
     data class Text(
         @StringRes override val titleRes: Int = 0,
         override val title: String = "",
@@ -62,6 +67,7 @@ sealed class PreferenceItem {
         override fun hashCode() = hashCode
     }
 
+    @Immutable
     data class Switch(
         override var checked: Boolean,
         @StringRes override val titleRes: Int = 0,
@@ -77,6 +83,7 @@ sealed class PreferenceItem {
         override fun hashCode() = hashCode
     }
 
+    @Immutable
     data class CheckBox(
         override var checked: Boolean,
         @StringRes override val titleRes: Int = 0,
@@ -92,6 +99,7 @@ sealed class PreferenceItem {
         override fun hashCode() = hashCode
     }
 
+    @Immutable
     data class List(
         @ArrayRes val entries: Int,
         @ArrayRes val entryValues: Int,
@@ -112,6 +120,7 @@ sealed class PreferenceItem {
         )
     }
 
+    @Immutable
     data class Pick(
         @ArrayRes val entriesRes: Int = 0,
         @ArrayRes val entryValuesRes: Int = 0,
@@ -134,6 +143,7 @@ sealed class PreferenceItem {
         )
     }
 
+    @Immutable
     data class Color(
         val color: androidx.compose.ui.graphics.Color?,
         @StringRes override val titleRes: Int = 0,
@@ -149,6 +159,7 @@ sealed class PreferenceItem {
         override fun hashCode() = hashCodeOf(color, value, titleRes, title, summaryRes, summary, key, enabled)
     }
 
+    @Immutable
     data class Placeholder(
         @StringRes override val titleRes: Int = 0,
         override val title: String = "",
