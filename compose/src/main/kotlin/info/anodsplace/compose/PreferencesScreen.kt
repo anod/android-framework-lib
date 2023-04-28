@@ -149,7 +149,6 @@ fun PreferencePick(
                     enabled = item.enabled
                 ) { newIndex ->
                     val value = entryValues[newIndex]
-                    item.value = value
                     onPickValue(value)
                 }
                 placeholder()
@@ -371,8 +370,7 @@ fun PreferencesScreen(
                             colors = colors,
                             onCheckedChange = { newChecked ->
                                 checked = newChecked
-                                item.checked = newChecked
-                                onClick(item)
+                                onClick(item.copy(checked = newChecked))
                             })
                     }
 
@@ -385,15 +383,16 @@ fun PreferencesScreen(
                         onClick = { listItem = item }
                     ) { }
 
-                    is PreferenceItem.Pick -> PreferencePick(
-                        item = item,
-                        colors = colors,
-                        placeholder = { placeholder(item, paddingValues = paddingValues) },
-                        onPickValue = { value ->
-                            item.value = value
-                            onClick(item)
-                        }
-                    )
+                    is PreferenceItem.Pick -> {
+                        PreferencePick(
+                            item = item,
+                            colors = colors,
+                            placeholder = { placeholder(item, paddingValues = paddingValues) },
+                            onPickValue = { value ->
+                                onClick(item.copy(value = value))
+                            }
+                        )
+                    }
 
                     is PreferenceItem.Switch -> {
                         var checked by remember { mutableStateOf(item.checked) }
@@ -405,9 +404,8 @@ fun PreferencesScreen(
                             },
                             colors = colors,
                             onCheckedChange = { newChecked ->
-                                item.checked = newChecked
                                 checked = newChecked
-                                onClick(item)
+                                onClick(item.copy(checked = newChecked))
                             })
                     }
 
@@ -469,8 +467,7 @@ fun PreferenceListDialog(
             val selected = entryValues.indexOf(value)
             RadioGroup(entries, selected) { newIndex ->
                 value = entryValues[newIndex]
-                item.value = value
-                onValueChange(item)
+                onValueChange(item.copy(value = value))
             }
         },
         confirmButton = { },

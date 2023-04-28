@@ -10,11 +10,11 @@ import info.anodsplace.ktx.hashCodeOf
 import java.util.UUID
 
 interface CheckablePreferenceItem : ActionablePreferenceItem{
-    var checked: Boolean
+    val checked: Boolean
 }
 
 interface SingleValuePreferenceItem : ActionablePreferenceItem {
-    var value: String
+    val value: String
 }
 
 interface ActionablePreferenceItem {
@@ -69,7 +69,7 @@ sealed class PreferenceItem {
 
     @Immutable
     data class Switch(
-        override var checked: Boolean,
+        override val checked: Boolean,
         @StringRes override val titleRes: Int = 0,
         override val title: String = "",
         @StringRes override val summaryRes: Int = 0,
@@ -85,7 +85,7 @@ sealed class PreferenceItem {
 
     @Immutable
     data class CheckBox(
-        override var checked: Boolean,
+        override val checked: Boolean,
         @StringRes override val titleRes: Int = 0,
         override val title: String = "",
         @StringRes override val summaryRes: Int = 0,
@@ -103,7 +103,7 @@ sealed class PreferenceItem {
     data class List(
         @ArrayRes val entries: Int,
         @ArrayRes val entryValues: Int,
-        override var value: String = "",
+        override val value: String = "",
         @StringRes override val titleRes: Int = 0,
         override val title: String = "",
         @StringRes override val summaryRes: Int = 0,
@@ -126,7 +126,7 @@ sealed class PreferenceItem {
         @ArrayRes val entryValuesRes: Int = 0,
         val entries: Array<String> = emptyArray(),
         val entryValues: Array<String> = emptyArray(),
-        override var value: String = "",
+        override val value: String = "",
         @StringRes override val titleRes: Int = 0,
         override val title: String = "",
         @StringRes override val summaryRes: Int = 0,
