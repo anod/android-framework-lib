@@ -156,7 +156,7 @@ sealed class PreferenceItem {
         override val contentType: String = "Color",
     ) : PreferenceItem(), ActionablePreferenceItem {
         override fun equals(other: Any?) = equalsHash(this, other)
-        override fun hashCode() = hashCodeOf(color, value, titleRes, title, summaryRes, summary, key, enabled)
+        override fun hashCode() = hashCodeOf(color, titleRes, title, summaryRes, summary, key, enabled)
     }
 
     @Immutable
@@ -187,7 +187,7 @@ val ActionablePreferenceItem.hashCode: Int
     get() = hashCodeOf(titleRes, title, summaryRes, summary, key, enabled, clickable)
 
 val SingleValuePreferenceItem.hashCode: Int
-    get() = hashCodeOf(titleRes, title, summaryRes, summary, key, enabled, clickable, value)
+    get() = hashCodeOf(value, titleRes, title, summaryRes, summary, key, enabled, clickable)
 
 val CheckablePreferenceItem.hashCode: Int
     get() = hashCodeOf(titleRes, title, summaryRes, summary, key, enabled, clickable, checked)

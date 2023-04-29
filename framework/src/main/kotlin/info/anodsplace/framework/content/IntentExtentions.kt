@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.provider.Settings
 import android.widget.Toast
@@ -68,6 +69,28 @@ fun Intent.forRequestIgnoreBatteryOptimization(packageName: String): Intent {
     action = Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
     data = Uri.fromParts("package", packageName, null)
     return this
+}
+
+fun Intent.forApplicationDetails(packageName: String): Intent {
+    action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+    data = Uri.fromParts("package", packageName, null)
+    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS
+    return this
+}
+
+fun Intent.playStoreDetails(packageName: String): Intent {
+    action = Intent.ACTION_VIEW
+    data = Uri.parse("market://details?id=%s".format(packageName))
+    flags = Intent.FLAG_ACTIVITY_NEW_TASK
+    return this
+}
+
+fun Context.resolveDefaultCarDock(): String? {
+    val intent = Intent(Intent.ACTION_MAIN).apply {
+        addCategory(Intent.CATEGORY_CAR_DOCK)
+    }
+    val info = packageManager.resolveActivity(intent, PackageManager.MATCH_DEFAULT_ONLY)
+    return info?.activityInfo?.applicationInfo?.packageName ?: return null
 }
 
 fun Context.startActivitySafely(intent: Intent) {
