@@ -1,7 +1,11 @@
 package info.anodsplace.compose
 
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -14,16 +18,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-class SingleScreenState(
-        val title: String,
-        val items: Map<String, String>,
+class SingleSelectListState(
+    val items: Map<String, String>,
 )
 
 @Composable
-fun SingleScreenList(listContent: Map<String, String>, modifier: Modifier = Modifier, onSelect: (key: String, value: String) -> Unit) {
+fun SingleSelectLazyList(state: SingleSelectListState, modifier: Modifier = Modifier, onSelect: (key: String, value: String) -> Unit) {
     rememberScrollState(0)
     LazyColumn(modifier = modifier) {
-        items(listContent.entries.toList()) { item ->
+        items(state.items.entries.toList()) { item ->
             Row(modifier = Modifier
                     .clickable(onClick = { onSelect(item.key, item.value) })
             ) {
@@ -43,36 +46,13 @@ fun SingleScreenList(listContent: Map<String, String>, modifier: Modifier = Modi
 }
 
 
-@Composable
-fun SingleListScreen(state: SingleScreenState, onSelect: (key: String, value: String) -> Unit) {
-    Surface(
-            modifier = Modifier.padding(16.dp),
-            shadowElevation = 2.dp,
-            color = MaterialTheme.colorScheme.surface) {
-        Column {
-            Box(modifier = Modifier.padding(16.dp)) {
-                //CompositionLocalProvider(LocalContentAlpha provides ContentAlpha.high) {
-                Text(text = state.title, style = MaterialTheme.typography.titleMedium)
-                //}
-            }
-            SingleScreenList(
-                    listContent = state.items,
-                    modifier = Modifier
-                            .padding(horizontal = 16.dp)
-                            .fillMaxWidth(),
-                    onSelect = onSelect
-            )
-        }
-    }
-}
-
 @Preview
 @Composable
 fun SingleListScreenPreview() {
-    val state = SingleScreenState("Action", emptyMap())
+    val state = SingleSelectListState( mapOf("Banana" to "Kiwi", "Apple" to "Orange", "Peach" to "Pear"))
     MaterialTheme {
-        Box(contentAlignment = Alignment.Center) {
-            SingleListScreen(state, onSelect = { _, _ -> })
+        Surface {
+            SingleSelectLazyList(state, onSelect = { _, _ -> })
         }
     }
 }

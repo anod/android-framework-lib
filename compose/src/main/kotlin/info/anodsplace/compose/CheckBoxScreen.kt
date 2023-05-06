@@ -1,10 +1,7 @@
 package info.anodsplace.compose
 
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -35,7 +32,7 @@ data class CheckBoxItem(
 )
 
 @Composable
-fun CheckBoxList(items: List<CheckBoxItem>, modifier: Modifier = Modifier, onCheckedChange: (CheckBoxItem) -> Unit) {
+fun CheckBoxLazyList(items: List<CheckBoxItem>, modifier: Modifier = Modifier, onCheckedChange: (CheckBoxItem) -> Unit) {
     rememberScrollState(0)
     LazyColumn(modifier = modifier) {
         items(items) { item ->
@@ -87,50 +84,23 @@ fun CheckBoxList(items: List<CheckBoxItem>, modifier: Modifier = Modifier, onChe
     }
 }
 
-@Composable
-fun CheckBoxScreen(
-    titleText: String,
-    saveText: String,
-    items: List<CheckBoxItem>,
-    onCheckedChange: (CheckBoxItem) -> Unit,
-    onDismissRequest: () -> Unit
-) {
-    Surface(color = MaterialTheme.colorScheme.background) {
-        Column(modifier = Modifier.fillMaxHeight()) {
-            Box(modifier = Modifier
-                .padding(16.dp)
-                .align(Alignment.Start)) {
-                Text(titleText, style = MaterialTheme.typography.titleMedium)
-            }
-            CheckBoxList(
-                items = items,
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .weight(0.1f, fill = true),
-                onCheckedChange = onCheckedChange
-            )
-            ButtonsPanel(actionText = saveText, onDismissRequest = onDismissRequest, onAction = onDismissRequest)
-        }
-    }
-}
 
 @Preview
 @Composable
 fun CheckBoxScreenPreview() {
     MaterialTheme {
-        CheckBoxScreen(
-            titleText = "Categories",
-            saveText = "Save",
-            items = listOf(
-                CheckBoxItem(
-                    key = "ACTIVITY_NEW_TASK", checked = true
+        Surface {
+            CheckBoxLazyList(
+                items = listOf(
+                    CheckBoxItem(
+                        key = "ACTIVITY_NEW_TASK", checked = true
+                    ),
+                    CheckBoxItem(
+                        key = "ACTIVITY_NEW_DOCUMENT", title = "CustomTitle", checked = false, icon = Icons.Default.Pageview
+                    ),
                 ),
-                CheckBoxItem(
-                    key = "ACTIVITY_NEW_DOCUMENT", title = "CustomTitle", checked = false, icon = Icons.Default.Pageview
-                ),
-            ),
-            onDismissRequest = {},
-            onCheckedChange = {}
-        )
+                onCheckedChange = {}
+            )
+        }
     }
 }
