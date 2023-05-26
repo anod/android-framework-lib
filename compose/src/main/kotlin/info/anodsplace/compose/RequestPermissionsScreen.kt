@@ -5,8 +5,18 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.ListItem
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import info.anodsplace.permissions.AppPermission
@@ -52,9 +62,9 @@ fun RequestPermissionsScreen(input: List<PermissionDescription>, screenDescripti
             items(input.size) { index ->
                 val desc = input[index]
                 ListItem(
-                        leadingContent = { Icon(painter = painterResource(id = desc.iconsRes), contentDescription = null) },
-                        headlineText = { Text(text = stringResource(id = desc.titleRes)) },
-                        supportingText = { Text(text = stringResource(id = desc.descRes)) },
+                    leadingContent = { Icon(painter = painterResource(id = desc.iconsRes), contentDescription = null) },
+                    headlineContent = { Text(text = stringResource(id = desc.titleRes)) },
+                    supportingContent = { Text(text = stringResource(id = desc.descRes)) },
                 )
             }
         }
