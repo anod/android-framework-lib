@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RadioGroup(radioOptions: Array<String>, selectedIndex: Int, onValueChanged: (index: Int) -> Unit) {
     val (selectedOption, onOptionSelected) = remember { mutableStateOf(selectedIndex) }

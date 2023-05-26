@@ -180,7 +180,6 @@ class HexCodeVisualTransformation : VisualTransformation, OffsetMapping {
 
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ColorInput(showAlpha: Boolean, color: Color?, onColorChange: (Color?) -> Unit, modifier: Modifier) {
     val colorValue = remember(color) {

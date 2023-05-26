@@ -38,7 +38,6 @@ data class RequestPermissionsScreenDescription(
     @StringRes val allowAccessRes: Int,
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RequestPermissionsScreen(input: List<PermissionDescription>, screenDescription: RequestPermissionsScreenDescription, onResult: (List<AppPermission>) -> Unit) {
     val currentRequest = remember { mutableStateOf(-1) }
