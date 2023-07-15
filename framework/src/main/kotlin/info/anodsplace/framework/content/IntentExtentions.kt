@@ -5,7 +5,9 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.net.Uri
+import android.provider.MediaStore
 import android.provider.Settings
 import android.widget.Toast
 import androidx.annotation.RequiresPermission
@@ -49,6 +51,15 @@ object IconPack {
 
 fun Intent.forIconPack(): Intent {
     action = IconPack.ACTION_ADW_PICK_ICON
+    return this
+}
+
+fun Intent.forCustomImage(context: Context): Intent {
+    val tempFile = context.getFileStreamPath("tempImage")
+    action = Intent.ACTION_GET_CONTENT
+    type = "image/*"
+    putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(tempFile))
+    putExtra("outputFormat", Bitmap.CompressFormat.PNG.name)
     return this
 }
 

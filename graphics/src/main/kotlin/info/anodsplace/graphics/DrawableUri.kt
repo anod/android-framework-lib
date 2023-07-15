@@ -22,19 +22,33 @@ class DrawableUri(private val context: Context) {
 
     class OpenResourceIdResult(val r: Resources, val id: Int)
 
+    data class ResolveProperties(
+            val maxIconSize: Int,
+            val targetDensity: Int,
+            val densityDpi: Int
+    ) {
+        constructor(
+            maxIconSize: Int,
+            targetDensity: Int,
+            context: Context
+        ) : this(
+            maxIconSize = maxIconSize,
+            targetDensity = targetDensity,
+            densityDpi = context.resources.displayMetrics.densityDpi
+        )
+    }
     /**
      * Source android.widget.ImageView
      */
-    fun resolve(uri: Uri, maxIconSize: Int, targetDensity: Int): Drawable? {
+    fun resolve(uri: Uri, properties: ResolveProperties): Drawable? {
         var d: Drawable? = null
         val scheme = uri.scheme
         if (ContentResolver.SCHEME_ANDROID_RESOURCE == scheme) {
-            d = getDrawableByUri(uri, targetDensity)
+            d = getDrawableByUri(uri, properties.targetDensity)
         } else if (ContentResolver.SCHEME_CONTENT == scheme || ContentResolver.SCHEME_FILE == scheme) {
             try {
-                val bmp = decodeSampledBitmapFromStream(uri, maxIconSize, maxIconSize)
-                val dm = context.resources.displayMetrics
-                bmp.density = dm.densityDpi
+                val bmp = decodeSampledBitmapFromStream(uri, properties.maxIconSize, properties.maxIconSize)
+                bmp.density = properties.densityDpi
                 d = BitmapDrawable(context.resources, bmp)
             } catch (e: Exception) {
                 Log.w("ShortcutEditActivity", "Unable to open content: $uri", e)
