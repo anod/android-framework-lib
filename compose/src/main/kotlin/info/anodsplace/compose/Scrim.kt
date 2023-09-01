@@ -16,7 +16,11 @@ fun OverlayScrim(
         visible: Boolean
 ) {
     if (color != Color.Transparent) {
-        val alpha = animateFloatAsState(targetValue = if (visible) 1f else 0f, animationSpec = TweenSpec()).value
+        val alpha = animateFloatAsState(
+            targetValue = if (visible) 1f else 0f,
+            animationSpec = TweenSpec(),
+            label = "OverlayScrim"
+        ).value
         val dismissModifier = if (visible) Modifier.clickable { onDismiss() } else Modifier
         Canvas(
             Modifier

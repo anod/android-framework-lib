@@ -395,7 +395,7 @@ fun PreferencesScreen(
                             checked = checked,
                             item = item,
                             placeholder = {
-                                placeholder(item, paddingValues = paddingValues)
+                                placeholder(item, paddingValues)
                             },
                             colors = colors,
                             onCheckedChange = { newChecked ->
@@ -408,7 +408,7 @@ fun PreferencesScreen(
                         item = item,
                         colors = colors,
                         secondary = {
-                            placeholder(item, paddingValues = paddingValues)
+                            placeholder(item, paddingValues)
                         },
                         onClick = { listItem = item }
                     ) { }
@@ -417,7 +417,7 @@ fun PreferencesScreen(
                         PreferencePick(
                             item = item,
                             colors = colors,
-                            placeholder = { placeholder(item, paddingValues = paddingValues) },
+                            placeholder = { placeholder(item, paddingValues) },
                             onPickValue = { value ->
                                 onClick(item.copy(value = value))
                             }
@@ -430,7 +430,7 @@ fun PreferencesScreen(
                             checked = checked,
                             item = item,
                             placeholder = {
-                                placeholder(item, paddingValues = paddingValues)
+                                placeholder(item, paddingValues)
                             },
                             colors = colors,
                             onCheckedChange = { newChecked ->
@@ -443,7 +443,7 @@ fun PreferencesScreen(
                         item = item,
                         colors = colors,
                         secondary = {
-                            placeholder(item, paddingValues = paddingValues)
+                            placeholder(item, paddingValues)
                         },
                         onClick = { onClick(item) })
 
@@ -451,12 +451,12 @@ fun PreferencesScreen(
                         item = item,
                         colors = colors,
                         secondary = {
-                            placeholder(item, paddingValues = paddingValues)
+                            placeholder(item, paddingValues)
                         },
                         onClick = { onClick(item) }) { }
 
                     is PreferenceItem.Placeholder -> {
-                        placeholder(item, paddingValues = paddingValues)
+                        placeholder(item, paddingValues)
                     }
 
                     is PreferenceItem.Spacer -> {

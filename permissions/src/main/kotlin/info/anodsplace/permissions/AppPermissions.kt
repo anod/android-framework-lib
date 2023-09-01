@@ -1,7 +1,9 @@
 package info.anodsplace.permissions
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -66,12 +68,6 @@ fun List<AppPermission>.toRequestInputs(): List<AppPermissions.Request.Input> {
         when (it) {
             AppPermission.CanDrawOverlay -> canDrawOverlay = true
             AppPermission.WriteSettings -> writeSettings = true
-            AppPermission.AnswerPhoneCalls -> {
-                manifestPermissions.add(it.value)
-            }
-            AppPermission.ActivityRecognition -> {
-                manifestPermissions.add(it.value)
-            }
             else -> manifestPermissions.add(it.value)
         }
     }
@@ -147,6 +143,7 @@ object AppPermissions {
         }
     }
 
+    @SuppressLint("NewApi")
     fun fromValue(value: String): AppPermission {
         return when (value) {
             AppPermission.CallPhone.value -> AppPermission.CallPhone
@@ -158,6 +155,7 @@ object AppPermissions {
             AppPermission.ActivityRecognition.value -> AppPermission.ActivityRecognition
             AppPermission.BluetoothConnect.value -> AppPermission.BluetoothConnect
             AppPermission.BluetoothScan.value -> AppPermission.BluetoothScan
+            AppPermission.PostNotification.value -> AppPermission.PostNotification
             else -> throw IllegalArgumentException("Unknown $value")
         }
     }
@@ -175,6 +173,7 @@ object AppPermissions {
         return ContextCompat.checkSelfPermission(context, permission.value) == PackageManager.PERMISSION_GRANTED
     }
 
+    @SuppressLint("NewApi")
     fun shouldShowMessage(activity: ComponentActivity, permission: AppPermission): Boolean {
         if (isGranted(activity, permission)) {
             return false
@@ -190,6 +189,9 @@ object AppPermissions {
         }
         if (permission == AppPermission.ActivityRecognition) {
             return true
+        }
+        if (permission == AppPermission.PostNotification) {
+            return !activity.getSystemService(NotificationManager::class.java).areNotificationsEnabled()
         }
         return ActivityCompat.shouldShowRequestPermissionRationale(activity, permission.value)
     }

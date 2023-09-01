@@ -15,7 +15,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun BottomSheet(onDismissRequest: () -> Unit, content: @Composable () -> Unit) {
     val transitionState = remember {

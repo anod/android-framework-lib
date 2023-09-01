@@ -6,19 +6,26 @@ import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import info.anodsplace.permissions.AppPermission
 import info.anodsplace.permissions.AppPermissions
 import info.anodsplace.permissions.toRequestInputs
@@ -26,61 +33,103 @@ import info.anodsplace.permissions.toRequestInputs
 @Immutable
 data class PermissionDescription(
     val permission: AppPermission,
-    @DrawableRes val iconsRes: Int,
+    @DrawableRes val iconRes: Int,
+    val icon: Painter? = null,
     @StringRes val titleRes: Int,
-    @StringRes val descRes: Int
+    val title: String = "",
+    @StringRes val descRes: Int,
+    val desc: String = "",
 )
 
 @Immutable
 data class RequestPermissionsScreenDescription(
-    @StringRes val descRes: Int,
-    @StringRes val titleRes: Int,
-    @StringRes val allowAccessRes: Int,
+    @StringRes val descRes: Int = 0,
+    val desc: String = "",
+    @StringRes val titleRes: Int = 0,
+    val title: String = "",
+    @StringRes val allowAccessRes: Int = 0,
+    val allowAccess: String = ""
 )
 
 @Composable
-fun RequestPermissionsScreen(input: List<PermissionDescription>, screenDescription: RequestPermissionsScreenDescription, onResult: (List<AppPermission>) -> Unit) {
-    val currentRequest = remember { mutableStateOf(-1) }
-    val requests = input.map { it.permission }.toRequestInputs()
-    val result = remember {
-        mutableStateListOf<AppPermission>()
-    }
+fun RequestPermissionsScreen(
+    input: List<PermissionDescription>,
+    screenDescription: RequestPermissionsScreenDescription,
+    onResult: (List<AppPermission>) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var currentRequest by remember { mutableIntStateOf(-1) }
+    val requests = remember(input) { input.map { it.permission }.toRequestInputs() }
+    val result = remember { mutableStateListOf<AppPermission>() }
     val permissionRequest = rememberLauncherForActivityResult(contract = AppPermissions.Request()) { permissionResults ->
         permissionResults.forEach { (permissionValue, permissionResult) ->
             if (!permissionResult) {
                 result.add(AppPermissions.fromValue(permissionValue))
             }
         }
-        currentRequest.value = currentRequest.value + 1
+        currentRequest += 1
     }
 
-    Column {
-        Text(text = stringResource(id = screenDescription.descRes), style = MaterialTheme.typography.labelSmall)
-        Text(text = stringResource(id = screenDescription.titleRes), style = MaterialTheme.typography.labelSmall)
+    val title = if (screenDescription.titleRes != 0) stringResource(id = screenDescription.titleRes) else screenDescription.title
+    val desc = if (screenDescription.descRes != 0) stringResource(id = screenDescription.descRes) else screenDescription.desc
+
+    Column(
+        modifier = modifier
+    ) {
+        Text(text = title, style = MaterialTheme.typography.titleLarge)
+        Text(text = desc, style = MaterialTheme.typography.labelMedium)
         LazyColumn {
             items(input.size) { index ->
-                val desc = input[index]
+                val item = input[index]
+                val itemTitle = if (item.titleRes != 0) stringResource(id = item.titleRes) else item.title
+                val itemDesc = if (item.descRes != 0) stringResource(id = item.descRes) else item.desc
+                val icon = if (item.iconRes != 0) painterResource(id = item.iconRes) else item.icon!!
+
                 ListItem(
-                    leadingContent = { Icon(painter = painterResource(id = desc.iconsRes), contentDescription = null) },
-                    headlineContent = { Text(text = stringResource(id = desc.titleRes)) },
-                    supportingContent = { Text(text = stringResource(id = desc.descRes)) },
+                    leadingContent = { Icon(painter = icon, contentDescription = null) },
+                    headlineContent = { Text(text = itemTitle) },
+                    supportingContent = { Text(text = itemDesc) },
                 )
             }
         }
-        Button(onClick = {
-            currentRequest.value = currentRequest.value + 1
-        }) {
-            Text(text = stringResource(id = screenDescription.allowAccessRes))
+        var allowEnabled by remember {
+            mutableStateOf(true)
+        }
+        Button(
+            modifier = Modifier.align(Alignment.End),
+            enabled = allowEnabled,
+            onClick = {
+                currentRequest += 1
+                allowEnabled = false
+            }
+        ) {
+            Text(text = if (screenDescription.allowAccessRes != 0) stringResource(id = screenDescription.allowAccessRes) else screenDescription.allowAccess)
         }
     }
 
-    if (currentRequest.value > 0 && currentRequest.value < requests.size) {
-        LaunchedEffect(key1 = currentRequest) {
-            permissionRequest.launch(requests[currentRequest.value])
-        }
-    } else if (currentRequest.value >= requests.size) {
-        LaunchedEffect(key1 = currentRequest) {
+    LaunchedEffect(key1 = currentRequest) {
+        if (currentRequest >= 0 && currentRequest < requests.size) {
+            permissionRequest.launch(requests[0])
+        } else {
             onResult(result)
         }
+    }
+}
+
+@Preview("RequestPermissionsScreen Dark", widthDp = 360, heightDp = 1020)
+@Composable
+fun RequestPermissionsScreenDark() {
+    Surface {
+        RequestPermissionsScreen(
+            input = listOf(
+
+            ),
+            screenDescription = RequestPermissionsScreenDescription(
+                title = "The app is missing required permissions",
+                desc = "",
+                allowAccess = "Allow access"
+            ),
+            onResult = {}
+        )
     }
 }
