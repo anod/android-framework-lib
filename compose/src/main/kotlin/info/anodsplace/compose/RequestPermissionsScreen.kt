@@ -4,6 +4,8 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -20,7 +22,6 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
@@ -48,8 +49,17 @@ data class RequestPermissionsScreenDescription(
     @StringRes val titleRes: Int = 0,
     val title: String = "",
     @StringRes val allowAccessRes: Int = 0,
-    val allowAccess: String = ""
-)
+    val allowAccess: String = "",
+    @StringRes val cancelRes: Int = 0,
+    val cancel: String = ""
+) {
+    constructor() : this(
+        title = "The app is missing required permissions",
+        desc = "",
+        allowAccess = "Allow access",
+        cancel = "Cancel"
+    )
+}
 
 @Composable
 fun RequestPermissionsScreen(
@@ -61,12 +71,16 @@ fun RequestPermissionsScreen(
     var currentRequest by remember { mutableIntStateOf(-1) }
     val requests = remember(input) { input.map { it.permission }.toRequestInputs() }
     val result = remember { mutableStateListOf<AppPermission>() }
+    var allowEnabled by remember {
+        mutableStateOf(true)
+    }
     val permissionRequest = rememberLauncherForActivityResult(contract = AppPermissions.Request()) { permissionResults ->
         permissionResults.forEach { (permissionValue, permissionResult) ->
             if (!permissionResult) {
                 result.add(AppPermissions.fromValue(permissionValue))
             }
         }
+        allowEnabled = true
         currentRequest += 1
     }
 
@@ -92,26 +106,36 @@ fun RequestPermissionsScreen(
                 )
             }
         }
-        var allowEnabled by remember {
-            mutableStateOf(true)
-        }
-        Button(
-            modifier = Modifier.align(Alignment.End),
-            enabled = allowEnabled,
-            onClick = {
-                currentRequest += 1
-                allowEnabled = false
+
+        Row {
+            Button(
+                enabled = allowEnabled,
+                onClick = {
+                    onResult(emptyList())
+                }
+            ) {
+                Text(text = if (screenDescription.cancelRes != 0) stringResource(id = screenDescription.cancelRes) else screenDescription.cancel)
             }
-        ) {
-            Text(text = if (screenDescription.allowAccessRes != 0) stringResource(id = screenDescription.allowAccessRes) else screenDescription.allowAccess)
+            Spacer(modifier = Modifier.weight(1f))
+            Button(
+                enabled = allowEnabled,
+                onClick = {
+                    currentRequest += 1
+                    allowEnabled = false
+                }
+            ) {
+                Text(text = if (screenDescription.allowAccessRes != 0) stringResource(id = screenDescription.allowAccessRes) else screenDescription.allowAccess)
+            }
         }
     }
 
     LaunchedEffect(key1 = currentRequest) {
-        if (currentRequest >= 0 && currentRequest < requests.size) {
-            permissionRequest.launch(requests[0])
-        } else {
-            onResult(result)
+        if (currentRequest >= 0) {
+            if (currentRequest < requests.size) {
+                permissionRequest.launch(requests[0])
+            } else {
+                onResult(result)
+            }
         }
     }
 }
@@ -124,11 +148,7 @@ fun RequestPermissionsScreenDark() {
             input = listOf(
 
             ),
-            screenDescription = RequestPermissionsScreenDescription(
-                title = "The app is missing required permissions",
-                desc = "",
-                allowAccess = "Allow access"
-            ),
+            screenDescription = RequestPermissionsScreenDescription(),
             onResult = {}
         )
     }

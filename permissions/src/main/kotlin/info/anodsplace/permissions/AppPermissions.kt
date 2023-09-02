@@ -102,8 +102,8 @@ object AppPermissions {
         private val startActivity = ActivityResultContracts.StartActivityForResult()
 
         sealed interface Input {
-            object CanDrawOverlay : Input
-            object WriteSettings : Input
+            data object CanDrawOverlay : Input
+            data object WriteSettings : Input
             class Permissions(val value: Array<String>) : Input
         }
 
@@ -111,19 +111,21 @@ object AppPermissions {
             this.input = input
             return when (input) {
                 is Input.CanDrawOverlay -> startActivity.createIntent(
-                        context,
-                        Intent(
-                                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                                Uri.parse("package:" + context.packageName)
-                        )
+                    context,
+                    Intent(
+                        Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                        Uri.parse("package:" + context.packageName)
+                    )
                 )
+
                 is Input.WriteSettings -> startActivity.createIntent(
-                        context,
-                        Intent(
-                                Settings.ACTION_MANAGE_WRITE_SETTINGS,
-                                Uri.parse("package:" + context.packageName)
-                        )
+                    context,
+                    Intent(
+                        Settings.ACTION_MANAGE_WRITE_SETTINGS,
+                        Uri.parse("package:" + context.packageName)
+                    )
                 )
+
                 is Input.Permissions -> request.createIntent(context, input.value)
             }
         }
@@ -134,10 +136,12 @@ object AppPermissions {
                     val granted = startActivity.parseResult(resultCode, intent).resultCode == Activity.RESULT_OK
                     return mapOf(Permission.CAN_DRAW_OVERLAY to granted)
                 }
+
                 is Input.WriteSettings -> {
                     val granted = startActivity.parseResult(resultCode, intent).resultCode == Activity.RESULT_OK
                     return mapOf(Permission.WRITE_SETTINGS to granted)
                 }
+
                 else -> request.parseResult(resultCode, intent)
             }
         }
