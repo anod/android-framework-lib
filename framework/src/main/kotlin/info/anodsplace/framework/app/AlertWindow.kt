@@ -2,7 +2,6 @@ package info.anodsplace.framework.app
 
 import android.content.Context
 import android.graphics.PixelFormat
-import android.os.Build
 import android.provider.Settings
 import android.view.View
 import android.view.WindowManager
@@ -10,7 +9,7 @@ import androidx.core.content.getSystemService
 import info.anodsplace.applog.AppLog
 
 class AlertWindow(private val context: Context) {
-    private val wm: WindowManager = context.getSystemService()!!
+   private val wm: WindowManager by lazy { context.getSystemService()!! }
     private var view: View? = null
 
     companion object {
@@ -28,15 +27,16 @@ class AlertWindow(private val context: Context) {
         }
 
         val overlay = WindowManager.LayoutParams(
-                params.width,
-                params.height,
-                WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
-                WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or params.flags,
-                PixelFormat.TRANSLUCENT
-        )
-        overlay.x = params.x
-        overlay.y = params.y
-        overlay.gravity = params.gravity
+            params.width,
+            params.height,
+            WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY,
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or params.flags,
+            PixelFormat.TRANSLUCENT
+        ).apply {
+            x = params.x
+            y = params.y
+            gravity = params.gravity
+        }
 
         view = View(context).also {
             configure(it)
@@ -46,9 +46,16 @@ class AlertWindow(private val context: Context) {
 
     fun hide() {
         view?.let {
-            it.setOnClickListener(null)
-            wm.removeView(it)
+            try {
+                if (it.isAttachedToWindow) {
+                    it.setOnClickListener(null)
+                    wm.removeView(it)
+                }
+            } catch (e: Exception) {
+                AppLog.e(e)
+            }
         }
+        view = null
     }
 
     fun move(x: Int, y: Int) {
