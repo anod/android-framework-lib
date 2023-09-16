@@ -65,7 +65,7 @@ data class RequestPermissionsScreenDescription(
 fun RequestPermissionsScreen(
     input: List<PermissionDescription>,
     screenDescription: RequestPermissionsScreenDescription,
-    onResult: (List<AppPermission>) -> Unit,
+    onResult: (List<AppPermission>, e: Exception?) -> Unit,
     modifier: Modifier = Modifier
 ) {
     var currentRequest by remember { mutableIntStateOf(-1) }
@@ -111,7 +111,7 @@ fun RequestPermissionsScreen(
             Button(
                 enabled = allowEnabled,
                 onClick = {
-                    onResult(emptyList())
+                    onResult(emptyList(), null)
                 }
             ) {
                 Text(text = if (screenDescription.cancelRes != 0) stringResource(id = screenDescription.cancelRes) else screenDescription.cancel)
@@ -132,9 +132,13 @@ fun RequestPermissionsScreen(
     LaunchedEffect(key1 = currentRequest) {
         if (currentRequest >= 0) {
             if (currentRequest < requests.size) {
-                permissionRequest.launch(requests[0])
+                try {
+                    permissionRequest.launch(requests[0])
+                } catch (e: Exception) {
+                    onResult(result, e)
+                }
             } else {
-                onResult(result)
+                onResult(result, null)
             }
         }
     }
@@ -149,7 +153,7 @@ fun RequestPermissionsScreenDark() {
 
             ),
             screenDescription = RequestPermissionsScreenDescription(),
-            onResult = {}
+            onResult = { _, _ -> }
         )
     }
 }
