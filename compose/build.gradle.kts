@@ -44,7 +44,7 @@ dependencies {
     implementation(project(":lib:permissions"))
     implementation(project(":lib:graphics"))
 
-    implementation("androidx.activity:activity-compose:1.7.2")
+    implementation("androidx.activity:activity-compose:1.8.0")
 
     val compose = platform("androidx.compose:compose-bom:2023.09.00")
     implementation(compose)
@@ -52,8 +52,8 @@ dependencies {
 
     api("androidx.compose.foundation:foundation")
     api("androidx.compose.ui:ui")
-    api("androidx.compose.material3:material3:1.1.1")
-    api("androidx.compose.material3:material3-window-size-class:1.1.1")
+    api("androidx.compose.material3:material3")
+    api("androidx.compose.material3:material3-window-size-class")
     api("androidx.compose.material:material-icons-core")
     api("androidx.compose.material:material-icons-extended")
 
