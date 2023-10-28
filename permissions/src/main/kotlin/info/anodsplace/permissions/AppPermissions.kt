@@ -29,7 +29,9 @@ sealed class AppPermission(val value: String) {
     object CallPhone : AppPermission(Manifest.permission.CALL_PHONE)
     object ReadContacts : AppPermission(Manifest.permission.READ_CONTACTS)
     object AnswerPhoneCalls : AppPermission(Manifest.permission.ANSWER_PHONE_CALLS)
-    object ModifyPhoneState : AppPermission(Manifest.permission.MODIFY_PHONE_STATE)
+    @RequiresApi(31)
+    object PhoneStateRead : AppPermission(Manifest.permission.READ_PHONE_STATE)
+    object PhoneStateModify : AppPermission(Manifest.permission.MODIFY_PHONE_STATE)
     object CanDrawOverlay : AppPermission(AppPermissions.Permission.CAN_DRAW_OVERLAY)
     object WriteSettings : AppPermission(AppPermissions.Permission.WRITE_SETTINGS)
 
@@ -153,7 +155,8 @@ object AppPermissions {
             AppPermission.CallPhone.value -> AppPermission.CallPhone
             AppPermission.ReadContacts.value -> AppPermission.ReadContacts
             AppPermission.AnswerPhoneCalls.value -> AppPermission.AnswerPhoneCalls
-            AppPermission.ModifyPhoneState.value -> AppPermission.ModifyPhoneState
+            AppPermission.PhoneStateModify.value -> AppPermission.PhoneStateModify
+            AppPermission.PhoneStateRead.value -> AppPermission.PhoneStateRead
             AppPermission.CanDrawOverlay.value -> AppPermission.CanDrawOverlay
             AppPermission.WriteSettings.value -> AppPermission.WriteSettings
             AppPermission.ActivityRecognition.value -> AppPermission.ActivityRecognition
@@ -192,6 +195,9 @@ object AppPermissions {
             return true
         }
         if (permission == AppPermission.ActivityRecognition) {
+            return true
+        }
+        if (permission == AppPermission.PhoneStateRead) {
             return true
         }
         if (permission == AppPermission.PostNotification) {
