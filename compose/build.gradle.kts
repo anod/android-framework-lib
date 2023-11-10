@@ -44,9 +44,9 @@ dependencies {
     implementation(project(":lib:permissions"))
     implementation(project(":lib:graphics"))
 
-    implementation("androidx.activity:activity-compose:1.8.0")
+    implementation(libs.activity.compose)
 
-    val compose = platform("androidx.compose:compose-bom:2023.09.00")
+    val compose = platform("androidx.compose:compose-bom:2023.10.01")
     implementation(compose)
     androidTestImplementation(compose)
 
@@ -60,5 +60,5 @@ dependencies {
     api("androidx.compose.ui:ui-tooling-preview")
     debugApi("androidx.compose.ui:ui-tooling")
 
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.10")
+    implementation(libs.kotlin.stdlib)
 }

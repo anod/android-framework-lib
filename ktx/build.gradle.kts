@@ -26,6 +26,6 @@ android {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib:1.9.10")
+    implementation(libs.coroutines.core)
+    implementation(libs.kotlin.stdlib)
 }
