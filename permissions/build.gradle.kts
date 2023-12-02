@@ -4,7 +4,7 @@ plugins {
 }
 
 android {
-    compileSdk = 33
+    compileSdk = 34
 
     defaultConfig {
         minSdk = 27
@@ -27,6 +27,6 @@ android {
 
 dependencies {
     implementation("androidx.annotation:annotation:1.7.0")
-    implementation("androidx.activity:activity-ktx:1.8.0")
+    implementation("androidx.activity:activity-ktx:1.8.1")
     implementation(libs.kotlin.stdlib)
 }
