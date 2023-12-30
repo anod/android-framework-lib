@@ -1,5 +1,6 @@
 package info.anodsplace.compose
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
@@ -10,14 +11,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 
-@OptIn(ExperimentalMaterial3Api::class, ExperimentalLayoutApi::class)
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun PickGroup(
     options: Array<String>,
-    selectedIndex: Int, modifier:
-    Modifier = Modifier,
+    selectedIndex: Int,
+    modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    border: SelectableChipBorder = FilterChipDefaults.filterChipBorder(
+    border: BorderStroke = FilterChipDefaults.filterChipBorder(
+        enabled = enabled,
+        selected = selectedIndex >= 0,
         borderColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
         selectedBorderColor = MaterialTheme.colorScheme.primary,
         borderWidth = 1.dp,
