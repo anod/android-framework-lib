@@ -11,7 +11,6 @@ import android.provider.MediaStore
 import android.provider.Settings
 import android.widget.Toast
 import androidx.annotation.RequiresPermission
-import androidx.fragment.app.Fragment
 import info.anodsplace.applog.AppLog
 
 fun Intent.forUninstall(packageName: String): Intent {
@@ -110,24 +109,6 @@ fun Context.startActivitySafely(intent: Intent) {
     } catch (e: Exception) {
         AppLog.e(e)
         Toast.makeText(this, "Cannot start activity: $intent", Toast.LENGTH_SHORT).show()
-    }
-}
-
-fun Fragment.startActivitySafely(intent: Intent) {
-    try {
-        requireActivity().startActivity(intent)
-    } catch (e: Exception) {
-        AppLog.e(e)
-        Toast.makeText(requireContext(), "Cannot start activity: $intent", Toast.LENGTH_SHORT).show()
-    }
-}
-
-fun Fragment.startActivityForResultSafely(intent: Intent, requestCode: Int) {
-    try {
-        this.startActivityForResult(intent, requestCode)
-    } catch (e: Exception) {
-        AppLog.e(e)
-        Toast.makeText(requireContext(), "Cannot start activity: $intent", Toast.LENGTH_SHORT).show()
     }
 }
 

@@ -1,10 +1,9 @@
-package info.anodsplace.framework.playservices
+package info.anodsplace.playservices
 
 import android.content.Context
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.GoogleApiAvailability
-import info.anodsplace.framework.R
-import info.anodsplace.framework.app.ApplicationContext
+import info.anodsplace.context.ApplicationContext
 
 /**
  * @author alex

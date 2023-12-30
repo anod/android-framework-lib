@@ -1,4 +1,4 @@
-package info.anodsplace.framework.app
+package info.anodsplace.context
 
 import android.app.Application
 import android.content.ContentResolver
@@ -9,7 +9,6 @@ import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 
 /**
  * @author Alex Gavrishev
@@ -54,8 +53,4 @@ class ApplicationContext(context: Context) {
     fun sendBroadcast(intent: Intent) {
         actual.sendBroadcast(intent)
     }
-}
-
-fun Fragment.applicationContext(): ApplicationContext {
-    return ApplicationContext(this.requireActivity())
 }

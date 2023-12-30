@@ -1,4 +1,4 @@
-package info.anodsplace.framework.playservices
+package info.anodsplace.playservices
 
 import android.content.Context
 import com.google.android.gms.auth.api.signin.GoogleSignIn
@@ -7,7 +7,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.api.ApiException
 import com.google.android.gms.tasks.Tasks
-import info.anodsplace.framework.app.ApplicationContext
+import info.anodsplace.context.ApplicationContext
 import java.util.concurrent.ExecutionException
 
 /**

@@ -1,4 +1,4 @@
-package info.anodsplace.framework.util
+package info.anodsplace.ktx
 
 import android.os.Bundle
 import androidx.core.os.bundleOf

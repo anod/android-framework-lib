@@ -1,4 +1,4 @@
-package info.anodsplace.framework.app
+package info.anodsplace.notification
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -18,7 +18,8 @@ interface NotificationManager {
     }
 }
 
-class RealNotificationManager(private val context: ApplicationContext) : NotificationManager {
+class RealNotificationManager(private val context: info.anodsplace.context.ApplicationContext) :
+    NotificationManager {
     private val compat = NotificationManagerCompat.from(context.actual)
 
     override val areNotificationsEnabled: Boolean

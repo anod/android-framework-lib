@@ -9,39 +9,29 @@ import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
-import com.google.android.material.color.MaterialColors
 
 /**
  * @author Alex Gavrishev
  * @date 04/12/2017
  */
-interface CustomThemeActivity {
-    val themeRes: Int
-    val themeColors: CustomThemeColors
-}
 
 class CustomThemeColor(
         val available: Boolean,
         @ColorInt val colorInt: Int,
         @ColorRes val colorRes: Int,
-        @AttrRes val colorAttr: Int,
         val isLight: Boolean) {
 
     constructor(@ColorInt colorInt: Int = 0,
                 @ColorRes colorRes: Int = 0,
-                @AttrRes colorAttr: Int = 0,
-                isLight: Boolean = false) : this(true, colorInt, colorRes, colorAttr, isLight)
+                isLight: Boolean = false) : this(true, colorInt, colorRes, isLight)
 
     companion object {
-        val none = CustomThemeColor(false, 0, 0, 0, false)
-        val white = CustomThemeColor(true, Color.WHITE, 0, 0, true)
-        val black = CustomThemeColor(true, Color.BLACK, 0, 0, false)
+        val none = CustomThemeColor(false, 0, 0, false)
+        val white = CustomThemeColor(true, Color.WHITE, 0, true)
+        val black = CustomThemeColor(true, Color.BLACK, 0, false)
     }
 
     fun get(activity: Activity): Int {
-        if (colorAttr != 0) {
-            return MaterialColors.getColor(activity, colorAttr, activity.javaClass.simpleName)
-        }
         if (colorRes != 0) {
             return ContextCompat.getColor(activity, colorRes)
         }
@@ -60,14 +50,12 @@ class CustomThemeColors(
                     available = parcel.readByte() != 0.toByte(),
                     colorInt = parcel.readInt(),
                     colorRes = parcel.readInt(),
-                    colorAttr = parcel.readInt(),
                     isLight = parcel.readByte() != 0.toByte()
             ),
             CustomThemeColor(
                     available = parcel.readByte() != 0.toByte(),
                     colorInt = parcel.readInt(),
                     colorRes = parcel.readInt(),
-                    colorAttr = parcel.readInt(),
                     isLight = parcel.readByte() != 0.toByte()
             )
     )
@@ -112,12 +100,10 @@ class CustomThemeColors(
         parcel.writeInt(if (statusBarColor.available) 1 else 0)
         parcel.writeInt(statusBarColor.colorInt)
         parcel.writeInt(statusBarColor.colorRes)
-        parcel.writeInt(statusBarColor.colorAttr)
         parcel.writeByte(if (statusBarColor.isLight) 1 else 0)
         parcel.writeInt(if (navigationBarColor.available) 1 else 0)
         parcel.writeInt(navigationBarColor.colorInt)
         parcel.writeInt(navigationBarColor.colorRes)
-        parcel.writeInt(navigationBarColor.colorAttr)
         parcel.writeByte(if (navigationBarColor.isLight) 1 else 0)
     }
 

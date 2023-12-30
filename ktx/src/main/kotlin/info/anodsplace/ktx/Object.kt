@@ -1,4 +1,4 @@
-package info.anodsplace.framework.util
+package info.anodsplace.ktx
 
 val Any?.isScalar: Boolean
     get() = when (this) {

@@ -1,4 +1,4 @@
-package info.anodsplace.framework.util
+package info.anodsplace.ktx
 
 import java.security.MessageDigest
 

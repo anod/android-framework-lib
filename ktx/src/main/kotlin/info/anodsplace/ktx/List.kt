@@ -1,4 +1,4 @@
-package info.anodsplace.framework.util
+package info.anodsplace.ktx
 
 suspend fun <T, R> List<T>.chunked(
         action: suspend (items: List<T>) -> List<R>,

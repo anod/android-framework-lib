@@ -1,5 +1,5 @@
 // Copyright (c) 2020. Alex Gavrishev
-package info.anodsplace.framework.util
+package info.anodsplace.ktx
 
 import android.util.LruCache
 
