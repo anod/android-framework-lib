@@ -40,6 +40,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -68,7 +69,7 @@ fun PreferenceSlider(
     endIcon: @Composable (() -> Unit)? = null,
     paddingValues: PaddingValues = PaddingValues(0.dp),
 ) {
-    var value: Float by remember { mutableStateOf(initialValue.toFloat()) }
+    var value: Float by remember { mutableFloatStateOf(initialValue.toFloat()) }
     Column(
         modifier = Modifier.padding(paddingValues),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -82,9 +83,16 @@ fun PreferenceSlider(
                         .width(IntrinsicSize.Min)
                         .widthIn(max = 100.dp),
                     value = value.toInt().toString(),
-                    onValueChange = { value ->
-                        if (value.isEmpty()) {
-                            onValueChanged(value.trim().toInt())
+                    onValueChange = { newValue ->
+                        if (newValue.isEmpty()) {
+                            val parsed = try {
+                                newValue.trim().toInt()
+                            } catch (e: Exception) {
+                                null
+                            }
+                            if (parsed != null) {
+                                onValueChanged(parsed)
+                            }
                         }
                     },
                     textStyle = MaterialTheme.typography.labelLarge,
