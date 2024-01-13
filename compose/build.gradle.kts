@@ -33,7 +33,7 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.7"
+        kotlinCompilerExtensionVersion = "1.5.8"
     }
     namespace = "info.anodsplace.compose"
 }
@@ -52,8 +52,8 @@ dependencies {
 
     api("androidx.compose.foundation:foundation")
     api("androidx.compose.ui:ui")
-    api("androidx.compose.material3:material3:1.2.0-beta01")
-    api("androidx.compose.material3:material3-window-size-class:1.2.0-beta01")
+    api("androidx.compose.material3:material3:1.2.0-beta02")
+    api("androidx.compose.material3:material3-window-size-class:1.2.0-beta02")
     api("androidx.compose.material:material-icons-core")
     api("androidx.compose.material:material-icons-extended")
 
