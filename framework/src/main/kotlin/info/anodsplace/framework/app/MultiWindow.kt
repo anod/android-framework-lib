@@ -4,7 +4,6 @@ package info.anodsplace.framework.app
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 
 val Activity.isMultiWindow: Boolean
     get() = isInMultiWindowMode

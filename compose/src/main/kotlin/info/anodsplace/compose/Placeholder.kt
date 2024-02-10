@@ -1,19 +1,13 @@
 package info.anodsplace.compose
 
 import androidx.compose.animation.core.FiniteAnimationSpec
-import androidx.compose.animation.core.InfiniteRepeatableSpec
 import androidx.compose.animation.core.MutableTransitionState
-import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.Transition
 import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.spring
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -123,7 +117,7 @@ private fun DrawScope.drawPlaceholder(
     lastOutline: Outline?,
     lastLayoutDirection: LayoutDirection?,
     lastSize: Size?,
-): Outline? {
+): Outline {
     // Otherwise we need to create an outline from the shape
     val outline = lastOutline.takeIf {
         size == lastSize && layoutDirection == lastLayoutDirection

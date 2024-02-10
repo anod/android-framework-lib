@@ -4,7 +4,6 @@ import android.app.Activity
 import android.graphics.Color
 import android.os.Parcel
 import android.os.Parcelable
-import androidx.annotation.AttrRes
 import androidx.annotation.ColorInt
 import androidx.annotation.ColorRes
 import androidx.core.content.ContextCompat

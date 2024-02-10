@@ -58,7 +58,6 @@ fun PickGroup(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true, widthDp = 260, heightDp = 200)
 @Composable
 fun PickGroupPreview() {

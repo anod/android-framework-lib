@@ -19,8 +19,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.VolumeDown
-import androidx.compose.material.icons.filled.VolumeUp
+import androidx.compose.material.icons.automirrored.filled.VolumeDown
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
@@ -161,7 +161,6 @@ fun PreferenceCategory(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PreferencePick(
     item: PreferenceItem.Pick,
@@ -578,13 +577,13 @@ fun InCarScreenLight() {
                                 ),
                                 startIcon = {
                                     Icon(
-                                        imageVector = Icons.Filled.VolumeDown,
+                                        imageVector = Icons.AutoMirrored.Filled.VolumeDown,
                                         contentDescription = null
                                     )
                                 },
                                 endIcon = {
                                     Icon(
-                                        imageVector = Icons.Filled.VolumeUp,
+                                        imageVector = Icons.AutoMirrored.Filled.VolumeUp,
                                         contentDescription = null
                                     )
                                 }

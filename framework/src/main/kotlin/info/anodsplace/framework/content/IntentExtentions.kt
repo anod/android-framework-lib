@@ -1,6 +1,7 @@
 package info.anodsplace.framework.content
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
@@ -74,6 +75,7 @@ fun Intent.forOverlayPermission(packageName: String): Intent {
     return this
 }
 
+@SuppressLint("BatteryLife")
 @RequiresPermission(Manifest.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS)
 fun Intent.forRequestIgnoreBatteryOptimization(packageName: String): Intent {
     action = Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS
