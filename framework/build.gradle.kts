@@ -28,7 +28,7 @@ android {
 dependencies {
     implementation(project(":lib:applog"))
     implementation(libs.androidx.activity.compose)
-    implementation("androidx.window:window:1.2.0")
+    implementation(libs.androidx.window)
     implementation(libs.androidx.core.ktx)
 
     implementation(libs.kotlin.stdlib)

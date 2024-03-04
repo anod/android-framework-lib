@@ -26,7 +26,7 @@ android {
 }
 
 dependencies {
-    implementation("androidx.annotation:annotation:1.7.1")
-    implementation("androidx.activity:activity-ktx:1.8.2")
+    implementation(libs.androidx.annotation)
+    implementation(libs.androidx.activity.ktx)
     implementation(libs.kotlin.stdlib)
 }

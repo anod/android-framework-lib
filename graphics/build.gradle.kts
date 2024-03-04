@@ -26,8 +26,8 @@ android {
 }
 
 dependencies {
-    implementation("androidx.palette:palette-ktx:1.0.0")
+    implementation(libs.androidx.palette.ktx)
     implementation(libs.androidx.core.ktx)
-    implementation("androidx.annotation:annotation:1.7.1")
+    implementation(libs.androidx.annotation)
     implementation(libs.kotlin.stdlib)
 }
