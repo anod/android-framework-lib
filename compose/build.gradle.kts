@@ -29,10 +29,6 @@ android {
         compose = true
     }
 
-    kotlinOptions {
-        jvmTarget = "11"
-    }
-
     namespace = "info.anodsplace.compose"
 }
 
