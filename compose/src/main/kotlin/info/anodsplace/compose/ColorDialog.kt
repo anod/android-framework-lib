@@ -48,6 +48,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
 import java.util.Locale
+import kotlin.math.max
 import kotlin.math.roundToInt
 
 private val colorsAll = listOf(
@@ -194,7 +195,7 @@ class HexCodeVisualTransformation : VisualTransformation, OffsetMapping {
     }
 
     override fun transformedToOriginal(offset: Int): Int {
-        return offset - 1
+        return max(offset - 1, 0)
     }
 
 }
