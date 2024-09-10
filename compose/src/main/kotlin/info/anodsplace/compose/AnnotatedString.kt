@@ -12,8 +12,8 @@ import android.text.util.Linkify
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.ExperimentalTextApi
+import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.UrlAnnotation
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -37,7 +37,7 @@ fun Spanned.toAnnotatedString(linkColor: Color): AnnotatedString = buildAnnotate
             is ForegroundColorSpan -> addStyle(SpanStyle(color = Color(span.foregroundColor)), start, end)
             is URLSpan -> {
                 addStyle(SpanStyle(textDecoration = TextDecoration.Underline, color = linkColor), start, end)
-                addUrlAnnotation(UrlAnnotation(span.url), start, end)
+                addLink(LinkAnnotation.Url(span.url), start, end)
                 addStringAnnotation(tag = "URL", annotation = span.url, start, end)
             }
             is ImageSpan -> {

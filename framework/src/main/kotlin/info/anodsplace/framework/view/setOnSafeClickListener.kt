@@ -13,7 +13,7 @@ inline fun View.setOnSafeClickListener(crossinline onSafeClick: ((View) -> Unit)
 
 
 class SafeClickListener(
-        private inline val onSafeClick: (View) -> Unit
+    private val onSafeClick: (View) -> Unit
 ) : View.OnClickListener {
     private var lastClickTime = 0L
     private val clickTimeInterval = 700L
