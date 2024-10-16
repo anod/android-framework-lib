@@ -28,5 +28,4 @@ android {
 dependencies {
     implementation(libs.androidx.annotation)
     implementation(libs.androidx.activity.ktx)
-    implementation(libs.kotlin.stdlib)
 }

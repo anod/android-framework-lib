@@ -29,5 +29,4 @@ dependencies {
     implementation(libs.androidx.palette.ktx)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.annotation)
-    implementation(libs.kotlin.stdlib)
 }

@@ -53,6 +53,4 @@ dependencies {
 
     api(libs.androidx.compose.ui.tooling.preview)
     debugApi(libs.androidx.compose.ui.tooling)
-
-    implementation(libs.kotlin.stdlib)
 }

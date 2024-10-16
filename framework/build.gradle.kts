@@ -30,6 +30,4 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.window)
     implementation(libs.androidx.core.ktx)
-
-    implementation(libs.kotlin.stdlib)
 }

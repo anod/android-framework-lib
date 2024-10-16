@@ -24,7 +24,3 @@ android {
     }
     namespace = "info.anodsplace.applog"
 }
-
-dependencies {
-    implementation(libs.kotlin.stdlib)
-}
