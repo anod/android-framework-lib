@@ -10,20 +10,20 @@ import androidx.window.layout.WindowLayoutInfo
 import info.anodsplace.framework.R
 import kotlinx.coroutines.flow.*
 
-data class HingeDeviceLayout(val isWideLayout: Boolean = false, val hinge: Rect = Rect())
+data class FoldableDeviceLayout(val isWideLayout: Boolean = false, val hinge: Rect = Rect())
 
-interface HingeDevice {
-    val layout: StateFlow<HingeDeviceLayout>
+interface FoldableDevice {
+    val layout: StateFlow<FoldableDeviceLayout>
     var attachedToWindow: Boolean
 
-    class NoOp : HingeDevice {
+    class NoOp : FoldableDevice {
         override var attachedToWindow = false
-        override val layout = MutableStateFlow(HingeDeviceLayout(false, Rect()))
+        override val layout = MutableStateFlow(FoldableDeviceLayout(false, Rect()))
     }
 
     companion object {
         // private fun isDuo(context: Context) = context.packageManager.hasSystemFeature("com.microsoft.device.display.displaymask")
-        fun create(activity: ComponentActivity): HingeDevice = HingeDeviceReal(activity)
+        fun create(activity: ComponentActivity): FoldableDevice = FoldableDeviceReal(activity)
     }
 }
 
@@ -34,7 +34,7 @@ fun WindowLayoutInfo.hingeBounds(): Rect {
     return foldingFeature?.bounds ?: Rect()
 }
 
-class HingeDeviceReal(private val activity: ComponentActivity) : HingeDevice {
+class FoldableDeviceReal(private val activity: ComponentActivity) : FoldableDevice {
     override var attachedToWindow = false
 
     private val window: WindowInfoTracker? = try {
@@ -43,9 +43,9 @@ class HingeDeviceReal(private val activity: ComponentActivity) : HingeDevice {
         null
     }
 
-    override val layout: StateFlow<HingeDeviceLayout> = window?.windowLayoutInfo(activity)?.map {
-        HingeDeviceLayout(isWideLayout = activity.resources.getBoolean(R.bool.wide_layout), hinge = it.hingeBounds())
-    }?.stateIn(activity.lifecycleScope, SharingStarted.WhileSubscribed(), HingeDeviceLayout(false, Rect()))
-            ?: MutableStateFlow(HingeDeviceLayout(false, Rect()))
+    override val layout: StateFlow<FoldableDeviceLayout> = window?.windowLayoutInfo(activity)?.map {
+        FoldableDeviceLayout(isWideLayout = activity.resources.getBoolean(R.bool.wide_layout), hinge = it.hingeBounds())
+    }?.stateIn(activity.lifecycleScope, SharingStarted.WhileSubscribed(), FoldableDeviceLayout(false, Rect()))
+            ?: MutableStateFlow(FoldableDeviceLayout(false, Rect()))
 
 }
