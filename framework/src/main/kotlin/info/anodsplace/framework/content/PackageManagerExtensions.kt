@@ -14,6 +14,7 @@ import java.io.BufferedReader
 import java.io.IOException
 import java.io.InputStreamReader
 import java.util.*
+import androidx.core.graphics.createBitmap
 
 /**
  * @author alex
@@ -47,7 +48,7 @@ fun PackageManager.loadIcon(componentName: ComponentName, displayMetrics: Displa
     var d: Drawable? = null
     try {
         d = this.getActivityIcon(componentName)
-    } catch (ignored: PackageManager.NameNotFoundException) {
+    } catch (_: PackageManager.NameNotFoundException) {
     }
 
     if (d == null) {
@@ -69,11 +70,15 @@ fun PackageManager.loadIcon(componentName: ComponentName, displayMetrics: Displa
             AppLog.e("Bitmap is recycled for $componentName")
             return null
         }
+        if (bitmapDrawable.bitmap.config == null) {
+            AppLog.e("Bitmap config is null for $componentName")
+            return null
+        }
         // copy to avoid recycling problems
-        return bitmapDrawable.bitmap.copy(bitmapDrawable.bitmap.config, true)
+        return bitmapDrawable.bitmap.copy(bitmapDrawable.bitmap.config!!, true)
     }
 
-    val bitmap = Bitmap.createBitmap(d.intrinsicWidth, d.intrinsicHeight, Bitmap.Config.ARGB_8888)
+    val bitmap = createBitmap(d.intrinsicWidth, d.intrinsicHeight)
     val canvas = Canvas(bitmap)
     d.setBounds(0, 0, canvas.width, canvas.height)
     d.draw(canvas)
@@ -101,7 +106,7 @@ fun PackageManager.getInstalledPackagesCodes(): List<InstalledPackage> {
 
     val downloaded = ArrayList<InstalledPackage>(packs.size)
     for (packageInfo in packs) {
-        val applicationInfo = packageInfo.applicationInfo
+        val applicationInfo = packageInfo.applicationInfo ?: continue
         // Skips the system application (packages)
         if (applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM == 1
                 && applicationInfo.flags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP == 0) {
@@ -153,7 +158,7 @@ private fun getInstalledPackagesFallback(): List<InstalledPackage> {
 }
 
 fun PackageManager.getAppTitle(info: PackageInfo): String {
-    return info.applicationInfo.loadLabel(this).toString()
+    return info.applicationInfo?.loadLabel(this)?.toString() ?: info.packageName
 }
 
 fun PackageManager.getPackageInfoOrNull(packageName: String): PackageInfo? {

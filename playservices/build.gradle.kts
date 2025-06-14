@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "info.anodsplace.playservices"
-    compileSdk = 34
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 27
