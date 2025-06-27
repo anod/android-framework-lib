@@ -38,9 +38,9 @@ sealed class PreferenceItem {
 
     @Immutable
     data class Category(
-        @StringRes override val titleRes: Int = 0,
+        @param:StringRes override val titleRes: Int = 0,
         override val title: String = "",
-        @StringRes override val summaryRes: Int = 0,
+        @param:StringRes override val summaryRes: Int = 0,
         override val summary: String = "",
         override val key: String = "",
         override val enabled: Boolean = true,
@@ -54,9 +54,9 @@ sealed class PreferenceItem {
 
     @Immutable
     data class Text(
-        @StringRes override val titleRes: Int = 0,
+        @param:StringRes override val titleRes: Int = 0,
         override val title: String = "",
-        @StringRes override val summaryRes: Int = 0,
+        @param:StringRes override val summaryRes: Int = 0,
         override val summary: String = "",
         override val key: String = "",
         override val enabled: Boolean = true,
@@ -70,9 +70,9 @@ sealed class PreferenceItem {
     @Immutable
     data class Switch(
         override val checked: Boolean,
-        @StringRes override val titleRes: Int = 0,
+        @param:StringRes override val titleRes: Int = 0,
         override val title: String = "",
-        @StringRes override val summaryRes: Int = 0,
+        @param:StringRes override val summaryRes: Int = 0,
         override val summary: String = "",
         override val key: String = "",
         override val enabled: Boolean = true,
@@ -86,9 +86,9 @@ sealed class PreferenceItem {
     @Immutable
     data class CheckBox(
         override val checked: Boolean,
-        @StringRes override val titleRes: Int = 0,
+        @param:StringRes override val titleRes: Int = 0,
         override val title: String = "",
-        @StringRes override val summaryRes: Int = 0,
+        @param:StringRes override val summaryRes: Int = 0,
         override val summary: String = "",
         override val key: String = "",
         override val enabled: Boolean = true,
@@ -101,12 +101,12 @@ sealed class PreferenceItem {
 
     @Immutable
     data class List(
-        @ArrayRes val entries: Int,
-        @ArrayRes val entryValues: Int,
+        @param:ArrayRes val entries: Int,
+        @param:ArrayRes val entryValues: Int,
         override val value: String = "",
-        @StringRes override val titleRes: Int = 0,
+        @param:StringRes override val titleRes: Int = 0,
         override val title: String = "",
-        @StringRes override val summaryRes: Int = 0,
+        @param:StringRes override val summaryRes: Int = 0,
         override val summary: String = "",
         override val key: String = "",
         override val enabled: Boolean = true,
@@ -122,14 +122,14 @@ sealed class PreferenceItem {
 
     @Immutable
     data class Pick(
-        @ArrayRes val entriesRes: Int = 0,
-        @ArrayRes val entryValuesRes: Int = 0,
+        @param:ArrayRes val entriesRes: Int = 0,
+        @param:ArrayRes val entryValuesRes: Int = 0,
         val entries: Array<String> = emptyArray(),
         val entryValues: Array<String> = emptyArray(),
         override val value: String = "",
-        @StringRes override val titleRes: Int = 0,
+        @param:StringRes override val titleRes: Int = 0,
         override val title: String = "",
-        @StringRes override val summaryRes: Int = 0,
+        @param:StringRes override val summaryRes: Int = 0,
         override val summary: String = "",
         override val key: String = "",
         override val enabled: Boolean = true,
@@ -146,9 +146,9 @@ sealed class PreferenceItem {
     @Immutable
     data class Color(
         val color: androidx.compose.ui.graphics.Color?,
-        @StringRes override val titleRes: Int = 0,
+        @param:StringRes override val titleRes: Int = 0,
         override val title: String = "",
-        @StringRes override val summaryRes: Int = 0,
+        @param:StringRes override val summaryRes: Int = 0,
         override val summary: String = "",
         override val key: String = "",
         override val enabled: Boolean = true,
@@ -161,9 +161,9 @@ sealed class PreferenceItem {
 
     @Immutable
     data class Placeholder(
-        @StringRes override val titleRes: Int = 0,
+        @param:StringRes override val titleRes: Int = 0,
         override val title: String = "",
-        @StringRes override val summaryRes: Int = 0,
+        @param:StringRes override val summaryRes: Int = 0,
         override val summary: String = "",
         override val key: String = "",
         override val enabled: Boolean = true,

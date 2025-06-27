@@ -34,23 +34,23 @@ import info.anodsplace.permissions.toRequestInputs
 @Immutable
 data class PermissionDescription(
     val permission: AppPermission,
-    @DrawableRes val iconRes: Int,
+    @param:DrawableRes val iconRes: Int,
     val icon: Painter? = null,
-    @StringRes val titleRes: Int,
+    @param:StringRes val titleRes: Int,
     val title: String = "",
-    @StringRes val descRes: Int,
+    @param:StringRes val descRes: Int,
     val desc: String = "",
 )
 
 @Immutable
 data class RequestPermissionsScreenDescription(
-    @StringRes val descRes: Int = 0,
+    @param:StringRes val descRes: Int = 0,
     val desc: String = "",
-    @StringRes val titleRes: Int = 0,
+    @param:StringRes val titleRes: Int = 0,
     val title: String = "",
-    @StringRes val allowAccessRes: Int = 0,
+    @param:StringRes val allowAccessRes: Int = 0,
     val allowAccess: String = "",
-    @StringRes val cancelRes: Int = 0,
+    @param:StringRes val cancelRes: Int = 0,
     val cancel: String = ""
 ) {
     constructor() : this(
