@@ -15,10 +15,10 @@ import androidx.core.graphics.ColorUtils
  */
 
 class CustomThemeColor(
-        val available: Boolean,
-        @ColorInt val colorInt: Int,
-        @ColorRes val colorRes: Int,
-        val isLight: Boolean) {
+    val available: Boolean,
+    @param:ColorInt val colorInt: Int,
+    @param:ColorRes val colorRes: Int,
+    val isLight: Boolean) {
 
     constructor(@ColorInt colorInt: Int = 0,
                 @ColorRes colorRes: Int = 0,
