@@ -12,6 +12,7 @@ import android.provider.MediaStore
 import android.provider.Settings
 import android.widget.Toast
 import androidx.annotation.RequiresPermission
+import androidx.core.net.toUri
 import info.anodsplace.applog.AppLog
 
 fun Intent.forUninstall(packageName: String): Intent {
@@ -26,9 +27,9 @@ fun Intent.forAppInfo(packageName: String): Intent {
     return this
 }
 
-fun Intent.forStoreSearch(query: String): Intent {
+fun Intent.forStoreSearch(query: String, category: String?): Intent {
     this.action = Intent.ACTION_VIEW
-    this.data = Uri.parse("market://search?q=$query")
+    this.data = "market://search?q=$query${category?.let { "&c=$it" }}".toUri()
     return this
 }
 
