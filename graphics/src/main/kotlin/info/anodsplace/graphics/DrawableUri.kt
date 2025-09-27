@@ -6,11 +6,11 @@ import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.util.Log
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.graphics.drawable.toDrawable
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.io.InputStream
@@ -49,7 +49,7 @@ class DrawableUri(private val context: Context) {
             try {
                 val bmp = decodeSampledBitmapFromStream(uri, properties.maxIconSize, properties.maxIconSize)
                 bmp.density = properties.densityDpi
-                d = BitmapDrawable(context.resources, bmp)
+                d = bmp.toDrawable(context.resources)
             } catch (e: Exception) {
                 Log.w("ShortcutEditActivity", "Unable to open content: $uri", e)
             }
@@ -109,7 +109,7 @@ class DrawableUri(private val context: Context) {
         } else {
             try {
                 r = context.packageManager.getResourcesForApplication(authority)
-            } catch (ex: PackageManager.NameNotFoundException) {
+            } catch (_: PackageManager.NameNotFoundException) {
                 throw FileNotFoundException("No package found for authority: $uri")
             }
 
@@ -119,7 +119,7 @@ class DrawableUri(private val context: Context) {
             1 -> {
                 try {
                     Integer.parseInt(path[0])
-                } catch (e: NumberFormatException) {
+                } catch (_: NumberFormatException) {
                     throw FileNotFoundException("Single path segment is not a resource ID: $uri")
                 }
 
@@ -143,7 +143,7 @@ class DrawableUri(private val context: Context) {
             if (`is` != null) {
                 try {
                     `is`.close()
-                } catch (ignored: IOException) {
+                } catch (_: IOException) {
                 }
 
             }
