@@ -72,7 +72,7 @@ fun Intent.forIconTheme(): Intent {
 
 fun Intent.forOverlayPermission(packageName: String): Intent {
     action = Settings.ACTION_MANAGE_OVERLAY_PERMISSION
-    data = Uri.parse("package:$packageName")
+    data = "package:$packageName".toUri()
     return this
 }
 
@@ -93,7 +93,7 @@ fun Intent.forApplicationDetails(packageName: String): Intent {
 
 fun Intent.playStoreDetails(packageName: String): Intent {
     action = Intent.ACTION_VIEW
-    data = Uri.parse("market://details?id=%s".format(packageName))
+    data = "market://details?id=%s".format(packageName).toUri()
     flags = Intent.FLAG_ACTIVITY_NEW_TASK
     return this
 }
