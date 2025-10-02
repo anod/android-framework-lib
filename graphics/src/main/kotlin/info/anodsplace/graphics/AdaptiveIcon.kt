@@ -11,8 +11,10 @@ import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.Shader
 import android.graphics.drawable.AdaptiveIconDrawable
-import android.graphics.drawable.BitmapDrawable
 import android.util.TypedValue
+import androidx.core.graphics.createBitmap
+import androidx.core.graphics.drawable.toDrawable
+import androidx.core.graphics.get
 import kotlin.math.roundToInt
 
 class AdaptiveIcon(
@@ -28,7 +30,7 @@ class AdaptiveIcon(
 
     fun fromDrawable(drawable: AdaptiveIconDrawable): Bitmap {
         val canvas = Canvas()
-        val resultBitmap = Bitmap.createBitmap(layerSize, layerSize, Bitmap.Config.ARGB_8888)
+        val resultBitmap = createBitmap(layerSize, layerSize)
         drawable.setBounds(0, 0, layerSize, layerSize)
 
         if (mask.isEmpty) {
@@ -42,8 +44,8 @@ class AdaptiveIcon(
         val cMask = Path()
         mask.transform(maskMatrix, cMask)
 
-        val maskBitmap = Bitmap.createBitmap(layerSize, layerSize, Bitmap.Config.ALPHA_8)
-        val layersBitmap = Bitmap.createBitmap(layerSize, layerSize, Bitmap.Config.ARGB_8888)
+        val maskBitmap = createBitmap(layerSize, layerSize, Bitmap.Config.ALPHA_8)
+        val layersBitmap = createBitmap(layerSize, layerSize)
         val background = drawable.background
         val foreground = drawable.foreground
 
@@ -77,24 +79,24 @@ class AdaptiveIcon(
         }
 
         val isTransparent = arrayOf(
-                input.getPixel(0, 0) == Color.TRANSPARENT,
-                input.getPixel(0, input.height - 1) == Color.TRANSPARENT,
-                input.getPixel(input.width - 1, 0) == Color.TRANSPARENT,
-                input.getPixel(input.width - 1, input.height - 1) == Color.TRANSPARENT
+            input[0, 0] == Color.TRANSPARENT,
+            input[0, input.height - 1] == Color.TRANSPARENT,
+            input[input.width - 1, 0] == Color.TRANSPARENT,
+            input[input.width - 1, input.height - 1] == Color.TRANSPARENT
         ).reduce { a, b -> a && b }
 
         if (!isTransparent) {
             val canvas = Canvas()
-            val resultBitmap = Bitmap.createBitmap(widthPx, widthPx, Bitmap.Config.ARGB_8888)
+            val resultBitmap = createBitmap(widthPx, widthPx)
 
             val maskMatrix = Matrix()
             maskMatrix.setScale(widthPx / MASK_SIZE, widthPx / MASK_SIZE)
             val cMask = Path()
             mask.transform(maskMatrix, cMask)
 
-            val maskBitmap = Bitmap.createBitmap(widthPx, widthPx, Bitmap.Config.ALPHA_8)
-            val layersBitmap = Bitmap.createBitmap(widthPx, widthPx, Bitmap.Config.ARGB_8888)
-            val background = BitmapDrawable(context.resources, input)
+            val maskBitmap = createBitmap(widthPx, widthPx, Bitmap.Config.ALPHA_8)
+            val layersBitmap = createBitmap(widthPx, widthPx)
+            val background = input.toDrawable(context.resources)
             background.setBounds(0, 0, widthPx, widthPx)
 
             paint.shader = null
@@ -125,20 +127,20 @@ class AdaptiveIcon(
     }
 
     companion object {
-        private const val circlePath = "M50 0C77.6 0 100 22.4 100 50C100 77.6 77.6 100 50 100C22.4 100 0 77.6 0 50C0 22.4 22.4 0 50 0Z"
+        private const val CIRCLE_PATH = "M50 0C77.6 0 100 22.4 100 50C100 77.6 77.6 100 50 100C22.4 100 0 77.6 0 50C0 22.4 22.4 0 50 0Z"
         const val MASK_SIZE = 100f
 
         fun getSystemDefaultMask(): String {
             val configResId = Resources.getSystem().getIdentifier("config_icon_mask", "string", "android")
 
             if (configResId == 0) {
-                return circlePath
+                return CIRCLE_PATH
             }
 
             val configMask = Resources.getSystem().getString(configResId)
 
             if (configMask.isEmpty()) {
-                return circlePath
+                return CIRCLE_PATH
             }
 
             return configMask
@@ -150,9 +152,9 @@ class AdaptiveIcon(
             }
 
             return try {
-                PathParser.createPathFromPathData(mask) ?: PathParser.createPathFromPathData(circlePath)
-            } catch (e: Exception) {
-                PathParser.createPathFromPathData(circlePath)
+                PathParser.createPathFromPathData(mask) ?: PathParser.createPathFromPathData(CIRCLE_PATH)
+            } catch (_: Exception) {
+                PathParser.createPathFromPathData(CIRCLE_PATH)
             }
         }
 

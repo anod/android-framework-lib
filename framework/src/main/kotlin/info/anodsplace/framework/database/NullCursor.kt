@@ -115,7 +115,7 @@ class NullCursor : Cursor {
     }
 
     override fun getType(columnIndex: Int): Int {
-        return 0
+        return Cursor.FIELD_TYPE_NULL
     }
 
     override fun isNull(columnIndex: Int): Boolean {
