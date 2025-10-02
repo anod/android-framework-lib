@@ -1,13 +1,12 @@
 package info.anodsplace.framework.app
 
 import android.app.Activity
-import android.os.Build
 import android.view.View
 import android.view.Window
 import android.view.WindowManager
 
 object WindowCustomTheme {
-    private const val DEVICE_SAMSUNG = "samsung"
+    private const val DEVICE_SAMSUNG = "samsung" // kept for potential future use
 
     fun apply(themeColors: CustomThemeColors, window: Window, activity: Activity) {
         var systemUiVisibility = WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
@@ -27,9 +26,7 @@ object WindowCustomTheme {
     }
 
     private fun navBarAvailable(navigationBarColor: CustomThemeColor): Boolean {
-        if (Build.MANUFACTURER == DEVICE_SAMSUNG && Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
-            return false
-        }
+        // Min SDK is 31 so previous Samsung < P workaround is obsolete.
         return navigationBarColor.available
     }
 }
