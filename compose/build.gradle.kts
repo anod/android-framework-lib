@@ -42,7 +42,7 @@ dependencies {
     implementation(project(":lib:permissions"))
     implementation(project(":lib:graphics"))
 
-    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.activity)
 
     val composeBom = platform(libs.androidx.compose.bom)
     implementation(composeBom)
