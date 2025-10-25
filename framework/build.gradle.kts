@@ -31,7 +31,7 @@ android {
 
 dependencies {
     implementation(project(":lib:applog"))
-    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.activity)
     implementation(libs.androidx.window)
     implementation(libs.androidx.core.ktx)
 }
