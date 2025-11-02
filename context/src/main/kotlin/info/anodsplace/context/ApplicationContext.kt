@@ -16,8 +16,6 @@ import androidx.core.content.ContextCompat
  */
 
 interface ApplicationInstance {
-    val appCompatNightMode: Int
-
     fun sendBroadcast(intent: Intent)
     fun getString(@StringRes resId: Int): String
     fun getString(@StringRes resId: Int, vararg formatArgs: Any): String
@@ -28,10 +26,7 @@ class ApplicationContext(context: Context) {
     constructor(application: Application) : this(application.applicationContext)
 
     val actual: Context = context.applicationContext as Context
-    private val app: ApplicationInstance = context.applicationContext as ApplicationInstance
 
-    val appCompatNightMode: Int
-        get() = app.appCompatNightMode
     val resources: Resources
         get() = actual.resources
     val contentResolver: ContentResolver

@@ -1,32 +1,20 @@
 package info.anodsplace.framework.app
 
-import android.app.Activity
 import android.view.View
 import android.view.Window
-import android.view.WindowManager
+import androidx.core.view.WindowCompat
+import info.anodsplace.applog.AppLog
 
 object WindowCustomTheme {
-    private const val DEVICE_SAMSUNG = "samsung" // kept for potential future use
-
-    fun apply(themeColors: CustomThemeColors, window: Window, activity: Activity) {
-        var systemUiVisibility = WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS
+    fun apply(themeColors: CustomThemeColors, window: Window, view: View) {
         if (themeColors.statusBarColor.available) {
-            window.statusBarColor = themeColors.statusBarColor.get(activity)
-            if (themeColors.statusBarColor.isLight) {
-                systemUiVisibility = systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-            }
+            window.statusBarColor = themeColors.statusBarColor.colorInt
+            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = themeColors.statusBarColor.isLight
+            AppLog.d("statusBarColor ${themeColors.statusBarColor.colorInt.toHexString()}, isAppearanceLightStatusBars: ${themeColors.statusBarColor.isLight}")
         }
-        if (navBarAvailable(themeColors.navigationBarColor)) {
-            window.navigationBarColor = themeColors.navigationBarColor.get(activity)
-            if (themeColors.navigationBarColor.isLight) {
-                systemUiVisibility = systemUiVisibility or View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
-            }
+        if (themeColors.navigationBarColor.available) {
+            window.navigationBarColor = themeColors.navigationBarColor.colorInt
+            WindowCompat.getInsetsController(window, view).isAppearanceLightNavigationBars = themeColors.navigationBarColor.isLight
         }
-        window.decorView.systemUiVisibility = systemUiVisibility
-    }
-
-    private fun navBarAvailable(navigationBarColor: CustomThemeColor): Boolean {
-        // Min SDK is 31 so previous Samsung < P workaround is obsolete.
-        return navigationBarColor.available
     }
 }

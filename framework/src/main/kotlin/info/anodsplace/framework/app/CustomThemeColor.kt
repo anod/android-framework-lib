@@ -1,12 +1,9 @@
 package info.anodsplace.framework.app
 
-import android.app.Activity
 import android.graphics.Color
 import android.os.Parcel
 import android.os.Parcelable
 import androidx.annotation.ColorInt
-import androidx.annotation.ColorRes
-import androidx.core.content.ContextCompat
 import androidx.core.graphics.ColorUtils
 
 /**
@@ -17,24 +14,16 @@ import androidx.core.graphics.ColorUtils
 class CustomThemeColor(
     val available: Boolean,
     @param:ColorInt val colorInt: Int,
-    @param:ColorRes val colorRes: Int,
     val isLight: Boolean) {
 
     constructor(@ColorInt colorInt: Int = 0,
-                @ColorRes colorRes: Int = 0,
-                isLight: Boolean = false) : this(true, colorInt, colorRes, isLight)
+                isLight: Boolean = false
+    ) : this(true, colorInt, isLight)
 
     companion object {
-        val none = CustomThemeColor(false, 0, 0, false)
-        val white = CustomThemeColor(true, Color.WHITE, 0, true)
-        val black = CustomThemeColor(true, Color.BLACK, 0, false)
-    }
-
-    fun get(activity: Activity): Int {
-        if (colorRes != 0) {
-            return ContextCompat.getColor(activity, colorRes)
-        }
-        return colorInt
+        val none = CustomThemeColor(false, 0, false)
+        val white = CustomThemeColor(true, Color.WHITE, true)
+        val black = CustomThemeColor(true, Color.BLACK, false)
     }
 }
 
@@ -48,21 +37,13 @@ class CustomThemeColors(
             CustomThemeColor(
                     available = parcel.readByte() != 0.toByte(),
                     colorInt = parcel.readInt(),
-                    colorRes = parcel.readInt(),
                     isLight = parcel.readByte() != 0.toByte()
             ),
             CustomThemeColor(
                     available = parcel.readByte() != 0.toByte(),
                     colorInt = parcel.readInt(),
-                    colorRes = parcel.readInt(),
                     isLight = parcel.readByte() != 0.toByte()
             )
-    )
-
-    constructor(isStatusBarLight: Boolean, @ColorRes statusBarColor: Int, isNavBarLight: Boolean, @ColorRes navigationBarColor: Int) : this(
-            available = true,
-            statusBarColor = CustomThemeColor(colorRes = statusBarColor, isLight = isStatusBarLight),
-            navigationBarColor = CustomThemeColor(colorRes = navigationBarColor, isLight = isNavBarLight)
     )
 
     constructor(@ColorInt statusBarColor: Int, navigationBarColor: CustomThemeColor) : this(
@@ -98,11 +79,9 @@ class CustomThemeColors(
         parcel.writeByte(if (available) 1 else 0)
         parcel.writeInt(if (statusBarColor.available) 1 else 0)
         parcel.writeInt(statusBarColor.colorInt)
-        parcel.writeInt(statusBarColor.colorRes)
         parcel.writeByte(if (statusBarColor.isLight) 1 else 0)
         parcel.writeInt(if (navigationBarColor.available) 1 else 0)
         parcel.writeInt(navigationBarColor.colorInt)
-        parcel.writeInt(navigationBarColor.colorRes)
         parcel.writeByte(if (navigationBarColor.isLight) 1 else 0)
     }
 
