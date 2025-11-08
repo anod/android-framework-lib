@@ -3,7 +3,11 @@ package info.anodsplace.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 abstract class BaseFlowViewModel<State, Event, Action> : ViewModel() {
@@ -17,7 +21,7 @@ abstract class BaseFlowViewModel<State, Event, Action> : ViewModel() {
             if (::_viewState.isInitialized) {
                 return _viewState.value
             } else {
-                throw UninitializedPropertyAccessException("\"viewState\" was queried before being initialized")
+                throw RuntimeException("\"viewState\" was queried before being initialized")
             }
         }
         protected set(value) {

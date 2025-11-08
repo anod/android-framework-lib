@@ -16,6 +16,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 
 /**
  * @author algavris
@@ -29,7 +30,6 @@ sealed class AppPermission(val value: String) {
     object CallPhone : AppPermission(Manifest.permission.CALL_PHONE)
     object ReadContacts : AppPermission(Manifest.permission.READ_CONTACTS)
     object AnswerPhoneCalls : AppPermission(Manifest.permission.ANSWER_PHONE_CALLS)
-    @RequiresApi(31)
     object PhoneStateRead : AppPermission(Manifest.permission.READ_PHONE_STATE)
     object PhoneStateModify : AppPermission(Manifest.permission.MODIFY_PHONE_STATE)
     object CanDrawOverlay : AppPermission(AppPermissions.Permission.CAN_DRAW_OVERLAY)
@@ -38,13 +38,10 @@ sealed class AppPermission(val value: String) {
     @RequiresApi(33)
     object PostNotification : AppPermission(Manifest.permission.POST_NOTIFICATIONS)
 
-    @RequiresApi(Build.VERSION_CODES.Q)
     object ActivityRecognition : AppPermission(Manifest.permission.ACTIVITY_RECOGNITION)
 
-    @RequiresApi(31)
     object BluetoothConnect : AppPermission(AppPermissions.Permission.BLUETOOTH_CONNECT)
 
-    @RequiresApi(31)
     object BluetoothScan : AppPermission(AppPermissions.Permission.BLUETOOTH_SCAN)
 }
 
@@ -116,7 +113,7 @@ object AppPermissions {
                     context,
                     Intent(
                         Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                        Uri.parse("package:" + context.packageName)
+                        ("package:" + context.packageName).toUri()
                     )
                 )
 
@@ -124,7 +121,7 @@ object AppPermissions {
                     context,
                     Intent(
                         Settings.ACTION_MANAGE_WRITE_SETTINGS,
-                        Uri.parse("package:" + context.packageName)
+                        ("package:" + context.packageName).toUri()
                     )
                 )
 

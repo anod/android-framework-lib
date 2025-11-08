@@ -1,13 +1,36 @@
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin)
+    alias(libs.plugins.kotlin.multiplatform)
 }
 
 kotlin {
-    compilerOptions {
-        jvmTarget = JvmTarget.JVM_11
+    androidTarget {
+        @OptIn(ExperimentalKotlinGradlePluginApi::class)
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_11)
+        }
+    }
+    listOf(
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64(),
+    ).forEach {
+        it.binaries.framework {
+            baseName = "viewmodel"
+            isStatic = true
+        }
+    }
+    jvm()
+    sourceSets.all {
+        languageSettings.optIn("kotlin.experimental.ExperimentalObjCName")
+    }
+    sourceSets {
+        commonMain.dependencies {
+            implementation(libs.androidx.lifecycle.viewmodel)
+        }
     }
 }
 
@@ -23,10 +46,4 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-}
-
-dependencies {
-    implementation(libs.lifecycle.viewmodel.ktx)
-    implementation(libs.coroutines.core)
-    implementation(libs.coroutines.android)
 }

@@ -1,13 +1,17 @@
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin)
+    alias(libs.plugins.kotlin.multiplatform)
 }
 
 kotlin {
-    compilerOptions {
-        jvmTarget = JvmTarget.JVM_11
+    androidTarget {
+        @OptIn(ExperimentalKotlinGradlePluginApi::class)
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_11)
+        }
     }
 }
 
@@ -31,5 +35,5 @@ android {
 
 dependencies {
     implementation(libs.androidx.annotation)
-    implementation(libs.androidx.activity.ktx)
+    implementation(libs.androidx.activity)
 }
