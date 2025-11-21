@@ -67,6 +67,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import info.anodsplace.compose.SystemIconShape
+import info.anodsplace.ktx.resourceUri
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.onEach
@@ -566,23 +567,24 @@ private fun MultiSelectChooserContent(
 @Preview(name = "Chooser Screen", showBackground = true, widthDp = 360, heightDp = 640)
 @Composable
 fun ChooserScreenPreview() {
+    val context = LocalContext.current
     MaterialTheme {
         ChooserScreen(
             loader = StaticChooserLoader(
                 listOf(
                     ChooserEntry(
-                        componentName = null,
+                        context = context,
                         title = "Music",
                         iconRes = android.R.drawable.ic_input_add
                     ),
                     ChooserEntry(
-                        componentName = null,
+                        context = context,
                         title = "Maps",
                         iconRes = android.R.drawable.ic_input_delete
                     ),
                     sectionEntry("section-1", "Apps"),
                     ChooserEntry(
-                        componentName = null,
+                        context = context,
                         title = "Calls",
                         iconRes = android.R.drawable.ic_input_get
                     ),
@@ -598,10 +600,10 @@ fun ChooserScreenPreview() {
                 )
             ),
             headers = listOf(
-                headerEntry(0, "Actions", iconRes = android.R.drawable.ic_popup_sync),
+                headerEntry(0, "Actions", iconUri = context.resourceUri(android.R.drawable.ic_popup_sync)),
                 headerEntry(0, "More", Icons.Filled.Alarm)
             ),
-            asyncImage = { entry, colorFilter ->
+            asyncImage = { _, _ ->
                 Box(Modifier.size(chooserIconSize).background(MaterialTheme.colorScheme.onPrimaryContainer)) {
 
                 }
@@ -628,7 +630,7 @@ private fun ChooserScreenLoadingPreview() {
         }
         ChooserScreen(
             loader = loader,
-            asyncImage = { entry, colorFilter ->
+            asyncImage = { _, _ ->
                 Box(Modifier.size(chooserIconSize).background(MaterialTheme.colorScheme.onPrimaryContainer)) {
 
                 }
@@ -653,7 +655,7 @@ private fun ChooserScreenLoadingWithSectionsPreview() {
         }
         ChooserScreen(
             loader = loader,
-            asyncImage = { entry, colorFilter ->
+            asyncImage = { _, _ ->
                 Box(Modifier.size(chooserIconSize).background(MaterialTheme.colorScheme.onPrimaryContainer)) {
 
                 }

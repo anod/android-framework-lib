@@ -31,8 +31,8 @@ class MediaListChooserLoader(context: Context) : ChooserLoader {
                 continue
             }
             val title = appInfo.activityInfo.applicationInfo.loadLabel(packageManager)
-            if (AppLog.Companion.isDebug) {
-                AppLog.Companion.d(appInfo.activityInfo.packageName + "/" + appInfo.activityInfo.applicationInfo.className)
+            if (AppLog.isDebug) {
+                AppLog.d(appInfo.activityInfo.packageName + "/" + appInfo.activityInfo.applicationInfo.className)
             }
             receivers.put(pkg, true)
             val entry = ChooserEntry(appInfo, title.toString())

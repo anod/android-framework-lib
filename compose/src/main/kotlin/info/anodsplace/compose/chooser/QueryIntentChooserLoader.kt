@@ -40,7 +40,6 @@ open class QueryIntentChooserLoader(context: Context, private val queryIntent: I
                 val entry = ChooserEntry(
                     componentName = ComponentName(pkg, appInfo.activityInfo.name),
                     title = title,
-                    icon = null,
                     category = category
                 )
                 list.add(entry)

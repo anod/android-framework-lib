@@ -1,24 +1,26 @@
 package info.anodsplace.compose.chooser
 
 import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
 import android.content.pm.ApplicationInfo
-import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
 import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Bundle
-import androidx.annotation.DrawableRes
 import androidx.compose.ui.graphics.vector.ImageVector
 import info.anodsplace.applog.AppLog
+import info.anodsplace.ktx.appIconUri
+import info.anodsplace.ktx.resourceUri
 
 fun headerEntry(
     headerId: Int,
     title: String,
     iconVector: ImageVector? = null,
-    iconRes: Int = 0,
+    iconUri: Uri? = null,
     intent: Intent? = null
 ): ChooserEntry =
-    ChooserEntry(null, title, iconRes = iconRes, iconVector = iconVector, intent = intent).apply {
+    ChooserEntry(null, title, iconUri = iconUri, iconVector = iconVector, intent = intent).apply {
         this.headerId = headerId
     }
 
@@ -43,9 +45,7 @@ val ChooserEntry.isSection: Boolean
 data class ChooserEntry(
     val componentName: ComponentName?,
     var title: String,
-    @param:DrawableRes
-    val iconRes: Int = 0,
-    val icon: Drawable? = null,
+    val iconUri: Uri? = componentName?.appIconUri,
     val iconVector: ImageVector? = null,
     var intent: Intent? = null,
     var extras: Bundle? = null,
@@ -53,7 +53,6 @@ data class ChooserEntry(
     companion object {
         private const val KEY_CATEGORY = "category"
         private const val KEY_SOURCE_LOADER = "sourceLoader"
-        private const val KEY_SOURCE_SHORTCUT_ID = "sourceShortcutId"
     }
 
     var category: Int
@@ -67,20 +66,25 @@ data class ChooserEntry(
             ensureExtras().putInt(KEY_SOURCE_LOADER, value)
         }
 
-    var sourceShortcutId: Long
-        get() = extras?.getLong(KEY_SOURCE_SHORTCUT_ID, -1) ?: -1
-        set(value) {
-            ensureExtras().putLong(KEY_SOURCE_SHORTCUT_ID, value)
-        }
-
     constructor(
         componentName: ComponentName?,
         title: String,
-        icon: Drawable?,
         category: Int,
-    ) : this(componentName, title, icon = icon) {
+    ) : this(componentName, title) {
         this.category = category
     }
+
+    constructor(
+        context: Context,
+        title: String,
+        iconRes: Int,
+        extras: Bundle? = null,
+    ) : this(
+        componentName = null,
+        title = title,
+        iconUri = context.resourceUri(iconRes),
+        extras = extras
+    )
 
     constructor(info: ResolveInfo, title: String?) :
         this(
@@ -89,23 +93,11 @@ data class ChooserEntry(
                 info.activityInfo.name
             ),
             title = title ?: info.activityInfo.name ?: "",
-            icon = null,
             category = info.category()
         )
 
     constructor(title: String, icon: Drawable?)
-            : this(componentName = null, title = title, icon = icon)
-
-    constructor(pm: PackageManager, resolveInfo: ResolveInfo)
-            : this(
-        componentName = ComponentName(
-            resolveInfo.activityInfo.applicationInfo.packageName,
-            resolveInfo.activityInfo.name
-        ),
-        title = resolveInfo.loadLabel(pm).toString(),
-        icon = resolveInfo.loadIcon(pm),
-        category = resolveInfo.category()
-    )
+            : this(componentName = null, title = title)
 
     /**
      * Build the [Intent] described by this item. If this item
