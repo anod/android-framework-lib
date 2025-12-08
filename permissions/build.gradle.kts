@@ -13,6 +13,23 @@ kotlin {
             jvmTarget.set(JvmTarget.JVM_11)
         }
     }
+    listOf(
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64(),
+    ).forEach {
+        it.binaries.framework {
+            baseName = "permissions"
+            isStatic = true
+        }
+    }
+    jvm()
+    sourceSets.all {
+        languageSettings.optIn("kotlin.experimental.ExperimentalObjCName")
+    }
+    sourceSets {
+
+    }
 }
 
 android {
@@ -20,10 +37,6 @@ android {
 
     defaultConfig {
         minSdk = 31
-    }
-
-    sourceSets {
-        getByName("main").java.srcDirs("src/main/kotlin")
     }
 
     compileOptions {
