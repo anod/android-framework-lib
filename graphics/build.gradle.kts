@@ -8,6 +8,11 @@ kotlin {
         namespace = "info.anodsplace.graphics"
         compileSdk = 36
         minSdk = 31
+        // PathParser
+        withJava()
+        compilerOptions {
+            jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
+        }
     }
 
     sourceSets {

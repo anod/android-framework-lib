@@ -8,10 +8,10 @@ kotlin {
         namespace = "info.anodsplace.framework"
         compileSdk = 36
         minSdk = 31
-        withJava()
         androidResources {
             enable = true
         }
+        withJava()
         compilerOptions {
             jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
         }
