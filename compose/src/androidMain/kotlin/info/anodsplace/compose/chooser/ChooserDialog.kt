@@ -297,7 +297,7 @@ fun ChooserGridList(
                         SectionHeader(title = entry.title)
                     }
                 } else {
-                    item(key = entry.componentName?.flattenToShortString() ?: entry.title) {
+                    item(key = "${entry.componentName}-${entry.hashCode()}") {
                         val component = entry.componentName
                         val isSelected = component != null && selectedComponents.contains(component)
                         EntryItem(
