@@ -1,60 +1,41 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin)
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.kotlin.multiplatform.android.library)
     alias(libs.plugins.compose.compiler)
 }
 
 kotlin {
-    compilerOptions {
-        jvmTarget = JvmTarget.JVM_11
-    }
-}
-
-android {
-    compileSdk = 36
-
-    defaultConfig {
+    androidLibrary {
+        namespace = "info.anodsplace.compose"
+        compileSdk = 36
         minSdk = 31
     }
 
     sourceSets {
-        getByName("main").java.srcDirs("src/main/kotlin")
-    }
+        androidMain {
+            dependencies {
+                implementation(project(":lib:applog"))
+                implementation(project(":lib:ktx"))
+                implementation(project(":lib:permissions"))
+                implementation(project(":lib:graphics"))
 
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
+                implementation(libs.androidx.activity)
 
-    buildFeatures {
-        // Enables Jetpack Compose for this module
-        compose = true
-    }
+                implementation(project.dependencies.platform(libs.androidx.compose.bom))
 
-    namespace = "info.anodsplace.compose"
+                api(libs.androidx.compose.foundation)
+                api(libs.androidx.compose.ui)
+                api(libs.androidx.compose.material3)
+                api(libs.androidx.compose.material3.window.size)
+//                api(libs.androidx.compose.material.icons.core)
+//                api(libs.androidx.compose.material.icons.extended)
+
+                api(libs.androidx.compose.ui.tooling.preview)
+            }
+        }
+    }
 }
 
 dependencies {
-    implementation(project(":lib:applog"))
-    implementation(project(":lib:ktx"))
-    implementation(project(":lib:permissions"))
-    implementation(project(":lib:graphics"))
-
-    implementation(libs.androidx.activity)
-
-    val composeBom = platform(libs.androidx.compose.bom)
-    implementation(composeBom)
-    androidTestImplementation(composeBom)
-
-    api(libs.androidx.compose.foundation)
-    api(libs.androidx.compose.ui)
-    api(libs.androidx.compose.material3)
-    api(libs.androidx.compose.material3.window.size)
-    api(libs.androidx.compose.material.icons.core)
-    api(libs.androidx.compose.material.icons.extended)
-
-    api(libs.androidx.compose.ui.tooling.preview)
-    debugApi(libs.androidx.compose.ui.tooling)
+    "androidRuntimeClasspath"(libs.androidx.compose.ui.tooling)
 }

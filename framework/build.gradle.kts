@@ -1,37 +1,23 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin)
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.kotlin.multiplatform.android.library)
 }
 
 kotlin {
-    compilerOptions {
-        jvmTarget = JvmTarget.JVM_11
-    }
-}
-
-android {
-    compileSdk = 36
-
-    defaultConfig {
+    androidLibrary {
+        namespace = "info.anodsplace.framework"
+        compileSdk = 36
         minSdk = 31
     }
 
     sourceSets {
-        getByName("main").java.srcDirs("src/main/kotlin")
+        androidMain {
+            dependencies {
+                implementation(project(":lib:applog"))
+                implementation(libs.androidx.activity)
+                implementation(libs.androidx.window)
+                implementation(libs.androidx.core.ktx)
+            }
+        }
     }
-
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-    namespace = "info.anodsplace.framework"
-}
-
-dependencies {
-    implementation(project(":lib:applog"))
-    implementation(libs.androidx.activity)
-    implementation(libs.androidx.window)
-    implementation(libs.androidx.core.ktx)
 }
