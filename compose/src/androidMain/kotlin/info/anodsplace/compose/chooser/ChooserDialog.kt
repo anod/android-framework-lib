@@ -2,7 +2,6 @@ package info.anodsplace.compose.chooser
 
 import android.content.ComponentName
 import android.provider.Settings
-import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -75,7 +74,6 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.persistentSetOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.flow
 
 val chooserIconSize = 56.dp
 
@@ -341,14 +339,16 @@ fun ChooserDialog(
     topContent: @Composable (List<ChooserEntry>) -> Unit = {},
     loadingSection: ChooserEntry? = null
 ) {
+    val list by loader.load().collectAsState(initial = null)
     Dialog(
         onDismissRequest = onDismissRequest,
         properties = DialogProperties(
             usePlatformDefaultWidth = false
         )
     ) {
+        // Passing loader into dialog causing constant recomposition
         ChooserScreen(
-            loader = loader,
+            list = list?.toImmutableList(),
             modifier = modifier,
             headers = headers,
             asyncImage = asyncImage,
@@ -389,7 +389,7 @@ fun ChooserEmptyState(message: String, modifier: Modifier = Modifier) {
 
 @Composable
 fun ChooserScreen(
-    loader: ChooserLoader,
+    list: ImmutableList<ChooserEntry>?,
     modifier: Modifier = Modifier,
     headers: ImmutableList<ChooserEntry> = persistentListOf(),
     asyncImage: @Composable (ChooserEntry, ColorFilter?) -> Unit,
@@ -401,13 +401,10 @@ fun ChooserScreen(
     showLoadingInPreview: Boolean = false,
     loadingSection: ChooserEntry? = null,
 ) {
-    Log.d("ALEX", "1 headers: ${headers.hashCode()} selectedComponents: ${selectedComponents.hashCode()} ")
-    val loaderResult by loader.load().collectAsState(initial = null)
-    val emitted = loaderResult != null
-    val appsList = loaderResult?.toImmutableList() ?: persistentListOf()
+    val emitted = list != null
+    val appsList = list ?: persistentListOf()
     var minTimePassed by remember { mutableStateOf(false) }
     val isPreview = LocalInspectionMode.current
-    Log.d("ALEX", "2 headers: ${headers.hashCode()} appsList: ${appsList.hashCode()} ")
 
     LaunchedEffect(Unit) {
         if (!isPreview) {
@@ -585,8 +582,8 @@ fun ChooserScreenPreview() {
     val context = LocalContext.current
     MaterialTheme {
         ChooserScreen(
-            loader = StaticChooserLoader(
-                listOf(
+            list =
+                persistentListOf(
                     ChooserEntry(
                         context = context,
                         title = "Music",
@@ -612,8 +609,7 @@ fun ChooserScreenPreview() {
                         componentName = ComponentName("pkg.sample", "pkg.sample.App2"),
                         title = "App Two"
                     )
-                )
-            ),
+                ),
             headers = persistentListOf(
                 headerEntry(0, "Actions", iconUri = context.resourceUri(android.R.drawable.ic_popup_sync)),
                 headerEntry(0, "More", Icons.Filled.Alarm)
@@ -640,11 +636,8 @@ fun ChooserScreenPreview() {
 @Composable
 private fun ChooserScreenLoadingPreview() {
     MaterialTheme {
-        val loader = object : ChooserLoader { override fun load() =
-            flow<List<ChooserEntry>> { /* never emit */ }
-        }
         ChooserScreen(
-            loader = loader,
+            list = null,
             asyncImage = { _, _ ->
                 Box(Modifier.size(chooserIconSize).background(MaterialTheme.colorScheme.onPrimaryContainer)) {
 
@@ -665,11 +658,8 @@ private fun ChooserScreenLoadingPreview() {
 @Composable
 private fun ChooserScreenLoadingWithSectionsPreview() {
     MaterialTheme {
-        val loader = object : ChooserLoader { override fun load() =
-            flow<List<ChooserEntry>> { /* never emit */ }
-        }
         ChooserScreen(
-            loader = loader,
+            list = null,
             asyncImage = { _, _ ->
                 Box(Modifier.size(chooserIconSize).background(MaterialTheme.colorScheme.onPrimaryContainer)) {
 
@@ -691,10 +681,8 @@ private fun ChooserScreenLoadingWithSectionsPreview() {
 @Composable
 private fun ChooserScreenEmptyPreview() {
     MaterialTheme {
-        // Loader that immediately emits an empty list to trigger the empty state
-        val loader = StaticChooserLoader(emptyList())
         ChooserScreen(
-            loader = loader,
+            list = persistentListOf(),
             asyncImage = { _, _ ->
                 Box(Modifier.size(chooserIconSize).background(MaterialTheme.colorScheme.onPrimaryContainer)) { }
             },
