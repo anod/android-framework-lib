@@ -90,6 +90,11 @@ data class ChooserGridListStyle(
     val animateSelection: Boolean,
 )
 
+@Immutable
+data class ChooserSelectedComponents(
+    val entries: ImmutableSet<ComponentName> = persistentSetOf()
+)
+
 object ChooserGridListDefaults {
     @Composable
     fun style(
@@ -225,7 +230,7 @@ fun ChooserGridList(
     list: ImmutableList<ChooserEntry>,
     asyncImage: @Composable (ChooserEntry, ColorFilter?) -> Unit,
     headerShape: Shape = MaterialTheme.shapes.medium,
-    selectedComponents: ImmutableSet<ComponentName> = persistentSetOf(),
+    selectedComponents: ChooserSelectedComponents = ChooserSelectedComponents(),
     onSelect: (ChooserEntry) -> Unit = { },
     style: ChooserGridListStyle = ChooserGridListDefaults.style(),
     isLoading: Boolean = false,
@@ -304,7 +309,7 @@ fun ChooserGridList(
                 } else {
                     item(key = "${entry.componentName}-${entry.hashCode()}") {
                         val component = entry.componentName
-                        val isSelected = component != null && selectedComponents.contains(component)
+                        val isSelected = component != null && selectedComponents.entries.contains(component)
                         EntryItem(
                             entry,
                             onClick = { onSelect(entry) },
@@ -348,7 +353,7 @@ fun ChooserDialog(
             headers = headers,
             asyncImage = asyncImage,
             emptyState = emptyState,
-            selectedComponents = persistentSetOf(),
+            selectedComponents = ChooserSelectedComponents(),
             onSelect = onClick,
             style = style,
             topContent = topContent,
@@ -389,7 +394,7 @@ fun ChooserScreen(
     headers: ImmutableList<ChooserEntry> = persistentListOf(),
     asyncImage: @Composable (ChooserEntry, ColorFilter?) -> Unit,
     emptyState: @Composable (filterApplied: Boolean) -> Unit,
-    selectedComponents: ImmutableSet<ComponentName> = persistentSetOf(),
+    selectedComponents: ChooserSelectedComponents = ChooserSelectedComponents(),
     onSelect: (ChooserEntry) -> Unit = { },
     style: ChooserGridListStyle = ChooserGridListDefaults.singleSelect(),
     topContent: @Composable (List<ChooserEntry>) -> Unit = {},
@@ -465,7 +470,7 @@ fun MultiSelectChooserDialog(
     loader: ChooserLoader,
     modifier: Modifier = Modifier,
     headers: ImmutableList<ChooserEntry> = persistentListOf(),
-    selectedComponents: ImmutableSet<ComponentName> = persistentSetOf(),
+    selectedComponents: ChooserSelectedComponents = ChooserSelectedComponents(),
     onSelect: (ChooserEntry) -> Unit = { },
     onDismissRequest: () -> Unit,
     asyncImage: @Composable (ChooserEntry, ColorFilter?) -> Unit,
@@ -504,7 +509,7 @@ private fun MultiSelectChooserContent(
     loader: ChooserLoader,
     modifier: Modifier = Modifier,
     headers: ImmutableList<ChooserEntry> = persistentListOf(),
-    selectedComponents: ImmutableSet<ComponentName> = persistentSetOf(),
+    selectedComponents: ChooserSelectedComponents = ChooserSelectedComponents(),
     onSelect: (ChooserEntry) -> Unit = { },
     asyncImage: @Composable (ChooserEntry, ColorFilter?) -> Unit,
     emptyState: @Composable (filterApplied: Boolean) -> Unit,
