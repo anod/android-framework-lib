@@ -2,6 +2,7 @@ package info.anodsplace.compose.chooser
 
 import android.content.ComponentName
 import android.provider.Settings
+import android.util.Log
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -68,9 +69,13 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import info.anodsplace.compose.SystemIconShape
 import info.anodsplace.ktx.resourceUri
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.ImmutableSet
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentSetOf
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.onEach
 
 val chooserIconSize = 56.dp
 
@@ -216,11 +221,11 @@ private fun SectionHeader(title: String, modifier: Modifier = Modifier) {
 
 @Composable
 fun ChooserGridList(
-    headers: List<ChooserEntry>,
-    list: List<ChooserEntry>,
+    headers: ImmutableList<ChooserEntry>,
+    list: ImmutableList<ChooserEntry>,
     asyncImage: @Composable (ChooserEntry, ColorFilter?) -> Unit,
     headerShape: Shape = MaterialTheme.shapes.medium,
-    selectedComponents: Set<ComponentName> = emptySet(),
+    selectedComponents: ImmutableSet<ComponentName> = persistentSetOf(),
     onSelect: (ChooserEntry) -> Unit = { },
     style: ChooserGridListStyle = ChooserGridListDefaults.style(),
     isLoading: Boolean = false,
@@ -322,7 +327,7 @@ fun ChooserGridList(
 fun ChooserDialog(
     loader: ChooserLoader,
     modifier: Modifier = Modifier,
-    headers: List<ChooserEntry> = listOf(),
+    headers: ImmutableList<ChooserEntry> = persistentListOf(),
     onDismissRequest: () -> Unit,
     asyncImage: @Composable (ChooserEntry, ColorFilter?) -> Unit,
     emptyState: @Composable (filterApplied: Boolean) -> Unit,
@@ -343,7 +348,7 @@ fun ChooserDialog(
             headers = headers,
             asyncImage = asyncImage,
             emptyState = emptyState,
-            selectedComponents = emptySet(),
+            selectedComponents = persistentSetOf(),
             onSelect = onClick,
             style = style,
             topContent = topContent,
@@ -381,20 +386,24 @@ fun ChooserEmptyState(message: String, modifier: Modifier = Modifier) {
 fun ChooserScreen(
     loader: ChooserLoader,
     modifier: Modifier = Modifier,
-    headers: List<ChooserEntry> = listOf(),
+    headers: ImmutableList<ChooserEntry> = persistentListOf(),
     asyncImage: @Composable (ChooserEntry, ColorFilter?) -> Unit,
     emptyState: @Composable (filterApplied: Boolean) -> Unit,
-    selectedComponents: Set<ComponentName> = emptySet(),
+    selectedComponents: ImmutableSet<ComponentName> = persistentSetOf(),
     onSelect: (ChooserEntry) -> Unit = { },
     style: ChooserGridListStyle = ChooserGridListDefaults.singleSelect(),
     topContent: @Composable (List<ChooserEntry>) -> Unit = {},
     showLoadingInPreview: Boolean = false,
     loadingSection: ChooserEntry? = null,
 ) {
-    var emitted by remember { mutableStateOf(false) }
-    val appsList by loader.load().onEach { emitted = true }.collectAsState(initial = emptyList())
+    Log.d("ALEX", "1 headers: ${headers.hashCode()} selectedComponents: ${selectedComponents.hashCode()} ")
+    val loaderResult by loader.load().collectAsState(initial = null)
+    val emitted = loaderResult != null
+    val appsList = loaderResult?.toImmutableList() ?: persistentListOf()
     var minTimePassed by remember { mutableStateOf(false) }
     val isPreview = LocalInspectionMode.current
+    Log.d("ALEX", "2 headers: ${headers.hashCode()} appsList: ${appsList.hashCode()} ")
+
     LaunchedEffect(Unit) {
         if (!isPreview) {
             delay(250)
@@ -455,8 +464,8 @@ fun ChooserScreen(
 fun MultiSelectChooserDialog(
     loader: ChooserLoader,
     modifier: Modifier = Modifier,
-    headers: List<ChooserEntry> = emptyList(),
-    selectedComponents: Set<ComponentName> = emptySet(),
+    headers: ImmutableList<ChooserEntry> = persistentListOf(),
+    selectedComponents: ImmutableSet<ComponentName> = persistentSetOf(),
     onSelect: (ChooserEntry) -> Unit = { },
     onDismissRequest: () -> Unit,
     asyncImage: @Composable (ChooserEntry, ColorFilter?) -> Unit,
@@ -465,7 +474,7 @@ fun MultiSelectChooserDialog(
     topContent: @Composable (List<ChooserEntry>) -> Unit = {},
     bottomContent: @Composable (List<ChooserEntry>) -> Unit = {},
     style: ChooserGridListStyle = ChooserGridListDefaults.multiSelect(),
-    listFilter: (List<ChooserEntry>) -> List<ChooserEntry> = { it },
+    listFilter: (ImmutableList<ChooserEntry>) -> ImmutableList<ChooserEntry> = { it },
     loadingSection: ChooserEntry? = null
 ) {
     Dialog(
@@ -494,8 +503,8 @@ fun MultiSelectChooserDialog(
 private fun MultiSelectChooserContent(
     loader: ChooserLoader,
     modifier: Modifier = Modifier,
-    headers: List<ChooserEntry> = emptyList(),
-    selectedComponents: Set<ComponentName> = emptySet(),
+    headers: ImmutableList<ChooserEntry> = persistentListOf(),
+    selectedComponents: ImmutableSet<ComponentName> = persistentSetOf(),
     onSelect: (ChooserEntry) -> Unit = { },
     asyncImage: @Composable (ChooserEntry, ColorFilter?) -> Unit,
     emptyState: @Composable (filterApplied: Boolean) -> Unit,
@@ -503,11 +512,12 @@ private fun MultiSelectChooserContent(
     topContent: @Composable (List<ChooserEntry>) -> Unit = {},
     bottomContent: @Composable (List<ChooserEntry>) -> Unit = {},
     style: ChooserGridListStyle = ChooserGridListDefaults.multiSelect(),
-    listFilter: (List<ChooserEntry>) -> List<ChooserEntry> = { it },
+    listFilter: (ImmutableList<ChooserEntry>) -> ImmutableList<ChooserEntry> = { it },
     loadingSection: ChooserEntry? = null
 ) {
-    var emitted by remember { mutableStateOf(false) }
-    val appsList by loader.load().onEach { emitted = true }.collectAsState(initial = emptyList())
+    val loaderResult by loader.load().collectAsState(initial = null)
+    val emitted = loaderResult != null
+    val appsList = loaderResult?.toImmutableList() ?: persistentListOf()
     val filteredList = remember(appsList, listFilter) { listFilter(appsList) }
     val iconSizePx = with(LocalDensity.current) { chooserIconSize.roundToPx() }
     val headerShape = SystemIconShape(iconSizePx)
@@ -599,7 +609,7 @@ fun ChooserScreenPreview() {
                     )
                 )
             ),
-            headers = listOf(
+            headers = persistentListOf(
                 headerEntry(0, "Actions", iconUri = context.resourceUri(android.R.drawable.ic_popup_sync)),
                 headerEntry(0, "More", Icons.Filled.Alarm)
             ),
@@ -639,7 +649,7 @@ private fun ChooserScreenLoadingPreview() {
                 ChooserEmptyState("Empty ${if (filterApplied) "filtered" else ""}")
             },
             onSelect = {},
-            headers = emptyList(),
+            headers = persistentListOf(),
             topContent = { _ -> Text("Loading...", modifier = Modifier.padding(16.dp)) },
             showLoadingInPreview = true
         )
@@ -664,7 +674,7 @@ private fun ChooserScreenLoadingWithSectionsPreview() {
                 ChooserEmptyState("Empty ${if (filterApplied) "filtered" else ""}")
             },
             onSelect = {},
-            headers = emptyList(),
+            headers = persistentListOf(),
             topContent = { _ -> Text("Loading...", modifier = Modifier.padding(16.dp)) },
             showLoadingInPreview = true,
             loadingSection = sectionEntry("section-1", "Apps")
@@ -687,7 +697,7 @@ private fun ChooserScreenEmptyPreview() {
                 // Reuse existing preview string pattern to avoid introducing new untranslated strings
                 ChooserEmptyState("Empty ${if (filterApplied) "filtered" else ""}")
             },
-            headers = emptyList(),
+            headers = persistentListOf(),
             onSelect = {},
             style = ChooserGridListDefaults.singleSelect(),
             topContent = { _ -> }

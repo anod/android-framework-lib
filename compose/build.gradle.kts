@@ -31,6 +31,8 @@ kotlin {
                 api(libs.androidx.compose.material.icons.extended)
 
                 api(libs.androidx.compose.ui.tooling.preview)
+
+                api(libs.kotlinx.collections.immutable)
             }
         }
     }

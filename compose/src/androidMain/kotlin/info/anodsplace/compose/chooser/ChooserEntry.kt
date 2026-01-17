@@ -8,6 +8,7 @@ import android.content.pm.ResolveInfo
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.graphics.vector.ImageVector
 import info.anodsplace.applog.AppLog
 import info.anodsplace.ktx.appIconUri
@@ -42,6 +43,7 @@ var ChooserEntry.sectionId: String?
 val ChooserEntry.isSection: Boolean
     get() = extras?.containsKey("sectionId") == true
 
+@Stable
 data class ChooserEntry(
     val componentName: ComponentName?,
     var title: String,
