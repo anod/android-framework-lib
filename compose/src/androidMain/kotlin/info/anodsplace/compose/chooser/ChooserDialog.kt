@@ -339,7 +339,8 @@ fun ChooserDialog(
     topContent: @Composable (List<ChooserEntry>) -> Unit = {},
     loadingSection: ChooserEntry? = null
 ) {
-    val list by loader.load().collectAsState(initial = null)
+    val listFlow = remember(loader) { loader.load() }
+    val list by listFlow.collectAsState(initial = null)
     Dialog(
         onDismissRequest = onDismissRequest,
         properties = DialogProperties(
@@ -464,7 +465,7 @@ fun ChooserScreen(
 
 @Composable
 fun MultiSelectChooserDialog(
-    loader: ChooserLoader,
+    list: ImmutableList<ChooserEntry>?,
     modifier: Modifier = Modifier,
     headers: ImmutableList<ChooserEntry> = persistentListOf(),
     selectedComponents: ChooserSelectedComponents = ChooserSelectedComponents(),
@@ -476,7 +477,6 @@ fun MultiSelectChooserDialog(
     topContent: @Composable (List<ChooserEntry>) -> Unit = {},
     bottomContent: @Composable (List<ChooserEntry>) -> Unit = {},
     style: ChooserGridListStyle = ChooserGridListDefaults.multiSelect(),
-    listFilter: (ImmutableList<ChooserEntry>) -> ImmutableList<ChooserEntry> = { it },
     loadingSection: ChooserEntry? = null
 ) {
     Dialog(
@@ -484,7 +484,7 @@ fun MultiSelectChooserDialog(
         properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
         MultiSelectChooserContent(
-            loader = loader,
+            list = list,
             modifier = modifier,
             headers = headers,
             selectedComponents = selectedComponents,
@@ -495,7 +495,6 @@ fun MultiSelectChooserDialog(
             topContent = topContent,
             bottomContent = bottomContent,
             style = style,
-            listFilter = listFilter,
             loadingSection = loadingSection
         )
     }
@@ -503,7 +502,7 @@ fun MultiSelectChooserDialog(
 
 @Composable
 private fun MultiSelectChooserContent(
-    loader: ChooserLoader,
+    list: ImmutableList<ChooserEntry>?,
     modifier: Modifier = Modifier,
     headers: ImmutableList<ChooserEntry> = persistentListOf(),
     selectedComponents: ChooserSelectedComponents = ChooserSelectedComponents(),
@@ -514,13 +513,10 @@ private fun MultiSelectChooserContent(
     topContent: @Composable (List<ChooserEntry>) -> Unit = {},
     bottomContent: @Composable (List<ChooserEntry>) -> Unit = {},
     style: ChooserGridListStyle = ChooserGridListDefaults.multiSelect(),
-    listFilter: (ImmutableList<ChooserEntry>) -> ImmutableList<ChooserEntry> = { it },
     loadingSection: ChooserEntry? = null
 ) {
-    val loaderResult by loader.load().collectAsState(initial = null)
-    val emitted = loaderResult != null
-    val appsList = loaderResult?.toImmutableList() ?: persistentListOf()
-    val filteredList = remember(appsList, listFilter) { listFilter(appsList) }
+    val emitted = list != null
+    val appsList = list ?: persistentListOf()
     val iconSizePx = with(LocalDensity.current) { chooserIconSize.roundToPx() }
     val headerShape = SystemIconShape(iconSizePx)
     val reduceMotion = rememberReducedMotionPreference()
@@ -539,7 +535,7 @@ private fun MultiSelectChooserContent(
                     !emitted -> {
                         ChooserGridList(
                             headers = headers,
-                            list = filteredList,
+                            list = appsList,
                             asyncImage = asyncImage,
                             headerShape = headerShape,
                             selectedComponents = selectedComponents,
@@ -550,16 +546,16 @@ private fun MultiSelectChooserContent(
                             loadingSection = loadingSection
                         )
                     }
-                    filteredList.isEmpty() && appsList.isNotEmpty() -> {
+                    appsList.isEmpty() && appsList.isNotEmpty() -> {
                         emptyState(true)
                     }
-                    filteredList.isEmpty() && headers.isEmpty() -> {
+                    appsList.isEmpty() && headers.isEmpty() -> {
                         emptyState(false)
                     }
                     else -> {
                         ChooserGridList(
                             headers = headers,
-                            list = filteredList,
+                            list = appsList,
                             asyncImage = asyncImage,
                             headerShape = headerShape,
                             selectedComponents = selectedComponents,
