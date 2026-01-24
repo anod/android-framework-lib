@@ -8,6 +8,9 @@ kotlin {
         namespace = "info.anodsplace.playservices"
         compileSdk = 36
         minSdk = 31
+        androidResources {
+            enable = true
+        }
     }
 
     sourceSets {
