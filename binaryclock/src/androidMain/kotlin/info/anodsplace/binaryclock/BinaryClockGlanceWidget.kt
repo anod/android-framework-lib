@@ -155,7 +155,7 @@ private object BinaryClockRefreshScheduler {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && alarmManager.canScheduleExactAlarms()) {
             alarmManager.setAndAllowWhileIdle(AlarmManager.RTC, nextMinute, refreshIntent)
         } else {
-            alarmManager.set(AlarmManager.RTC, nextMinute, refreshIntent)
+            alarmManager.setWindow(AlarmManager.RTC, nextMinute, MINUTE_MILLIS, refreshIntent)
         }
     }
 
