@@ -1,6 +1,7 @@
 name: Build and publish APK
 
 on:
+  pull_request:
   workflow_dispatch:
     inputs:
       module:
@@ -21,7 +22,7 @@ on:
       - 'v*'
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: build-publish-apk-${{ github.ref }}
@@ -29,12 +30,14 @@ concurrency:
 
 jobs:
   build:
-    name: Build signed release APK
+    name: Build release APK
     runs-on: ubuntu-latest
+    outputs:
+      apk_name: ${{ steps.metadata.outputs.apk_name }}
+      version_code: ${{ steps.metadata.outputs.version_code }}
+      version_name: ${{ steps.metadata.outputs.version_name }}
     env:
       APP_MODULE: ${{ github.event.inputs.module || 'app' }}
-      PUBLISH_RELEASE: ${{ github.event.inputs.publish_release || 'false' }}
-      REQUESTED_RELEASE_TAG: ${{ github.event.inputs.release_tag || '' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4.2.2
@@ -49,6 +52,7 @@ jobs:
         uses: gradle/actions/setup-gradle@v4.4.2
 
       - name: Validate Android signing secrets
+        if: github.event_name != 'pull_request'
         env:
           ANDROID_SIGNING_KEYSTORE_BASE64: ${{ secrets.ANDROID_SIGNING_KEYSTORE_BASE64 }}
           ANDROID_SIGNING_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_SIGNING_KEYSTORE_PASSWORD }}
@@ -62,6 +66,7 @@ jobs:
           test -n "$ANDROID_SIGNING_KEY_PASSWORD"
 
       - name: Prepare build metadata
+        id: metadata
         run: |
           set -euo pipefail
           if [ ! -x ./gradlew ]; then
@@ -89,8 +94,14 @@ jobs:
             echo "VERSION_NAME=$version_name"
             echo "APK_NAME=${module_path//:/-}-${version_name}-${GITHUB_RUN_NUMBER}.apk"
           } >> "$GITHUB_ENV"
+          {
+            echo "apk_name=${module_path//:/-}-${version_name}-${GITHUB_RUN_NUMBER}.apk"
+            echo "version_code=${GITHUB_RUN_NUMBER}"
+            echo "version_name=$version_name"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Decode signing keystore
+        if: github.event_name != 'pull_request'
         env:
           ANDROID_SIGNING_KEYSTORE_BASE64: ${{ secrets.ANDROID_SIGNING_KEYSTORE_BASE64 }}
         run: |
@@ -99,7 +110,17 @@ jobs:
           printf '%s' "$ANDROID_SIGNING_KEYSTORE_BASE64" | base64 --decode > "$keystore_file"
           echo "KEYSTORE_FILE=$keystore_file" >> "$GITHUB_ENV"
 
+      - name: Build unsigned release APK
+        if: github.event_name == 'pull_request'
+        run: |
+          set -euo pipefail
+          ./gradlew ":${MODULE_PATH}:assembleRelease" \
+            --no-daemon \
+            -Pandroid.injected.version.code="$VERSION_CODE" \
+            -Pandroid.injected.version.name="$VERSION_NAME"
+
       - name: Build signed release APK
+        if: github.event_name != 'pull_request'
         env:
           ANDROID_SIGNING_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_SIGNING_KEYSTORE_PASSWORD }}
           ANDROID_SIGNING_KEY_ALIAS: ${{ secrets.ANDROID_SIGNING_KEY_ALIAS }}
@@ -115,12 +136,16 @@ jobs:
             -Pandroid.injected.signing.key.alias="$ANDROID_SIGNING_KEY_ALIAS" \
             -Pandroid.injected.signing.key.password="$ANDROID_SIGNING_KEY_PASSWORD"
 
-      - name: Locate signed APK
+      - name: Locate APK
         run: |
           set -euo pipefail
-          apk_path="$(find "$MODULE_DIR/build/outputs/apk/release" -type f -name '*.apk' ! -name '*unsigned*' | sort | head -n 1)"
+          if [ "${GITHUB_EVENT_NAME}" = "pull_request" ]; then
+            apk_path="$(find "$MODULE_DIR/build/outputs/apk/release" -type f -name '*.apk' | sort | head -n 1)"
+          else
+            apk_path="$(find "$MODULE_DIR/build/outputs/apk/release" -type f -name '*.apk' ! -name '*unsigned*' | sort | head -n 1)"
+          fi
           if [ -z "$apk_path" ]; then
-            echo "No signed release APK found in $MODULE_DIR/build/outputs/apk/release." >&2
+            echo "No release APK found in $MODULE_DIR/build/outputs/apk/release." >&2
             exit 1
           fi
           published_apk="$RUNNER_TEMP/$APK_NAME"
@@ -134,8 +159,26 @@ jobs:
           path: ${{ env.APK_PATH }}
           if-no-files-found: error
 
+  publish:
+    name: Publish APK to GitHub Release
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref_type == 'tag' || github.event.inputs.publish_release == 'true'
+    permissions:
+      contents: write
+    env:
+      REQUESTED_RELEASE_TAG: ${{ github.event.inputs.release_tag || '' }}
+      VERSION_CODE: ${{ needs.build.outputs.version_code }}
+      VERSION_NAME: ${{ needs.build.outputs.version_name }}
+      APK_NAME: ${{ needs.build.outputs.apk_name }}
+    steps:
+      - name: Download APK artifact
+        uses: actions/download-artifact@v4.3.0
+        with:
+          name: ${{ env.APK_NAME }}
+          path: ${{ runner.temp }}
+
       - name: Publish APK to GitHub Release
-        if: github.ref_type == 'tag' || github.event.inputs.publish_release == 'true'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
@@ -154,4 +197,4 @@ jobs:
               --notes "Signed APK built from ${GITHUB_SHA} with versionCode ${VERSION_CODE} and versionName ${VERSION_NAME}."
           fi
 
-          gh release upload "$release_tag" "$APK_PATH" --clobber
+          gh release upload "$release_tag" "$RUNNER_TEMP/$APK_NAME" --clobber

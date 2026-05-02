@@ -31,7 +31,7 @@ Build and test this module from the consuming Gradle project that includes this 
 
 ## APK build and publish workflow
 
-`.github/workflows/build-publish-apk.yml` builds a signed release APK for an Android application module and uploads it as a workflow artifact. When the workflow runs for a `v*` tag, or when `publish_release` is enabled for a manual run, it also uploads the APK to a GitHub Release.
+`.github/workflows/build-publish-apk.yml` builds a release APK for an Android application module on pull requests, manual runs, and `v*` tags, then uploads it as a workflow artifact. Pull request builds do not use signing secrets or publish releases. When the workflow runs for a `v*` tag, or when `publish_release` is enabled for a manual run, it signs the APK and uploads it to a GitHub Release.
 
 The workflow reuses the same signing key between builds through repository secrets. Generate the release keystore once, base64-encode it, and store these secrets in GitHub:
 
