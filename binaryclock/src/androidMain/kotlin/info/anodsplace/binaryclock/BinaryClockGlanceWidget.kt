@@ -46,7 +46,7 @@ class BinaryClockWidgetReceiver : GlanceAppWidgetReceiver() {
 
 @Composable
 internal fun BinaryClockWidgetContent(digits: List<Int>) {
-    val size = LocalSize.current
+    val isCompactMode = LocalSize.current.width < 180.dp
     Column(
         modifier = GlanceModifier
             .fillMaxSize()
@@ -63,7 +63,7 @@ internal fun BinaryClockWidgetContent(digits: List<Int>) {
                 BinaryDigitColumn(
                     digit = digit,
                     label = labels[index],
-                    compact = size.width < 180.dp,
+                    compact = isCompactMode,
                 )
                 if (index < digits.lastIndex) {
                     Spacer(modifier = GlanceModifier.width(if (index == 1 || index == 3) 12.dp else 6.dp))
