@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Android app widget periodic updates are throttled to a platform minimum of 30 minutes. -->
+<!-- Uses Android's documented app widget periodic update minimum: 1800000ms / 30 minutes. -->
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
     android:description="@string/binary_clock_widget_description"
     android:initialLayout="@layout/glance_default_loading_layout"
