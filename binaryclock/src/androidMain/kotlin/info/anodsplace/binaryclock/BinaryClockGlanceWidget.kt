@@ -81,7 +81,7 @@ class BinaryClockWidgetReceiver : GlanceAppWidgetReceiver() {
 
 @Composable
 internal fun BinaryClockWidgetContent(digits: List<Int>) {
-    val isCompactMode = LocalSize.current.width <= 180.dp
+    val isCompactMode = LocalSize.current.width <= MinimumWidgetWidth
     Column(
         modifier = GlanceModifier
             .fillMaxSize()
@@ -139,6 +139,7 @@ private fun BinaryDigitColumn(digit: Int, label: String, compact: Boolean) {
 }
 
 private val labels = listOf("H", "H", "M", "M", "S", "S")
+private val MinimumWidgetWidth = 180.dp
 
 private const val ACTION_REFRESH_BINARY_CLOCK = "info.anodsplace.binaryclock.action.REFRESH"
 private const val MINUTE_MILLIS = 60_000L

@@ -220,12 +220,13 @@ jobs:
           fi
 
           # Suppress the expected "not found" error when the release has not been created yet.
-          if gh release view "$release_tag" >/dev/null 2>&1; then
+          if gh release view "$release_tag" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
             echo "Uploading APK to existing release $release_tag."
           else
             gh release create "$release_tag" \
+              --repo "$GITHUB_REPOSITORY" \
               --title "$release_tag" \
               --notes "Signed APK built from ${GITHUB_SHA} with versionCode ${VERSION_CODE} and versionName ${VERSION_NAME}."
           fi
 
-          gh release upload "$release_tag" "$RUNNER_TEMP/$APK_NAME" --clobber
+          gh release upload "$release_tag" "$RUNNER_TEMP/$APK_NAME" --repo "$GITHUB_REPOSITORY" --clobber
