@@ -215,7 +215,9 @@ jobs:
             release_tag="apk-${VERSION_CODE}"
           fi
 
-          if ! gh release view "$release_tag" >/dev/null 2>&1; then
+          if gh release view "$release_tag" >/dev/null; then
+            echo "Uploading APK to existing release $release_tag."
+          else
             gh release create "$release_tag" \
               --title "$release_tag" \
               --notes "Signed APK built from ${GITHUB_SHA} with versionCode ${VERSION_CODE} and versionName ${VERSION_NAME}."
