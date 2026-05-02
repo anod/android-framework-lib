@@ -153,7 +153,7 @@ private object BinaryClockRefreshScheduler {
         }
         val alarmManager = context.getSystemService(AlarmManager::class.java)
         val refreshIntent = pendingIntent(context)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && alarmManager.canScheduleExactAlarms()) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && alarmManager.canScheduleExactAlarms()) {
             alarmManager.setExact(AlarmManager.RTC, nextMinute, refreshIntent)
         } else {
             alarmManager.setWindow(AlarmManager.RTC, nextMinute, INEXACT_REFRESH_WINDOW_MILLIS, refreshIntent)
