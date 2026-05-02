@@ -215,7 +215,8 @@ jobs:
             release_tag="apk-${VERSION_CODE}"
           fi
 
-          if gh release view "$release_tag" >/dev/null; then
+          # Suppress the expected "not found" error when the release has not been created yet.
+          if gh release view "$release_tag" >/dev/null 2>&1; then
             echo "Uploading APK to existing release $release_tag."
           else
             gh release create "$release_tag" \
