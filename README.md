@@ -27,6 +27,7 @@ Build and test this module from the consuming Gradle project that includes this 
 
 ```sh
 ./gradlew :lib:binaryclock:check
+./gradlew :binaryclock:check
 ```
 
 ## APK build and publish workflow
