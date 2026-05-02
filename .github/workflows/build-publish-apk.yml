@@ -98,6 +98,13 @@ jobs:
 
           if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
             version_name="${GITHUB_REF_NAME#v}"
+            case "$version_name" in
+              [0-9]*) ;;
+              *)
+                echo "Tag builds must use a version tag in the form v<version>, for example v1.0.0." >&2
+                exit 1
+                ;;
+            esac
           else
             version_name="0.1.${GITHUB_RUN_NUMBER}"
           fi

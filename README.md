@@ -40,6 +40,6 @@ The workflow reuses the same signing key between builds through repository secre
 - `ANDROID_SIGNING_KEY_ALIAS`
 - `ANDROID_SIGNING_KEY_PASSWORD`
 
-The APK version code is automatically set to `github.run_number`, so each workflow run increments the version code. Tagged builds use the tag name without a leading `v` as the version name; manual non-tag builds use `0.1.<run_number>`.
+The APK version code is automatically set to `github.run_number`, so each workflow run increments the version code. Tagged builds use `v<version>` tags, such as `v1.0.0`, and use the tag name without the leading `v` as the version name; manual non-tag builds use `0.1.<run_number>`.
 
 Manual runs accept an Android application module path, defaulting to `app`. This repository snapshot contains Android library modules only, so pull request runs report that no APK build was run unless a root Gradle wrapper and application module are added. Manual and tag release runs require a root Gradle wrapper and application module for the APK build to succeed.
