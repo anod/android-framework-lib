@@ -28,3 +28,18 @@ Build and test this module from the consuming Gradle project that includes this 
 ```sh
 ./gradlew :lib:binaryclock:check
 ```
+
+## APK build and publish workflow
+
+`.github/workflows/build-publish-apk.yml` builds a signed release APK for an Android application module and uploads it as a workflow artifact. When the workflow runs for a `v*` tag, or when `publish_release` is enabled for a manual run, it also uploads the APK to a GitHub Release.
+
+The workflow reuses the same signing key between builds through repository secrets. Generate the release keystore once, base64-encode it, and store these secrets in GitHub:
+
+- `ANDROID_SIGNING_KEYSTORE_BASE64`
+- `ANDROID_SIGNING_KEYSTORE_PASSWORD`
+- `ANDROID_SIGNING_KEY_ALIAS`
+- `ANDROID_SIGNING_KEY_PASSWORD`
+
+The APK version code is automatically set to `github.run_number`, so each workflow run increments the version code. Tagged builds use the tag name without a leading `v` as the version name; manual non-tag builds use `0.1.<run_number>`.
+
+Manual runs accept an Android application module path, defaulting to `app`. This repository snapshot contains Android library modules only, so a consuming project or future app module must provide a root Gradle wrapper and application module for the APK build to succeed.

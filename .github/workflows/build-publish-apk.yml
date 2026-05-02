@@ -1,0 +1,157 @@
+name: Build and publish APK
+
+on:
+  workflow_dispatch:
+    inputs:
+      module:
+        description: Android application module path, without the assemble task name
+        required: true
+        default: app
+      publish_release:
+        description: Attach the APK to a GitHub Release
+        required: true
+        type: boolean
+        default: false
+      release_tag:
+        description: Release tag to publish to when publish_release is enabled; defaults to apk-<versionCode>
+        required: false
+        default: ''
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: build-publish-apk-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Build signed release APK
+    runs-on: ubuntu-latest
+    env:
+      APP_MODULE: ${{ github.event.inputs.module || 'app' }}
+      PUBLISH_RELEASE: ${{ github.event.inputs.publish_release || 'false' }}
+      REQUESTED_RELEASE_TAG: ${{ github.event.inputs.release_tag || '' }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.2.2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v4.7.1
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4.4.2
+
+      - name: Validate Android signing secrets
+        env:
+          ANDROID_SIGNING_KEYSTORE_BASE64: ${{ secrets.ANDROID_SIGNING_KEYSTORE_BASE64 }}
+          ANDROID_SIGNING_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_SIGNING_KEYSTORE_PASSWORD }}
+          ANDROID_SIGNING_KEY_ALIAS: ${{ secrets.ANDROID_SIGNING_KEY_ALIAS }}
+          ANDROID_SIGNING_KEY_PASSWORD: ${{ secrets.ANDROID_SIGNING_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          test -n "$ANDROID_SIGNING_KEYSTORE_BASE64"
+          test -n "$ANDROID_SIGNING_KEYSTORE_PASSWORD"
+          test -n "$ANDROID_SIGNING_KEY_ALIAS"
+          test -n "$ANDROID_SIGNING_KEY_PASSWORD"
+
+      - name: Prepare build metadata
+        run: |
+          set -euo pipefail
+          if [ ! -x ./gradlew ]; then
+            echo "This workflow requires a Gradle wrapper at the repository root." >&2
+            exit 1
+          fi
+
+          module_path="${APP_MODULE#:}"
+          module_dir="${module_path//://}"
+          if [ ! -d "$module_dir" ]; then
+            echo "Android application module '$APP_MODULE' was not found at '$module_dir'." >&2
+            exit 1
+          fi
+
+          if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
+            version_name="${GITHUB_REF_NAME#v}"
+          else
+            version_name="0.1.${GITHUB_RUN_NUMBER}"
+          fi
+
+          {
+            echo "MODULE_PATH=$module_path"
+            echo "MODULE_DIR=$module_dir"
+            echo "VERSION_CODE=${GITHUB_RUN_NUMBER}"
+            echo "VERSION_NAME=$version_name"
+            echo "APK_NAME=${module_path//:/-}-${version_name}-${GITHUB_RUN_NUMBER}.apk"
+          } >> "$GITHUB_ENV"
+
+      - name: Decode signing keystore
+        env:
+          ANDROID_SIGNING_KEYSTORE_BASE64: ${{ secrets.ANDROID_SIGNING_KEYSTORE_BASE64 }}
+        run: |
+          set -euo pipefail
+          keystore_file="$RUNNER_TEMP/android-release.keystore"
+          printf '%s' "$ANDROID_SIGNING_KEYSTORE_BASE64" | base64 --decode > "$keystore_file"
+          echo "KEYSTORE_FILE=$keystore_file" >> "$GITHUB_ENV"
+
+      - name: Build signed release APK
+        env:
+          ANDROID_SIGNING_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_SIGNING_KEYSTORE_PASSWORD }}
+          ANDROID_SIGNING_KEY_ALIAS: ${{ secrets.ANDROID_SIGNING_KEY_ALIAS }}
+          ANDROID_SIGNING_KEY_PASSWORD: ${{ secrets.ANDROID_SIGNING_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          ./gradlew ":${MODULE_PATH}:assembleRelease" \
+            --no-daemon \
+            -Pandroid.injected.version.code="$VERSION_CODE" \
+            -Pandroid.injected.version.name="$VERSION_NAME" \
+            -Pandroid.injected.signing.store.file="$KEYSTORE_FILE" \
+            -Pandroid.injected.signing.store.password="$ANDROID_SIGNING_KEYSTORE_PASSWORD" \
+            -Pandroid.injected.signing.key.alias="$ANDROID_SIGNING_KEY_ALIAS" \
+            -Pandroid.injected.signing.key.password="$ANDROID_SIGNING_KEY_PASSWORD"
+
+      - name: Locate signed APK
+        run: |
+          set -euo pipefail
+          apk_path="$(find "$MODULE_DIR/build/outputs/apk/release" -type f -name '*.apk' ! -name '*unsigned*' | sort | head -n 1)"
+          if [ -z "$apk_path" ]; then
+            echo "No signed release APK found in $MODULE_DIR/build/outputs/apk/release." >&2
+            exit 1
+          fi
+          published_apk="$RUNNER_TEMP/$APK_NAME"
+          cp "$apk_path" "$published_apk"
+          echo "APK_PATH=$published_apk" >> "$GITHUB_ENV"
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4.6.2
+        with:
+          name: ${{ env.APK_NAME }}
+          path: ${{ env.APK_PATH }}
+          if-no-files-found: error
+
+      - name: Publish APK to GitHub Release
+        if: github.ref_type == 'tag' || github.event.inputs.publish_release == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if [ -n "$REQUESTED_RELEASE_TAG" ]; then
+            release_tag="$REQUESTED_RELEASE_TAG"
+          elif [ "${GITHUB_REF_TYPE}" = "tag" ]; then
+            release_tag="$GITHUB_REF_NAME"
+          else
+            release_tag="apk-${VERSION_CODE}"
+          fi
+
+          if ! gh release view "$release_tag" >/dev/null 2>&1; then
+            gh release create "$release_tag" \
+              --title "$release_tag" \
+              --notes "Signed APK built from ${GITHUB_SHA} with versionCode ${VERSION_CODE} and versionName ${VERSION_NAME}."
+          fi
+
+          gh release upload "$release_tag" "$APK_PATH" --clobber
