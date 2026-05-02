@@ -4,6 +4,7 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -151,10 +152,10 @@ private object BinaryClockRefreshScheduler {
         }
         val alarmManager = context.getSystemService(AlarmManager::class.java)
         val refreshIntent = pendingIntent(context)
-        if (alarmManager.canScheduleExactAlarms()) {
-            alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, nextMinute, refreshIntent)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && alarmManager.canScheduleExactAlarms()) {
+            alarmManager.setAndAllowWhileIdle(AlarmManager.RTC, nextMinute, refreshIntent)
         } else {
-            alarmManager.set(AlarmManager.RTC_WAKEUP, nextMinute, refreshIntent)
+            alarmManager.set(AlarmManager.RTC, nextMinute, refreshIntent)
         }
     }
 
