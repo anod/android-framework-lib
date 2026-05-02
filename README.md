@@ -26,13 +26,12 @@ Widget metadata lives in `binaryclock/src/androidMain/res/xml/binary_clock_widge
 Build and test this module from the consuming Gradle project that includes this repository, for example with the module path configured by that project:
 
 ```sh
-./gradlew :lib:binaryclock:check
 ./gradlew :binaryclock:check
 ```
 
 ## APK build and publish workflow
 
-`.github/workflows/build-publish-apk.yml` builds a release APK for an Android application module on pull requests and manual runs, then uploads it as a workflow artifact. Pull request builds do not use signing secrets or publish releases. When `publish_release` is enabled for a manual run, it signs the APK and uploads it to a GitHub Release.
+`.github/workflows/build-publish-apk.yml` builds a release APK for an Android application module on pull requests, manual runs, and `v*` tags, then uploads it as a workflow artifact. Pull request builds use a debug signature and do not publish releases. When `publish_release` is enabled for a manual run, or when a `v*` tag is pushed, it signs the APK and uploads it to a GitHub Release.
 
 The workflow reuses the same signing key between builds through repository secrets. Generate the release keystore once, base64-encode it, and store these secrets in GitHub:
 
@@ -41,6 +40,6 @@ The workflow reuses the same signing key between builds through repository secre
 - `ANDROID_SIGNING_KEY_ALIAS`
 - `ANDROID_SIGNING_KEY_PASSWORD`
 
-The APK version code is automatically set to `github.run_number`, so each workflow run increments the version code. APK version names use `0.1.<run_number>`. Manual release runs can publish to a specific GitHub Release by setting `release_tag`; otherwise the workflow uses `apk-<versionCode>`.
+The APK version code is automatically set to `github.run_number`, so each workflow run increments the version code. Tagged builds use the tag name without a leading `v` as the version name; non-tag builds use `0.1.<run_number>`. Manual release runs can publish to a specific GitHub Release by setting `release_tag`; otherwise the workflow uses `apk-<versionCode>`.
 
-Manual runs accept an Android application module path, defaulting to `app`. This repository snapshot contains Android library modules only, so pull request runs report that no APK build was run unless a root Gradle wrapper and application module are added. Manual release runs require a root Gradle wrapper and application module for the APK build to succeed.
+Manual runs accept an Android application module path, defaulting to `app`. If this repository snapshot does not contain a root Gradle wrapper or Android application module, the workflow still publishes a minimal Binary Clock demo APK built directly with Android SDK tools.

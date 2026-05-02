@@ -17,6 +17,9 @@ on:
         description: Release tag to publish to when publish_release is enabled; defaults to apk-<versionCode>
         required: false
         default: ''
+  push:
+    tags:
+      - 'v*'
 
 permissions:
   contents: read
@@ -67,38 +70,39 @@ jobs:
         id: metadata
         run: |
           set -euo pipefail
-          if [ ! -x ./gradlew ]; then
-            if [ "${GITHUB_EVENT_NAME}" = "pull_request" ]; then
-              echo "No Gradle wrapper found at the repository root; skipping APK build for this pull request."
-              echo "BUILD_APK=false" >> "$GITHUB_ENV"
-              echo "build_apk=false" >> "$GITHUB_OUTPUT"
-              exit 0
-            else
-              echo "This workflow requires a Gradle wrapper at the repository root." >&2
-              exit 1
-            fi
-          fi
-
           module_path="${APP_MODULE#:}"
           module_dir="${module_path//:/\/}"
-          if [ ! -d "$module_dir" ]; then
-            if [ "${GITHUB_EVENT_NAME}" = "pull_request" ]; then
-              echo "Android application module '$APP_MODULE' was not found at '$module_dir'; skipping APK build for this pull request."
-              echo "BUILD_APK=false" >> "$GITHUB_ENV"
-              echo "build_apk=false" >> "$GITHUB_OUTPUT"
-              exit 0
-            else
-              echo "Android application module '$APP_MODULE' was not found at '$module_dir'." >&2
-              exit 1
-            fi
+          fallback_apk=false
+          if [ ! -x ./gradlew ]; then
+            echo "No Gradle wrapper found at the repository root; building the Android SDK fallback APK."
+            fallback_apk=true
+            module_path="binaryclock-demo"
+            module_dir="."
+          elif [ ! -d "$module_dir" ]; then
+            echo "Android application module '$APP_MODULE' was not found at '$module_dir'; building the Android SDK fallback APK."
+            fallback_apk=true
+            module_path="binaryclock-demo"
+            module_dir="."
           fi
 
-          version_name="0.1.${GITHUB_RUN_NUMBER}"
+          if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
+            version_name="${GITHUB_REF_NAME#v}"
+            case "$version_name" in
+              [0-9]*) ;;
+              *)
+                echo "Tag builds must use a version tag in the form v<version>, for example v1.0.0." >&2
+                exit 1
+                ;;
+            esac
+          else
+            version_name="0.1.${GITHUB_RUN_NUMBER}"
+          fi
 
           {
             echo "MODULE_PATH=$module_path"
             echo "MODULE_DIR=$module_dir"
             echo "BUILD_APK=true"
+            echo "FALLBACK_ANDROID_SDK_APK=$fallback_apk"
             echo "VERSION_CODE=${GITHUB_RUN_NUMBER}"
             echo "VERSION_NAME=$version_name"
             echo "APK_NAME=${module_path//:/-}-${version_name}-${GITHUB_RUN_NUMBER}.apk"
@@ -110,10 +114,10 @@ jobs:
             echo "version_name=$version_name"
           } >> "$GITHUB_OUTPUT"
 
-      - name: Report skipped APK build
-        if: env.BUILD_APK != 'true'
+      - name: Report fallback APK build
+        if: env.FALLBACK_ANDROID_SDK_APK == 'true'
         run: |
-          echo "No APK build was run because this repository checkout does not contain a root Gradle application project." >> "$GITHUB_STEP_SUMMARY"
+          echo "No root Gradle application project was found, so this run will publish a minimal Binary Clock demo APK built with Android SDK tools." >> "$GITHUB_STEP_SUMMARY"
 
       - name: Decode signing keystore
         if: env.BUILD_APK == 'true' && github.event_name != 'pull_request'
@@ -126,7 +130,7 @@ jobs:
           echo "KEYSTORE_FILE=$keystore_file" >> "$GITHUB_ENV"
 
       - name: Build unsigned release APK
-        if: env.BUILD_APK == 'true' && github.event_name == 'pull_request'
+        if: env.BUILD_APK == 'true' && env.FALLBACK_ANDROID_SDK_APK != 'true' && github.event_name == 'pull_request'
         run: |
           set -euo pipefail
           ./gradlew ":${MODULE_PATH}:assembleRelease" \
@@ -135,7 +139,7 @@ jobs:
             -Pandroid.injected.version.name="$VERSION_NAME"
 
       - name: Build signed release APK
-        if: env.BUILD_APK == 'true' && github.event_name != 'pull_request'
+        if: env.BUILD_APK == 'true' && env.FALLBACK_ANDROID_SDK_APK != 'true' && github.event_name != 'pull_request'
         env:
           ANDROID_SIGNING_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_SIGNING_KEYSTORE_PASSWORD }}
           ANDROID_SIGNING_KEY_ALIAS: ${{ secrets.ANDROID_SIGNING_KEY_ALIAS }}
@@ -151,8 +155,174 @@ jobs:
             -Pandroid.injected.signing.key.alias="$ANDROID_SIGNING_KEY_ALIAS" \
             -Pandroid.injected.signing.key.password="$ANDROID_SIGNING_KEY_PASSWORD"
 
+      - name: Build Android SDK fallback APK
+        if: env.FALLBACK_ANDROID_SDK_APK == 'true'
+        env:
+          ANDROID_SIGNING_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_SIGNING_KEYSTORE_PASSWORD }}
+          ANDROID_SIGNING_KEY_ALIAS: ${{ secrets.ANDROID_SIGNING_KEY_ALIAS }}
+          ANDROID_SIGNING_KEY_PASSWORD: ${{ secrets.ANDROID_SIGNING_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+          build_tools_dir="$(find "$ANDROID_HOME/build-tools" -mindepth 1 -maxdepth 1 -type d | sort -V | tail -n 1)"
+          android_jar="$ANDROID_HOME/platforms/android-36/android.jar"
+          work_dir="$RUNNER_TEMP/binary-clock-apk"
+          src_dir="$work_dir/src"
+          compiled_res="$work_dir/compiled-res"
+          generated_src="$work_dir/generated"
+          classes_dir="$work_dir/classes"
+          dex_dir="$work_dir/dex"
+          unsigned_apk="$work_dir/unsigned.apk"
+          aligned_apk="$work_dir/aligned.apk"
+          published_apk="$RUNNER_TEMP/$APK_NAME"
+
+          rm -rf "$work_dir"
+          mkdir -p \
+            "$src_dir/java/info/anodsplace/binaryclock/demo" \
+            "$src_dir/res/layout" \
+            "$src_dir/res/values" \
+            "$src_dir/res/xml" \
+            "$compiled_res" \
+            "$generated_src" \
+            "$classes_dir" \
+            "$dex_dir"
+
+          cat > "$src_dir/AndroidManifest.xml" <<'EOF'
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+              package="info.anodsplace.binaryclock.demo">
+              <application android:label="@string/app_name">
+                  <receiver
+                      android:name=".BinaryClockWidgetProvider"
+                      android:exported="true">
+                      <intent-filter>
+                          <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+                      </intent-filter>
+                      <meta-data
+                          android:name="android.appwidget.provider"
+                          android:resource="@xml/binary_clock_widget_info" />
+                  </receiver>
+              </application>
+          </manifest>
+          EOF
+          cat > "$src_dir/res/values/strings.xml" <<'EOF'
+          <resources>
+              <string name="app_name">Binary Clock</string>
+              <string name="widget_description">Binary clock demo widget</string>
+          </resources>
+          EOF
+          cat > "$src_dir/res/layout/binary_clock_widget.xml" <<'EOF'
+          <TextView xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/binary_clock_text"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="#101010"
+              android:gravity="center"
+              android:padding="12dp"
+              android:textColor="#FFFFFF"
+              android:textSize="20sp" />
+          EOF
+          cat > "$src_dir/res/xml/binary_clock_widget_info.xml" <<'EOF'
+          <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+              android:description="@string/widget_description"
+              android:initialLayout="@layout/binary_clock_widget"
+              android:minWidth="180dp"
+              android:minHeight="110dp"
+              android:resizeMode="horizontal|vertical"
+              android:targetCellWidth="4"
+              android:targetCellHeight="2"
+              android:updatePeriodMillis="1800000"
+              android:widgetCategory="home_screen" />
+          EOF
+          cat > "$src_dir/java/info/anodsplace/binaryclock/demo/BinaryClockWidgetProvider.java" <<'EOF'
+          package info.anodsplace.binaryclock.demo;
+
+          import android.appwidget.AppWidgetManager;
+          import android.appwidget.AppWidgetProvider;
+          import android.content.Context;
+          import android.widget.RemoteViews;
+          import java.time.LocalTime;
+
+          public final class BinaryClockWidgetProvider extends AppWidgetProvider {
+              @Override
+              public void onUpdate(Context context, AppWidgetManager manager, int[] appWidgetIds) {
+                  for (int appWidgetId : appWidgetIds) {
+                      RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.binary_clock_widget);
+                      views.setTextViewText(R.id.binary_clock_text, binaryTime(LocalTime.now()));
+                      manager.updateAppWidget(appWidgetId, views);
+                  }
+              }
+
+              private static String binaryTime(LocalTime time) {
+                  return digit(time.getHour() / 10) + " " + digit(time.getHour() % 10) + "\n"
+                      + digit(time.getMinute() / 10) + " " + digit(time.getMinute() % 10) + "\n"
+                      + digit(time.getSecond() / 10) + " " + digit(time.getSecond() % 10);
+              }
+
+              private static String digit(int value) {
+                  return "" + bit(value, 8) + bit(value, 4) + bit(value, 2) + bit(value, 1);
+              }
+
+              private static char bit(int value, int bit) {
+                  return (value & bit) == bit ? '1' : '0';
+              }
+          }
+          EOF
+
+          "$build_tools_dir/aapt2" compile --dir "$src_dir/res" -o "$compiled_res"
+          "$build_tools_dir/aapt2" link \
+            -I "$android_jar" \
+            --manifest "$src_dir/AndroidManifest.xml" \
+            --java "$generated_src" \
+            --min-sdk-version 31 \
+            --target-sdk-version 36 \
+            --version-code "$VERSION_CODE" \
+            --version-name "$VERSION_NAME" \
+            --rename-manifest-package info.anodsplace.binaryclock.demo \
+            -o "$unsigned_apk" \
+            "$compiled_res"/*.flat
+          javac \
+            -source 17 \
+            -target 17 \
+            -classpath "$android_jar:$generated_src" \
+            -d "$classes_dir" \
+            "$generated_src/info/anodsplace/binaryclock/demo/R.java" \
+            "$src_dir/java/info/anodsplace/binaryclock/demo/BinaryClockWidgetProvider.java"
+          mapfile -t class_files < <(find "$classes_dir" -name '*.class' -type f)
+          "$build_tools_dir/d8" --min-api 31 --output "$dex_dir" "${class_files[@]}"
+          (cd "$dex_dir" && zip -q "$unsigned_apk" classes.dex)
+          "$build_tools_dir/zipalign" -f 4 "$unsigned_apk" "$aligned_apk"
+
+          if [ "${GITHUB_EVENT_NAME}" = "pull_request" ]; then
+            debug_keystore="$RUNNER_TEMP/binary-clock-debug.keystore"
+            keytool -genkeypair \
+              -keystore "$debug_keystore" \
+              -storepass android \
+              -keypass android \
+              -alias androiddebugkey \
+              -keyalg RSA \
+              -keysize 2048 \
+              -validity 10000 \
+              -dname "CN=Android Debug,O=Android,C=US"
+            "$build_tools_dir/apksigner" sign \
+              --ks "$debug_keystore" \
+              --ks-pass pass:android \
+              --key-pass pass:android \
+              --out "$published_apk" \
+              "$aligned_apk"
+          else
+            "$build_tools_dir/apksigner" sign \
+              --ks "$KEYSTORE_FILE" \
+              --ks-pass pass:"$ANDROID_SIGNING_KEYSTORE_PASSWORD" \
+              --ks-key-alias "$ANDROID_SIGNING_KEY_ALIAS" \
+              --key-pass pass:"$ANDROID_SIGNING_KEY_PASSWORD" \
+              --out "$published_apk" \
+              "$aligned_apk"
+          fi
+
+          "$build_tools_dir/apksigner" verify "$published_apk"
+          echo "APK_PATH=$published_apk" >> "$GITHUB_ENV"
+
       - name: Locate APK
-        if: env.BUILD_APK == 'true'
+        if: env.BUILD_APK == 'true' && env.FALLBACK_ANDROID_SDK_APK != 'true'
         run: |
           set -euo pipefail
           if [ "${GITHUB_EVENT_NAME}" = "pull_request" ]; then
@@ -180,7 +350,7 @@ jobs:
     name: Publish APK to GitHub Release
     runs-on: ubuntu-latest
     needs: build
-    if: needs.build.outputs.build_apk == 'true' && github.event.inputs.publish_release == 'true'
+    if: needs.build.outputs.build_apk == 'true' && (github.ref_type == 'tag' || github.event.inputs.publish_release == 'true')
     permissions:
       contents: write
     env:
@@ -202,6 +372,8 @@ jobs:
           set -euo pipefail
           if [ -n "$REQUESTED_RELEASE_TAG" ]; then
             release_tag="$REQUESTED_RELEASE_TAG"
+          elif [ "${GITHUB_REF_TYPE}" = "tag" ]; then
+            release_tag="$GITHUB_REF_NAME"
           else
             release_tag="apk-${VERSION_CODE}"
           fi
