@@ -17,9 +17,6 @@ on:
         description: Release tag to publish to when publish_release is enabled; defaults to apk-<versionCode>
         required: false
         default: ''
-  push:
-    tags:
-      - 'v*'
 
 permissions:
   contents: read
@@ -83,7 +80,7 @@ jobs:
           fi
 
           module_path="${APP_MODULE#:}"
-          module_dir="${module_path//://}"
+          module_dir="${module_path//:/\/}"
           if [ ! -d "$module_dir" ]; then
             if [ "${GITHUB_EVENT_NAME}" = "pull_request" ]; then
               echo "Android application module '$APP_MODULE' was not found at '$module_dir'; skipping APK build for this pull request."

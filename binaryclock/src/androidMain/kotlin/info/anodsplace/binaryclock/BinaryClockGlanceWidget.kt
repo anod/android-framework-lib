@@ -1,6 +1,9 @@
 package info.anodsplace.binaryclock
 
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -11,6 +14,7 @@ import androidx.glance.LocalSize
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import androidx.glance.appwidget.provideContent
+import androidx.glance.appwidget.updateAll
 import androidx.glance.background
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Column
@@ -24,6 +28,9 @@ import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
 import java.time.LocalTime
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class BinaryClockGlanceWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
@@ -42,11 +49,39 @@ class BinaryClockGlanceWidget : GlanceAppWidget() {
 
 class BinaryClockWidgetReceiver : GlanceAppWidgetReceiver() {
     override val glanceAppWidget: GlanceAppWidget = BinaryClockGlanceWidget()
+
+    override fun onEnabled(context: Context) {
+        super.onEnabled(context)
+        BinaryClockRefreshScheduler.scheduleNext(context)
+    }
+
+    override fun onDisabled(context: Context) {
+        BinaryClockRefreshScheduler.cancel(context)
+        super.onDisabled(context)
+    }
+
+    override fun onReceive(context: Context, intent: Intent) {
+        super.onReceive(context, intent)
+        if (intent.action != ACTION_REFRESH_BINARY_CLOCK) {
+            return
+        }
+
+        val pendingResult = goAsync()
+        CoroutineScope(Dispatchers.Default).launch {
+            try {
+                val applicationContext = context.applicationContext
+                glanceAppWidget.updateAll(applicationContext)
+                BinaryClockRefreshScheduler.scheduleNext(applicationContext)
+            } finally {
+                pendingResult.finish()
+            }
+        }
+    }
 }
 
 @Composable
 internal fun BinaryClockWidgetContent(digits: List<Int>) {
-    val isCompactMode = LocalSize.current.width < 180.dp
+    val isCompactMode = LocalSize.current.width <= 180.dp
     Column(
         modifier = GlanceModifier
             .fillMaxSize()
@@ -104,3 +139,31 @@ private fun BinaryDigitColumn(digit: Int, label: String, compact: Boolean) {
 }
 
 private val labels = listOf("H", "H", "M", "M", "S", "S")
+
+private const val ACTION_REFRESH_BINARY_CLOCK = "info.anodsplace.binaryclock.action.REFRESH"
+private const val MINUTE_MILLIS = 60_000L
+
+private object BinaryClockRefreshScheduler {
+    fun scheduleNext(context: Context) {
+        val nextMinute = System.currentTimeMillis().let { now ->
+            now - (now % MINUTE_MILLIS) + MINUTE_MILLIS
+        }
+        context.getSystemService(AlarmManager::class.java)
+            .setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, nextMinute, pendingIntent(context))
+    }
+
+    fun cancel(context: Context) {
+        context.getSystemService(AlarmManager::class.java).cancel(pendingIntent(context))
+    }
+
+    private fun pendingIntent(context: Context): PendingIntent {
+        val intent = Intent(context, BinaryClockWidgetReceiver::class.java)
+            .setAction(ACTION_REFRESH_BINARY_CLOCK)
+        return PendingIntent.getBroadcast(
+            context,
+            0,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+        )
+    }
+}

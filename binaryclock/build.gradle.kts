@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotlin.multiplatform.android.library)
+    alias(libs.plugins.compose.compiler)
 }
 
 kotlin {
@@ -18,7 +19,8 @@ kotlin {
             implementation(kotlin("test"))
         }
         androidMain.dependencies {
-            implementation("androidx.glance:glance-appwidget:1.1.1")
+            implementation(libs.androidx.glance.appwidget)
+            implementation(libs.coroutines.core)
         }
     }
 }
