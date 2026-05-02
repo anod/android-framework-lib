@@ -149,8 +149,13 @@ private object BinaryClockRefreshScheduler {
         val nextMinute = System.currentTimeMillis().let { now ->
             now - (now % MINUTE_MILLIS) + MINUTE_MILLIS
         }
-        context.getSystemService(AlarmManager::class.java)
-            .setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, nextMinute, pendingIntent(context))
+        val alarmManager = context.getSystemService(AlarmManager::class.java)
+        val refreshIntent = pendingIntent(context)
+        if (alarmManager.canScheduleExactAlarms()) {
+            alarmManager.setAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, nextMinute, refreshIntent)
+        } else {
+            alarmManager.set(AlarmManager.RTC_WAKEUP, nextMinute, refreshIntent)
+        }
     }
 
     fun cancel(context: Context) {
