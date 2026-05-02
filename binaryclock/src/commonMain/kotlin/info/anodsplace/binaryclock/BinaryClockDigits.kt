@@ -5,7 +5,7 @@ object BinaryClockDigits {
 
     fun digitBits(digit: Int): List<Boolean> {
         require(digit in 0..9) { "Digit must be between 0 and 9" }
-        return bitValues.map { bit -> digit and bit == bit }
+        return bitValues.map { bit -> (digit and bit) == bit }
     }
 
     fun timeDigits(hour: Int, minute: Int, second: Int): List<Int> {

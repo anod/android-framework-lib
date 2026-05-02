@@ -21,7 +21,6 @@ import androidx.glance.layout.height
 import androidx.glance.layout.padding
 import androidx.glance.layout.width
 import androidx.glance.text.Text
-import androidx.glance.text.TextAlign
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
 import java.time.LocalTime
@@ -90,7 +89,6 @@ private fun BinaryDigitColumn(digit: Int, label: String, compact: Boolean) {
                 style = TextStyle(
                     color = ColorProvider(if (active) Color.White else Color(0xFF555555)),
                     fontSize = dotFontSize,
-                    textAlign = TextAlign.Center,
                 ),
             )
         }
@@ -100,7 +98,6 @@ private fun BinaryDigitColumn(digit: Int, label: String, compact: Boolean) {
             style = TextStyle(
                 color = ColorProvider(Color(0xFF888888)),
                 fontSize = 10.sp,
-                textAlign = TextAlign.Center,
             ),
         )
     }
