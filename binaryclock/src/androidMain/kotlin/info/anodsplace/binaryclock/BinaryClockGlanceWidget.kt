@@ -144,6 +144,7 @@ private val MinimumWidgetWidth = 180.dp
 
 private const val ACTION_REFRESH_BINARY_CLOCK = "info.anodsplace.binaryclock.action.REFRESH"
 private const val MINUTE_MILLIS = 60_000L
+private const val INEXACT_REFRESH_WINDOW_MILLIS = 10_000L
 
 private object BinaryClockRefreshScheduler {
     fun scheduleNext(context: Context) {
@@ -153,9 +154,9 @@ private object BinaryClockRefreshScheduler {
         val alarmManager = context.getSystemService(AlarmManager::class.java)
         val refreshIntent = pendingIntent(context)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && alarmManager.canScheduleExactAlarms()) {
-            alarmManager.setAndAllowWhileIdle(AlarmManager.RTC, nextMinute, refreshIntent)
+            alarmManager.setExact(AlarmManager.RTC, nextMinute, refreshIntent)
         } else {
-            alarmManager.setWindow(AlarmManager.RTC, nextMinute, MINUTE_MILLIS, refreshIntent)
+            alarmManager.setWindow(AlarmManager.RTC, nextMinute, INEXACT_REFRESH_WINDOW_MILLIS, refreshIntent)
         }
     }
 
