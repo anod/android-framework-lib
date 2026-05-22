@@ -21,7 +21,7 @@ kotlin {
 
                 implementation(libs.androidx.activity)
 
-                implementation(project.dependencies.platform(libs.androidx.compose.bom))
+                api(project.dependencies.platform(libs.androidx.compose.bom))
 
                 api(libs.androidx.compose.foundation)
                 api(libs.androidx.compose.ui)
