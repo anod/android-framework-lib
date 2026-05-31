@@ -54,8 +54,8 @@ fun PackageManager.loadIcon(componentName: ComponentName, displayMetrics: Displa
     if (d == null) {
         try {
             d = this.getApplicationIcon(componentName.packageName)
-        } catch (e1: PackageManager.NameNotFoundException) {
-            AppLog.e(e1)
+        } catch (_: PackageManager.NameNotFoundException) {
+            AppLog.d("Icon package missing: ${componentName.packageName}")
             return null
         }
     }
@@ -176,4 +176,3 @@ fun PackageManager.getLaunchComponent(packageName: String): ComponentName? {
     val launchIntent = this.getLaunchIntentForPackage(packageName)
     return launchIntent?.component
 }
-
