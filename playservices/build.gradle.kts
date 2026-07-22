@@ -4,9 +4,9 @@ plugins {
 }
 
 kotlin {
-    androidLibrary {
+    android {
         namespace = "info.anodsplace.playservices"
-        compileSdk = 36
+        compileSdk = 37
         minSdk = 31
         androidResources {
             enable = true

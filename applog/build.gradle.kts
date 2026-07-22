@@ -4,9 +4,9 @@ plugins {
 }
 
 kotlin {
-    androidLibrary {
+    android {
         namespace = "info.anodsplace.applog"
-        compileSdk = 36
+        compileSdk = 37
     }
     listOf(
         iosX64(),

@@ -5,9 +5,9 @@ plugins {
 }
 
 kotlin {
-    androidLibrary {
+    android {
         namespace = "info.anodsplace.compose"
-        compileSdk = 36
+        compileSdk = 37
         minSdk = 31
     }
 
