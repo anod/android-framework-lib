@@ -9,7 +9,6 @@ kotlin {
         compileSdk = 37
     }
     listOf(
-        iosX64(),
         iosArm64(),
         iosSimulatorArm64(),
     ).forEach {
