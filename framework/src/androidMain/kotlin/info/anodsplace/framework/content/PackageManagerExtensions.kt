@@ -9,6 +9,7 @@ import android.graphics.Canvas
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.util.DisplayMetrics
+import androidx.core.content.pm.PackageInfoCompat
 import info.anodsplace.applog.AppLog
 import java.io.BufferedReader
 import java.io.IOException
@@ -112,7 +113,7 @@ fun PackageManager.getInstalledPackagesCodes(): List<InstalledPackage> {
                 && applicationInfo.flags and ApplicationInfo.FLAG_UPDATED_SYSTEM_APP == 0) {
             continue
         }
-        downloaded.add(InstalledPackage(packageInfo.packageName, packageInfo.versionCode, packageInfo.versionName
+        downloaded.add(InstalledPackage(packageInfo.packageName, PackageInfoCompat.getLongVersionCode(packageInfo).toInt(), packageInfo.versionName
                 ?: "", packageInfo.lastUpdateTime))
     }
     return downloaded
