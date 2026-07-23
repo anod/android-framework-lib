@@ -2,6 +2,7 @@ package info.anodsplace.framework.content
 
 import android.content.pm.PackageInfo
 import androidx.collection.ArrayMap
+import androidx.core.content.pm.PackageInfoCompat
 
 /**
  * @author Alex Gavrishev
@@ -32,7 +33,7 @@ interface InstalledApps {
 
             if (pkgInfo != null) {
                 val versionName = pkgInfo.versionName ?: ""
-                return Info(pkgInfo.versionCode, versionName)
+                return Info(PackageInfoCompat.getLongVersionCode(pkgInfo).toInt(), versionName)
             }
             return Info(0, "")
         }
